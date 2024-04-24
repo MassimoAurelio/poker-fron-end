@@ -1,0 +1,114 @@
+@use "@/assets/scss/_vars.scss" as vars;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  @include vars.common-styles;
+  background-color: #582727;
+  color: vars.$colorWhiteTheme;
+}
+
+.dark-mode body {
+  @include vars.common-styles;
+  background-color: vars.$redBg;
+  color: vars.$colorDarkTheme;
+}
+
+a {
+  color: vars.$colorWhiteTheme;
+  font-weight: 400;
+  text-decoration: none;
+  @include vars.transition-ease;
+
+  &:hover {
+    color: vars.$justBlack;
+    text-decoration: none;
+  }
+}
+
+.dark-mode a {
+  color: vars.$colorDarkTheme;
+  font-weight: 400;
+  text-decoration: none;
+  @include vars.transition-ease;
+
+  &:hover {
+    color: vars.$justWhite;
+    text-decoration: none;
+  }
+}
+
+button {
+  color: vars.$colorWhiteTheme;
+  font-weight: 400;
+  text-decoration: none;
+  @include vars.transition-ease;
+
+  &:hover {
+    color: vars.$justBlack;
+    text-decoration: none;
+  }
+}
+
+.dark-mode button {
+  color: vars.$colorDarkTheme;
+  font-weight: 400;
+  text-decoration: none;
+  @include vars.transition-ease;
+  &:hover {
+    color: vars.$justWhite;
+    text-decoration: none;
+  }
+}
+
+span {
+  color: vars.$justBlack;
+  @include vars.transition-ease;
+}
+
+.dark-mode span {
+  color: vars.$justWhite;
+  @include vars.transition-ease;
+}
+
+.dark-mode h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: vars.$justWhite;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  @include vars.transition-ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: vars.$justBlack;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  @include vars.transition-ease;
+}
+
+ul,
+ol {
+  list-style-type: none;
+  @include vars.transition-ease;
+}
+
+p {
+  font-size: 16px;
+  font-weight: 400;
+  @include vars.transition-ease;
+}

@@ -1,0 +1,29 @@
+$darkBg: #111;
+$colorWhiteTheme: #646464;
+$customGray: rgb(44, 44, 44);
+$redBg: #582727;
+$colorDarkTheme: #b4b4b4;
+$justWhite: #fff;
+$justBlack: #202020;
+$dropboxBg: #191919;
+
+@mixin common-styles {
+  font-family: Montserra, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+@mixin transition-ease {
+  transition: all 0.2s ease;
+}
+
+@mixin borders {
+  border: 0.5px solid $colorWhiteTheme;
+  border-width: 1px;
+  border-radius: 0.5rem;
+}
+
+@mixin bordersHover {
+  border: 0.5px solid $justWhite;
+  border-width: 1px;
+  border-radius: 0.5rem;
+}
