@@ -3,9 +3,7 @@ interface IPlayers {
   name: string;
   position: number;
   stack: number;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
+  icon: string;
 }
 
 export const usePlayers = defineStore({

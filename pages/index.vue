@@ -3,6 +3,10 @@ import { useTogglePopup } from "@/store/useTogglePopup";
 import { usePlayers } from "~/store/usePlayers";
 const playersStore = usePlayers();
 
+useSeoMeta({
+  title: "POKER",
+});
+
 const joinTable = async (position: number) => {
   try {
     const response = await fetch("http://localhost:5000/join", {
@@ -77,192 +81,147 @@ const leaveFromTable = async (player: string) => {
   }
 };
 
+function createIconComputed(position: number) {
+  return computed(() => {
+    return playersStore.players.some((player) => player.position === position)
+      ? "fluent-emoji-flat:wheelchair-symbol"
+      : "flat-color-icons:plus";
+  });
+}
+
 onMounted(async () => {
   await getInfo();
 });
 </script>
 
 <template>
-  <p>За столом сидят</p>
-  <div
-    class="table-info"
-    v-for="item in playersStore.players"
-    :key="item.position"
-  >
-    <p>{{ item?.name }}</p>
+  <div class="info-container">
+    <p v-if="playersStore.players.length === 0">Стол пуст</p>
+    <p v-else>За столом сидят</p>
+
+    <div
+      class="table-info"
+      v-for="item in playersStore.players"
+      :key="item.position"
+    >
+      <p>{{ item?.name }}</p>
+    </div>
   </div>
+
   <div class="main-container">
     <div class="table">
       <div class="first">
-        <!-- Player 1 -->
-        <Icon
-          class="table-position"
-          name="fluent-emoji-flat:wheelchair-symbol"
-          @click="joinAndGetInfo(1)"
-          v-if="
-            playersStore.players.some((player) => player.name === 'Player 1')
-          "
-        ></Icon>
-        <Icon
-          class="table-position"
-          name="flat-color-icons:plus"
-          @click="joinAndGetInfo(1)"
-          v-if="
-            !playersStore.players.some((player) => player.name === 'Player 1')
-          "
-        ></Icon>
-        <Icon
-          class="table-position"
-          name="pepicons-pop:leave"
-          @click="leaveAndGetInfo(`Player 1`)"
-          v-if="
-            playersStore.players.some((player) => player.name === 'Player 1')
-          "
-        ></Icon>
+        <div class="player">
+          <Icon
+            class="table-position"
+            :name="createIconComputed(1).value"
+            @click="joinAndGetInfo(1)"
+          ></Icon>
+          <Icon
+            class="table-position"
+            name="pepicons-pop:leave"
+            @click="leaveAndGetInfo(`Player 1`)"
+            v-if="
+              playersStore.players.some((player) => player.name === 'Player 1')
+            "
+          ></Icon>
+        </div>
 
-        <!-- Player 2 -->
+        <div class="player">
+          <Icon
+            class="table-position"
+            :name="createIconComputed(2).value"
+            @click="joinAndGetInfo(2)"
+          ></Icon>
+          <Icon
+            class="table-position"
+            name="pepicons-pop:leave"
+            @click="leaveAndGetInfo(`Player 2`)"
+            v-if="
+              playersStore.players.some((player) => player.name === 'Player 2')
+            "
+          ></Icon>
+        </div>
 
-        <Icon
-          class="table-position"
-          name="fluent-emoji-flat:wheelchair-symbol"
-          @click="joinAndGetInfo(2)"
-          v-if="
-            playersStore.players.some((player) => player.name === 'Player 2')
-          "
-        ></Icon>
-        <Icon
-          class="table-position"
-          name="flat-color-icons:plus"
-          @click="joinAndGetInfo(2)"
-          v-if="
-            !playersStore.players.some((player) => player.name === 'Player 2')
-          "
-        ></Icon>
-        <Icon
-          class="table-position"
-          name="pepicons-pop:leave"
-          @click="leaveAndGetInfo(`Player 2`)"
-          v-if="
-            playersStore.players.some((player) => player.name === 'Player 2')
-          "
-        ></Icon>
-
-        <!-- Player 3 -->
-
-        <Icon
-          class="table-position"
-          name="fluent-emoji-flat:wheelchair-symbol"
-          @click="joinAndGetInfo(3)"
-          v-if="
-            playersStore.players.some((player) => player.name === 'Player 3')
-          "
-        ></Icon>
-        <Icon
-          class="table-position"
-          name="flat-color-icons:plus"
-          @click="joinAndGetInfo(3)"
-          v-if="
-            !playersStore.players.some((player) => player.name === 'Player 3')
-          "
-        ></Icon>
-        <Icon
-          class="table-position"
-          name="pepicons-pop:leave"
-          @click="leaveAndGetInfo(`Player 3`)"
-          v-if="
-            playersStore.players.some((player) => player.name === 'Player 3')
-          "
-        ></Icon>
+        <div class="player">
+          <Icon
+            class="table-position"
+            :name="createIconComputed(3).value"
+            @click="joinAndGetInfo(3)"
+          ></Icon>
+          <Icon
+            class="table-position"
+            name="pepicons-pop:leave"
+            @click="leaveAndGetInfo(`Player 3`)"
+            v-if="
+              playersStore.players.some((player) => player.name === 'Player 3')
+            "
+          ></Icon>
+        </div>
       </div>
 
-      <!--  Player 4 -->
       <div class="second">
-        <Icon
-          class="table-position"
-          name="fluent-emoji-flat:wheelchair-symbol"
-          @click="joinAndGetInfo(4)"
-          v-if="
-            playersStore.players.some((player) => player.name === 'Player 4')
-          "
-        ></Icon>
-        <Icon
-          class="table-position"
-          name="flat-color-icons:plus"
-          @click="joinAndGetInfo(4)"
-          v-if="
-            !playersStore.players.some((player) => player.name === 'Player 4')
-          "
-        ></Icon>
-        <Icon
-          class="table-position"
-          name="pepicons-pop:leave"
-          @click="leaveAndGetInfo(`Player 4`)"
-          v-if="
-            playersStore.players.some((player) => player.name === 'Player 4')
-          "
-        ></Icon>
+        <div class="player">
+          <Icon
+            class="table-position"
+            :name="createIconComputed(4).value"
+            @click="joinAndGetInfo(4)"
+          ></Icon>
+          <Icon
+            class="table-position"
+            name="pepicons-pop:leave"
+            @click="leaveAndGetInfo(`Player 4`)"
+            v-if="
+              playersStore.players.some((player) => player.name === 'Player 4')
+            "
+          ></Icon>
+        </div>
 
-        <!-- Player 5 -->
-        <Icon
-          class="table-position"
-          name="fluent-emoji-flat:wheelchair-symbol"
-          @click="joinAndGetInfo(5)"
-          v-if="
-            playersStore.players.some((player) => player.name === 'Player 5')
-          "
-        ></Icon>
-        <Icon
-          class="table-position"
-          name="flat-color-icons:plus"
-          @click="joinAndGetInfo(5)"
-          v-if="
-            !playersStore.players.some((player) => player.name === 'Player 5')
-          "
-        ></Icon>
-        <Icon
-          class="table-position"
-          name="pepicons-pop:leave"
-          @click="leaveAndGetInfo(`Player 5`)"
-          v-if="
-            playersStore.players.some((player) => player.name === 'Player 5')
-          "
-        ></Icon>
+        <div class="player">
+          <Icon
+            class="table-position"
+            :name="createIconComputed(5).value"
+            @click="joinAndGetInfo(5)"
+          ></Icon>
+          <Icon
+            class="table-position"
+            name="pepicons-pop:leave"
+            @click="leaveAndGetInfo(`Player 5`)"
+            v-if="
+              playersStore.players.some((player) => player.name === 'Player 5')
+            "
+          ></Icon>
+        </div>
 
-        <!--  'Player 6 -->
-        <Icon
-          class="table-position"
-          name="fluent-emoji-flat:wheelchair-symbol"
-          @click="joinAndGetInfo(6)"
-          v-if="
-            playersStore.players.some((player) => player.name === 'Player 6')
-          "
-        ></Icon>
-        <Icon
-          class="table-position"
-          name="flat-color-icons:plus"
-          @click="joinAndGetInfo(6)"
-          v-if="
-            !playersStore.players.some((player) => player.name === 'Player 6')
-          "
-        ></Icon>
-        <Icon
-          class="table-position"
-          name="pepicons-pop:leave"
-          @click="leaveAndGetInfo(`Player 6`)"
-          v-if="
-            playersStore.players.some((player) => player.name === 'Player 6')
-          "
-        ></Icon>
+        <div class="player">
+          <Icon
+            class="table-position"
+            :name="createIconComputed(6).value"
+            @click="joinAndGetInfo(6)"
+          ></Icon>
+          <Icon
+            class="table-position"
+            name="pepicons-pop:leave"
+            @click="leaveAndGetInfo(`Player 6`)"
+            v-if="
+              playersStore.players.some((player) => player.name === 'Player 6')
+            "
+          ></Icon>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.table-info {
-  display: flex;
-  flex-direction: column;
+.info-container {
+  height: 200px;
+  .table-info {
+    display: flex;
+    flex-direction: column;
+  }
 }
+
 .main-container {
   padding: 20%;
   display: flex;
@@ -294,13 +253,28 @@ onMounted(async () => {
     .first {
       display: flex;
       justify-content: space-between;
+      align-items: flex-end;
+      width: 470px;
       gap: 35px;
+
+      .player {
+        display: flex;
+        justify-content: center;
+        min-width: 100px;
+      }
     }
     .second {
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
+      width: 470px;
       gap: 35px;
+
+      .player {
+        display: flex;
+        justify-content: center;
+        min-width: 100px;
+      }
     }
   }
 }
