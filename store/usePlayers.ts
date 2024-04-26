@@ -11,11 +11,16 @@ export const usePlayers = defineStore({
 
   state: () => ({
     players: [] as IPlayers[],
+    dealerPlayer: [] as IPlayers[],
   }),
 
   actions: {
     setPlayers(players: IPlayers[]) {
       this.players = players;
+    },
+
+    setDealer(dealerPlayer: IPlayers[]) {
+      this.dealerPlayer = dealerPlayer;
     },
   },
 });
