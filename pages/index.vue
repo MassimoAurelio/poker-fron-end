@@ -115,14 +115,13 @@ const mbbb = async () => {
   }
 };
 
-function calculateMb(name: string, position: number) {
-  return computed(() => {
-    return playersStore.players.some(
-      (player) => player.name === name && player.position === position
-    );
-  });
-}
-
+const userTern = async () => {
+  try {
+    const response =await fetch("http://localhost:5000/start")
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 function createIconComputed(position: number) {
   return computed(() => {
@@ -174,6 +173,7 @@ onMounted(async () => {
           />
           <Icon
             name="ph:poker-chip-fill"
+            size="25"
             v-if="
               playersStore.players.some(
                 (player) => player.name === 'Player 1' && player.position === 6
@@ -198,6 +198,16 @@ onMounted(async () => {
             "
           >
             {{ 100 }}
+          </div>
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) =>
+                  player.name === 'Player 1' && player.currentPlayerId === true
+              )
+            "
+          >
+            <button @click="userTern">Next Player</button>
           </div>
         </div>
 
@@ -225,7 +235,6 @@ onMounted(async () => {
             "
           />
 
-          
           <div
             v-if="
               playersStore.players.some(
@@ -244,6 +253,16 @@ onMounted(async () => {
             "
           >
             {{ 100 }}
+          </div>
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) =>
+                  player.name === 'Player 2' && player.currentPlayerId === true
+              )
+            "
+          >
+            <button @click="userTern">Next Player</button>
           </div>
         </div>
 
@@ -270,7 +289,7 @@ onMounted(async () => {
               )
             "
           />
-          
+
           <div
             v-if="
               playersStore.players.some(
@@ -289,6 +308,16 @@ onMounted(async () => {
             "
           >
             {{ 100 }}
+          </div>
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) =>
+                  player.name === 'Player 3' && player.currentPlayerId === true
+              )
+            "
+          >
+            <button @click="userTern">Next Player</button>
           </div>
         </div>
       </div>
@@ -337,7 +366,16 @@ onMounted(async () => {
           >
             {{ 100 }}
           </div>
- 
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) =>
+                  player.name === 'Player 4' && player.currentPlayerId === true
+              )
+            "
+          >
+            <button @click="userTern">Next Player</button>
+          </div>
         </div>
 
         <div class="player" id="5">
@@ -382,6 +420,16 @@ onMounted(async () => {
           >
             {{ 100 }}
           </div>
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) =>
+                  player.name === 'Player 5' && player.currentPlayerId === true
+              )
+            "
+          >
+            <button @click="userTern">Next Player</button>
+          </div>
         </div>
 
         <div class="player" id="6">
@@ -424,6 +472,16 @@ onMounted(async () => {
             "
           >
             {{ 100 }}
+          </div>
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) =>
+                  player.name === 'Player 6' && player.currentPlayerId === true
+              )
+            "
+          >
+            <button @click="userTern">Next Player</button>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ interface IPlayers {
   id: string;
   name: string;
   position: number;
+  currentPlayerId: boolean;
   stack: number;
   icon: string;
 }
