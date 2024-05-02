@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useTogglePopup } from "@/store/useTogglePopup";
 import { usePlayers } from "~/store/usePlayers";
 const playersStore = usePlayers();
 
@@ -40,9 +39,6 @@ const getInfo = async () => {
     }
     const data = await response.json();
     playersStore.setPlayers(data);
-    const dealer = data.find((player: any) => player.position === 6);
-    playersStore.setDealer(dealer);
-    console.log(dealer);
   } catch (error) {
     console.error(error);
   }
@@ -114,11 +110,19 @@ const mbbb = async () => {
     if (!response.ok) {
       throw new Error("Ошибка при выполнении запроса");
     }
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
 };
+
+function calculateMb(name: string, position: number) {
+  return computed(() => {
+    return playersStore.players.some(
+      (player) => player.name === name && player.position === position
+    );
+  });
+}
+
 
 function createIconComputed(position: number) {
   return computed(() => {
@@ -143,19 +147,18 @@ onMounted(async () => {
       v-for="item in playersStore.players"
       :key="item.position"
     >
-      <h2>{{ item?.name }}</h2>
-      <p>Stack: {{ item.stack }}</p>
-      <p>Position{{ item.position }}</p>
+      <p>{{ item?.name }},</p>
+      <p>Stack: {{ item.stack }},</p>
+      <p>Position{{ item.position }},</p>
     </div>
   </div>
 
   <button @click="updatepos">NEXT ROUND</button>
-  <button @click="mbbb">NEXT BB</button>
 
   <div class="main-container">
     <div class="table">
       <div class="first">
-        <div class="player">
+        <div class="player" id="1">
           <Icon
             class="table-position"
             :name="createIconComputed(1).value"
@@ -177,9 +180,28 @@ onMounted(async () => {
               )
             "
           />
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) => player.name === 'Player 1' && player.position === 1
+              )
+            "
+          >
+            {{ 50 }}
+          </div>
+
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) => player.name === 'Player 1' && player.position === 2
+              )
+            "
+          >
+            {{ 100 }}
+          </div>
         </div>
 
-        <div class="player">
+        <div class="player" id="2">
           <Icon
             class="table-position"
             :name="createIconComputed(2).value"
@@ -202,9 +224,30 @@ onMounted(async () => {
               )
             "
           />
+
+          
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) => player.name === 'Player 2' && player.position === 1
+              )
+            "
+          >
+            {{ 50 }}
+          </div>
+
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) => player.name === 'Player 2' && player.position === 2
+              )
+            "
+          >
+            {{ 100 }}
+          </div>
         </div>
 
-        <div class="player">
+        <div class="player" id="3">
           <Icon
             class="table-position"
             :name="createIconComputed(3).value"
@@ -227,10 +270,30 @@ onMounted(async () => {
               )
             "
           />
+          
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) => player.name === 'Player 3' && player.position === 1
+              )
+            "
+          >
+            {{ 50 }}
+          </div>
+
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) => player.name === 'Player 3' && player.position === 2
+              )
+            "
+          >
+            {{ 100 }}
+          </div>
         </div>
       </div>
 
-      <div class="second">
+      <div class="second" id="4">
         <div class="player">
           <Icon
             class="table-position"
@@ -254,9 +317,30 @@ onMounted(async () => {
               )
             "
           />
+
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) => player.name === 'Player 4' && player.position === 1
+              )
+            "
+          >
+            {{ 50 }}
+          </div>
+
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) => player.name === 'Player 4' && player.position === 2
+              )
+            "
+          >
+            {{ 100 }}
+          </div>
+ 
         </div>
 
-        <div class="player">
+        <div class="player" id="5">
           <Icon
             class="table-position"
             :name="createIconComputed(5).value"
@@ -279,9 +363,28 @@ onMounted(async () => {
               )
             "
           />
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) => player.name === 'Player 5' && player.position === 1
+              )
+            "
+          >
+            {{ 50 }}
+          </div>
+
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) => player.name === 'Player 5' && player.position === 2
+              )
+            "
+          >
+            {{ 100 }}
+          </div>
         </div>
 
-        <div class="player">
+        <div class="player" id="6">
           <Icon
             class="table-position"
             :name="createIconComputed(6).value"
@@ -295,7 +398,6 @@ onMounted(async () => {
               playersStore.players.some((player) => player.name === 'Player 6')
             "
           ></Icon>
-
           <Icon
             name="ph:poker-chip-fill"
             v-if="
@@ -304,6 +406,25 @@ onMounted(async () => {
               )
             "
           />
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) => player.name === 'Player 6' && player.position === 1
+              )
+            "
+          >
+            {{ 50 }}
+          </div>
+
+          <div
+            v-if="
+              playersStore.players.some(
+                (player) => player.name === 'Player 6' && player.position === 2
+              )
+            "
+          >
+            {{ 100 }}
+          </div>
         </div>
       </div>
     </div>
@@ -312,10 +433,12 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 .info-container {
-  height: 200px;
+  min-height: 200px;
+  height: auto;
   .table-info {
     display: flex;
     align-items: center;
+    gap: 5px;
   }
 }
 
@@ -366,6 +489,7 @@ onMounted(async () => {
       align-items: flex-end;
       width: 470px;
       gap: 35px;
+      flex-direction: row-reverse;
 
       .player {
         display: flex;

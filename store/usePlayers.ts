@@ -1,5 +1,5 @@
 interface IPlayers {
-  _id: string;
+  id: string;
   name: string;
   position: number;
   stack: number;
@@ -12,6 +12,7 @@ export const usePlayers = defineStore({
   state: () => ({
     players: [] as IPlayers[],
     dealerPlayer: [] as IPlayers[],
+    mbBBPlayers: [] as IPlayers[],
   }),
 
   actions: {
@@ -21,6 +22,10 @@ export const usePlayers = defineStore({
 
     setDealer(dealerPlayer: IPlayers[]) {
       this.dealerPlayer = dealerPlayer;
+    },
+
+    setMbBB(mbBBPlayers: IPlayers[]) {
+      this.mbBBPlayers = mbBBPlayers;
     },
   },
 });
