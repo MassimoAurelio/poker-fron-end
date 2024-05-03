@@ -6,6 +6,12 @@ useSeoMeta({
   title: "POKER",
 });
 
+const showInput = ref(false);
+
+const toggleInput = () => {
+  showInput.value = !showInput.value;
+};
+
 const joinTable = async (position: number) => {
   try {
     const response = await fetch("http://localhost:5000/join", {
@@ -117,7 +123,16 @@ const mbbb = async () => {
 
 const userTern = async () => {
   try {
-    const response =await fetch("http://localhost:5000/start")
+    const response = await fetch("http://localhost:5000/nextplayer", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при выполнении запроса");
+    }
+    await getInfo();
   } catch (error) {
     console.error(error);
   }
@@ -207,7 +222,16 @@ onMounted(async () => {
               )
             "
           >
-            <button @click="userTern">Next Player</button>
+            <div class="buttons">
+              <button @click="userTern">Fold</button>
+              <div class="input">
+                <button @click="toggleInput">Raise</button>
+                <input v-if="showInput" type="text" size="1" />
+              </div>
+              <button>Coll</button>
+
+              <button @click="userTern">Bet</button>
+            </div>
           </div>
         </div>
 
@@ -228,6 +252,7 @@ onMounted(async () => {
 
           <Icon
             name="ph:poker-chip-fill"
+            size="25"
             v-if="
               playersStore.players.some(
                 (player) => player.name === 'Player 2' && player.position === 6
@@ -262,7 +287,14 @@ onMounted(async () => {
               )
             "
           >
-            <button @click="userTern">Next Player</button>
+            <button @click="userTern">Fold</button>
+            <div>
+              <button @click="toggleInput">Raise</button>
+              <input v-if="showInput" type="text" size="1" />
+            </div>
+            <button>Coll</button>
+
+            <button @click="userTern">Bet</button>
           </div>
         </div>
 
@@ -283,6 +315,7 @@ onMounted(async () => {
 
           <Icon
             name="ph:poker-chip-fill"
+            size="25"
             v-if="
               playersStore.players.some(
                 (player) => player.name === 'Player 3' && player.position === 6
@@ -299,7 +332,6 @@ onMounted(async () => {
           >
             {{ 50 }}
           </div>
-
           <div
             v-if="
               playersStore.players.some(
@@ -309,6 +341,7 @@ onMounted(async () => {
           >
             {{ 100 }}
           </div>
+
           <div
             v-if="
               playersStore.players.some(
@@ -317,7 +350,14 @@ onMounted(async () => {
               )
             "
           >
-            <button @click="userTern">Next Player</button>
+            <button @click="userTern">Fold</button>
+            <div>
+              <button @click="toggleInput">Raise</button>
+              <input v-if="showInput" type="text" size="1" />
+            </div>
+            <button>Coll</button>
+
+            <button @click="userTern">Bet</button>
           </div>
         </div>
       </div>
@@ -340,6 +380,7 @@ onMounted(async () => {
 
           <Icon
             name="ph:poker-chip-fill"
+            size="25"
             v-if="
               playersStore.players.some(
                 (player) => player.name === 'Player 4' && player.position === 6
@@ -374,7 +415,14 @@ onMounted(async () => {
               )
             "
           >
-            <button @click="userTern">Next Player</button>
+            <button @click="userTern">Fold</button>
+            <div>
+              <button @click="toggleInput">Raise</button>
+              <input v-if="showInput" type="text" size="1" />
+            </div>
+            <button>Coll</button>
+
+            <button @click="userTern">Bet</button>
           </div>
         </div>
 
@@ -395,6 +443,7 @@ onMounted(async () => {
 
           <Icon
             name="ph:poker-chip-fill"
+            size="25"
             v-if="
               playersStore.players.some(
                 (player) => player.name === 'Player 5' && player.position === 6
@@ -428,7 +477,14 @@ onMounted(async () => {
               )
             "
           >
-            <button @click="userTern">Next Player</button>
+            <button @click="userTern">Fold</button>
+            <div>
+              <button @click="toggleInput">Raise</button>
+              <input v-if="showInput" type="text" size="1" />
+            </div>
+            <button>Coll</button>
+
+            <button @click="userTern">Bet</button>
           </div>
         </div>
 
@@ -448,6 +504,7 @@ onMounted(async () => {
           ></Icon>
           <Icon
             name="ph:poker-chip-fill"
+            size="25"
             v-if="
               playersStore.players.some(
                 (player) => player.name === 'Player 6' && player.position === 6
@@ -481,7 +538,14 @@ onMounted(async () => {
               )
             "
           >
-            <button @click="userTern">Next Player</button>
+            <button @click="userTern">Fold</button>
+            <div>
+              <button @click="toggleInput">Raise</button>
+              <input v-if="showInput" type="text" size="1" />
+            </div>
+            <button>Coll</button>
+
+            <button @click="userTern">Bet</button>
           </div>
         </div>
       </div>
@@ -538,7 +602,18 @@ onMounted(async () => {
       .player {
         display: flex;
         justify-content: center;
-        min-width: 100px;
+        align-items: center;
+
+        .buttons {
+          display: grid;
+          grid-template-columns: 2fr 2fr;
+          max-width: 50px;
+
+          .input {
+            display: flex;
+            max-width: 10px;
+          }
+        }
       }
     }
     .second {
@@ -552,7 +627,18 @@ onMounted(async () => {
       .player {
         display: flex;
         justify-content: center;
-        min-width: 100px;
+        align-items: center;
+
+        .buttons {
+          display: grid;
+          grid-template-columns: 2fr 2fr;
+          max-width: 50px;
+
+          .input {
+            display: flex;
+            max-width: 10px;
+          }
+        }
       }
     }
   }
