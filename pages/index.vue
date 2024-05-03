@@ -186,7 +186,7 @@ onMounted(async () => {
               playersStore.players.some((player) => player.name === 'Player 1')
             "
           />
-          <Icon
+          <!--  <Icon
             name="ph:poker-chip-fill"
             size="25"
             v-if="
@@ -213,7 +213,7 @@ onMounted(async () => {
             "
           >
             {{ 100 }}
-          </div>
+          </div> -->
           <div
             v-if="
               playersStore.players.some(
