@@ -138,6 +138,52 @@ const userTern = async () => {
   }
 };
 
+const sum = ref("");
+
+const raise = async (name: string) => {
+  try {
+    const response = await fetch("http://localhost:5000/raise", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+        raiseAmount: sum.value,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при выполнении запроса");
+    }
+    showInput.value = false;
+    await userTern();
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const fold = async (name: string) => {
+  try {
+    const response = await fetch("http://localhost:5000/fold", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при выполнении запроса");
+    }
+    await userTern();
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 function createIconComputed(position: number) {
   return computed(() => {
     return playersStore.players.some((player) => player.position === position)
@@ -186,7 +232,7 @@ onMounted(async () => {
               playersStore.players.some((player) => player.name === 'Player 1')
             "
           />
-          <!--  <Icon
+          <Icon
             name="ph:poker-chip-fill"
             size="25"
             v-if="
@@ -213,7 +259,7 @@ onMounted(async () => {
             "
           >
             {{ 100 }}
-          </div> -->
+          </div>
           <div
             v-if="
               playersStore.players.some(
@@ -223,10 +269,14 @@ onMounted(async () => {
             "
           >
             <div class="buttons">
-              <button @click="userTern">Fold</button>
+              <button @click="fold('Player 1')">Fold</button>
               <div class="input">
                 <button @click="toggleInput">Raise</button>
-                <input v-if="showInput" type="text" size="1" />
+                <input v-if="showInput" v-model="sum" type="text" size="1" />
+
+                <button v-if="showInput" @click="raise('Player 1')">
+                  Raise
+                </button>
               </div>
               <button>Coll</button>
 
@@ -287,10 +337,12 @@ onMounted(async () => {
               )
             "
           >
-            <button @click="userTern">Fold</button>
-            <div>
+          <button @click="fold('Player 2')">Fold</button>
+            <div class="input">
               <button @click="toggleInput">Raise</button>
-              <input v-if="showInput" type="text" size="1" />
+              <input v-if="showInput" v-model="sum" type="text" size="1" />
+
+              <button v-if="showInput" @click="raise('Player 2')">Raise</button>
             </div>
             <button>Coll</button>
 
@@ -350,10 +402,12 @@ onMounted(async () => {
               )
             "
           >
-            <button @click="userTern">Fold</button>
-            <div>
+          <button @click="fold('Player 3')">Fold</button>
+            <div class="input">
               <button @click="toggleInput">Raise</button>
-              <input v-if="showInput" type="text" size="1" />
+              <input v-if="showInput" v-model="sum" type="text" size="1" />
+
+              <button v-if="showInput" @click="raise('Player 3')">Raise</button>
             </div>
             <button>Coll</button>
 
@@ -415,10 +469,12 @@ onMounted(async () => {
               )
             "
           >
-            <button @click="userTern">Fold</button>
-            <div>
+          <button @click="fold('Player 4')">Fold</button>
+            <div class="input">
               <button @click="toggleInput">Raise</button>
-              <input v-if="showInput" type="text" size="1" />
+              <input v-if="showInput" v-model="sum" type="text" size="1" />
+
+              <button v-if="showInput" @click="raise('Player 4')">Raise</button>
             </div>
             <button>Coll</button>
 
@@ -477,10 +533,12 @@ onMounted(async () => {
               )
             "
           >
-            <button @click="userTern">Fold</button>
-            <div>
+          <button @click="fold('Player 5')">Fold</button>
+            <div class="input">
               <button @click="toggleInput">Raise</button>
-              <input v-if="showInput" type="text" size="1" />
+              <input v-if="showInput" v-model="sum" type="text" size="1" />
+
+              <button v-if="showInput" @click="raise('Player 5')">Raise</button>
             </div>
             <button>Coll</button>
 
@@ -538,10 +596,12 @@ onMounted(async () => {
               )
             "
           >
-            <button @click="userTern">Fold</button>
-            <div>
+          <button @click="fold('Player 6')">Fold</button>
+            <div class="input">
               <button @click="toggleInput">Raise</button>
-              <input v-if="showInput" type="text" size="1" />
+              <input v-if="showInput" v-model="sum" type="text" size="1" />
+
+              <button v-if="showInput" @click="raise('Player 6')">Raise</button>
             </div>
             <button>Coll</button>
 
