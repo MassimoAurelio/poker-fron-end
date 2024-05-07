@@ -5,6 +5,8 @@ interface IPlayers {
   currentPlayerId: boolean;
   stack: number;
   icon: string;
+  fold: boolean;
+  lastBet: number;
 }
 
 export const usePlayers = defineStore({
@@ -12,7 +14,6 @@ export const usePlayers = defineStore({
 
   state: () => ({
     players: [] as IPlayers[],
-    
   }),
 
   actions: {

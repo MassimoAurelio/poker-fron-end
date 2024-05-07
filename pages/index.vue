@@ -157,7 +157,6 @@ const raise = async (name: string) => {
     }
     showInput.value = false;
     await userTern();
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
@@ -181,6 +180,26 @@ const fold = async (name: string) => {
     await getInfo();
   } catch (error) {
     console.error(error);
+  }
+};
+
+const coll = async (name: string) => {
+  try {
+    const response = await fetch("http://localhost:5000/coll", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при выполнении запроса");
+    }
+    await userTern();
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -218,7 +237,7 @@ onMounted(async () => {
   <div class="main-container">
     <div class="table">
       <div class="first">
-        <div class="player" id="1">
+        <div class="player">
           <Icon
             class="table-position"
             :name="createIconComputed(1).value"
@@ -241,25 +260,7 @@ onMounted(async () => {
               )
             "
           />
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 1' && player.position === 1
-              )
-            "
-          >
-            {{ 50 }}
-          </div>
-
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 1' && player.position === 2
-              )
-            "
-          >
-            {{ 100 }}
-          </div>
+          <div>{{ playersStore?.players[0]?.lastBet }}</div>
           <div
             v-if="
               playersStore.players.some(
@@ -278,14 +279,14 @@ onMounted(async () => {
                   Raise
                 </button>
               </div>
-              <button>Coll</button>
+              <button @click="coll('Player 1')">Coll</button>
 
               <button @click="userTern">Bet</button>
             </div>
           </div>
         </div>
 
-        <div class="player" id="2">
+        <div class="player">
           <Icon
             class="table-position"
             :name="createIconComputed(2).value"
@@ -310,25 +311,7 @@ onMounted(async () => {
             "
           />
 
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 2' && player.position === 1
-              )
-            "
-          >
-            {{ 50 }}
-          </div>
-
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 2' && player.position === 2
-              )
-            "
-          >
-            {{ 100 }}
-          </div>
+          <div>{{ playersStore?.players[1]?.lastBet }}</div>
           <div
             v-if="
               playersStore.players.some(
@@ -337,20 +320,20 @@ onMounted(async () => {
               )
             "
           >
-          <button @click="fold('Player 2')">Fold</button>
+            <button @click="fold('Player 2')">Fold</button>
             <div class="input">
               <button @click="toggleInput">Raise</button>
               <input v-if="showInput" v-model="sum" type="text" size="1" />
 
               <button v-if="showInput" @click="raise('Player 2')">Raise</button>
             </div>
-            <button>Coll</button>
+            <button @click="coll('Player 2')">Coll</button>
 
             <button @click="userTern">Bet</button>
           </div>
         </div>
 
-        <div class="player" id="3">
+        <div class="player">
           <Icon
             class="table-position"
             :name="createIconComputed(3).value"
@@ -375,24 +358,7 @@ onMounted(async () => {
             "
           />
 
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 3' && player.position === 1
-              )
-            "
-          >
-            {{ 50 }}
-          </div>
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 3' && player.position === 2
-              )
-            "
-          >
-            {{ 100 }}
-          </div>
+          <div>{{ playersStore?.players[2]?.lastBet }}</div>
 
           <div
             v-if="
@@ -402,21 +368,21 @@ onMounted(async () => {
               )
             "
           >
-          <button @click="fold('Player 3')">Fold</button>
+            <button @click="fold('Player 3')">Fold</button>
             <div class="input">
               <button @click="toggleInput">Raise</button>
               <input v-if="showInput" v-model="sum" type="text" size="1" />
 
               <button v-if="showInput" @click="raise('Player 3')">Raise</button>
             </div>
-            <button>Coll</button>
+            <button @click="coll('Player 3')">Coll</button>
 
             <button @click="userTern">Bet</button>
           </div>
         </div>
       </div>
 
-      <div class="second" id="4">
+      <div class="second">
         <div class="player">
           <Icon
             class="table-position"
@@ -442,25 +408,7 @@ onMounted(async () => {
             "
           />
 
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 4' && player.position === 1
-              )
-            "
-          >
-            {{ 50 }}
-          </div>
-
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 4' && player.position === 2
-              )
-            "
-          >
-            {{ 100 }}
-          </div>
+          <div>{{ playersStore?.players[3]?.lastBet }}</div>
           <div
             v-if="
               playersStore.players.some(
@@ -469,20 +417,20 @@ onMounted(async () => {
               )
             "
           >
-          <button @click="fold('Player 4')">Fold</button>
+            <button @click="fold('Player 4')">Fold</button>
             <div class="input">
               <button @click="toggleInput">Raise</button>
               <input v-if="showInput" v-model="sum" type="text" size="1" />
 
               <button v-if="showInput" @click="raise('Player 4')">Raise</button>
             </div>
-            <button>Coll</button>
+            <button @click="coll('Player 4')">Coll</button>
 
             <button @click="userTern">Bet</button>
           </div>
         </div>
 
-        <div class="player" id="5">
+        <div class="player">
           <Icon
             class="table-position"
             :name="createIconComputed(5).value"
@@ -506,25 +454,7 @@ onMounted(async () => {
               )
             "
           />
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 5' && player.position === 1
-              )
-            "
-          >
-            {{ 50 }}
-          </div>
-
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 5' && player.position === 2
-              )
-            "
-          >
-            {{ 100 }}
-          </div>
+          <div>{{ playersStore?.players[4]?.lastBet }}</div>
           <div
             v-if="
               playersStore.players.some(
@@ -533,20 +463,20 @@ onMounted(async () => {
               )
             "
           >
-          <button @click="fold('Player 5')">Fold</button>
+            <button @click="fold('Player 5')">Fold</button>
             <div class="input">
               <button @click="toggleInput">Raise</button>
               <input v-if="showInput" v-model="sum" type="text" size="1" />
 
               <button v-if="showInput" @click="raise('Player 5')">Raise</button>
             </div>
-            <button>Coll</button>
+            <button @click="coll('Player 5')">Coll</button>
 
             <button @click="userTern">Bet</button>
           </div>
         </div>
 
-        <div class="player" id="6">
+        <div class="player">
           <Icon
             class="table-position"
             :name="createIconComputed(6).value"
@@ -569,25 +499,7 @@ onMounted(async () => {
               )
             "
           />
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 6' && player.position === 1
-              )
-            "
-          >
-            {{ 50 }}
-          </div>
-
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 6' && player.position === 2
-              )
-            "
-          >
-            {{ 100 }}
-          </div>
+          <div>{{ playersStore?.players[5]?.lastBet }}</div>
           <div
             v-if="
               playersStore.players.some(
@@ -596,14 +508,14 @@ onMounted(async () => {
               )
             "
           >
-          <button @click="fold('Player 6')">Fold</button>
+            <button @click="fold('Player 6')">Fold</button>
             <div class="input">
               <button @click="toggleInput">Raise</button>
               <input v-if="showInput" v-model="sum" type="text" size="1" />
 
               <button v-if="showInput" @click="raise('Player 6')">Raise</button>
             </div>
-            <button>Coll</button>
+            <button @click="coll('Player 6')">Coll</button>
 
             <button @click="userTern">Bet</button>
           </div>
