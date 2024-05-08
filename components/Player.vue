@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { usePlayers } from "~/store/usePlayers";
+import { usePlayers } from "@/store/usePlayers";
 const playersStore = usePlayers();
 
 const props = defineProps({
@@ -12,6 +12,13 @@ const props = defineProps({
     required: true,
   },
 });
+
+const sum = ref("");
+const showInput = ref(false);
+
+const toggleInput = () => {
+  showInput.value = !showInput.value;
+};
 
 const joinTable = async (position: number) => {
   try {
@@ -26,13 +33,9 @@ const joinTable = async (position: number) => {
         position: position,
       }),
     });
-
     if (!response.ok) {
       throw new Error("Ошибка при отправке данных");
     }
-    const data = await response.json();
-
-    playersStore.setPlayers(data);
   } catch (error) {
     console.error(error);
   }
@@ -87,6 +90,84 @@ const leaveAndGetInfo = async (player: string) => {
     console.error(error);
   }
 };
+const fold = async (name: string) => {
+  try {
+    const response = await fetch("http://localhost:5000/fold", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при выполнении запроса");
+    }
+    await userTern();
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const raise = async (name: string) => {
+  try {
+    const response = await fetch("http://localhost:5000/raise", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+        raiseAmount: sum.value,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при выполнении запроса");
+    }
+    showInput.value = false;
+    await userTern();
+  } catch (error) {
+    console.error(error);
+  }
+};
+const coll = async (name: string) => {
+  try {
+    const response = await fetch("http://localhost:5000/coll", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при выполнении запроса");
+    }
+    await userTern();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const userTern = async () => {
+  try {
+    const response = await fetch("http://localhost:5000/nextplayer", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при выполнении запроса");
+    }
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 function createIconComputed(position: number) {
   return computed(() => {
@@ -95,6 +176,23 @@ function createIconComputed(position: number) {
       : "flat-color-icons:plus";
   });
 }
+
+const getLastBet = () => {
+  const player = playersStore.players.find(
+    (player) => player.name === props.name
+  );
+  return player?.lastBet || 0;
+};
+
+const playerExists = () => {
+  return playersStore.players.some((player) => player.name === props.name);
+};
+
+const playerAndCurrentPlayerId = () => {
+  return playersStore.players.some(
+    (player) => player.name === props.name && player.currentPlayerId === true
+  );
+};
 </script>
 
 <template>
@@ -110,15 +208,26 @@ function createIconComputed(position: number) {
       size="50"
       name="pepicons-pop:leave"
       @click="leaveAndGetInfo(props.name)"
-      v-if="playersStore.players.some((player) => player.name === props.name)"
+      v-if="playerExists()"
     />
+    <div>
+      {{ getLastBet() }}
+    </div>
+    <div v-if="playerAndCurrentPlayerId()">
+      <div class="buttons">
+        <button @click="fold(props.name)">Fold</button>
+        <div class="input">
+          <button @click="toggleInput">Raise</button>
+          <input v-if="showInput" v-model="sum" type="text" size="1" />
+
+          <button v-if="showInput" @click="raise(props.name)">Raise</button>
+        </div>
+        <button @click="coll(props.name)">Coll</button>
+
+        <button @click="userTern">Check</button>
+      </div>
+    </div>
   </div>
 </template>
 
-<style scoped lang="scss">
-.player {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-</style>
+<style scoped lang="scss"></style>

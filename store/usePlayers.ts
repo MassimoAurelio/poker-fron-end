@@ -1,3 +1,8 @@
+interface ICard {
+  value: string;
+  suit: string;
+  _id: string;
+}
 interface IPlayers {
   id: string;
   name: string;
@@ -7,6 +12,7 @@ interface IPlayers {
   icon: string;
   fold: boolean;
   lastBet: number;
+  cards: ICard[];
 }
 
 export const usePlayers = defineStore({

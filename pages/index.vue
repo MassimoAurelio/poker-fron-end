@@ -6,37 +6,6 @@ useSeoMeta({
   title: "POKER",
 });
 
-const showInput = ref(false);
-
-const toggleInput = () => {
-  showInput.value = !showInput.value;
-};
-
-const joinTable = async (position: number) => {
-  try {
-    const response = await fetch("http://localhost:5000/join", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        player: `Player ${position}`,
-        stack: 1000,
-        position: position,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Ошибка при отправке данных");
-    }
-    const data = await response.json();
-
-    playersStore.setPlayers(data);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
 const getInfo = async () => {
   try {
     const response = await fetch("http://localhost:5000/players");
@@ -45,43 +14,6 @@ const getInfo = async () => {
     }
     const data = await response.json();
     playersStore.setPlayers(data);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const joinAndGetInfo = async (position: number) => {
-  try {
-    await joinTable(position);
-    await getInfo();
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const leaveAndGetInfo = async (player: string) => {
-  try {
-    await leaveFromTable(player);
-    await getInfo();
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const leaveFromTable = async (player: string) => {
-  try {
-    const response = await fetch("http://localhost:5000/leave", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        player: player,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
   } catch (error) {
     console.error(error);
   }
@@ -121,10 +53,10 @@ const mbbb = async () => {
   }
 };
 
-const userTern = async () => {
+const giveCards = async () => {
   try {
-    const response = await fetch("http://localhost:5000/nextplayer", {
-      method: "POST",
+    const response = await fetch("http://localhost:5000/deal", {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
@@ -137,79 +69,6 @@ const userTern = async () => {
     console.error(error);
   }
 };
-
-const sum = ref("");
-
-const raise = async (name: string) => {
-  try {
-    const response = await fetch("http://localhost:5000/raise", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: name,
-        raiseAmount: sum.value,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
-    showInput.value = false;
-    await userTern();
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const fold = async (name: string) => {
-  try {
-    const response = await fetch("http://localhost:5000/fold", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: name,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
-    await userTern();
-    await getInfo();
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const coll = async (name: string) => {
-  try {
-    const response = await fetch("http://localhost:5000/coll", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: name,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
-    await userTern();
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-function createIconComputed(position: number) {
-  return computed(() => {
-    return playersStore.players.some((player) => player.position === position)
-      ? "fluent-emoji-flat:wheelchair-symbol"
-      : "flat-color-icons:plus";
-  });
-}
 
 onMounted(async () => {
   await getInfo();
@@ -233,293 +92,19 @@ onMounted(async () => {
   </div>
 
   <button @click="updatepos">NEXT ROUND</button>
+  <button @click="giveCards">Give Card</button>
 
   <div class="main-container">
     <div class="table">
       <div class="first">
-        <div class="player">
-          <Icon
-            class="table-position"
-            :name="createIconComputed(1).value"
-            @click="joinAndGetInfo(1)"
-          />
-          <Icon
-            class="table-position"
-            name="pepicons-pop:leave"
-            @click="leaveAndGetInfo('Player 1')"
-            v-if="
-              playersStore.players.some((player) => player.name === 'Player 1')
-            "
-          />
-          <Icon
-            name="ph:poker-chip-fill"
-            size="25"
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 1' && player.position === 6
-              )
-            "
-          />
-          <div>{{ playersStore?.players[0]?.lastBet }}</div>
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) =>
-                  player.name === 'Player 1' && player.currentPlayerId === true
-              )
-            "
-          >
-            <div class="buttons">
-              <button @click="fold('Player 1')">Fold</button>
-              <div class="input">
-                <button @click="toggleInput">Raise</button>
-                <input v-if="showInput" v-model="sum" type="text" size="1" />
-
-                <button v-if="showInput" @click="raise('Player 1')">
-                  Raise
-                </button>
-              </div>
-              <button @click="coll('Player 1')">Coll</button>
-
-              <button @click="userTern">Bet</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="player">
-          <Icon
-            class="table-position"
-            :name="createIconComputed(2).value"
-            @click="joinAndGetInfo(2)"
-          ></Icon>
-          <Icon
-            class="table-position"
-            name="pepicons-pop:leave"
-            @click="leaveAndGetInfo('Player 2')"
-            v-if="
-              playersStore.players.some((player) => player.name === 'Player 2')
-            "
-          />
-
-          <Icon
-            name="ph:poker-chip-fill"
-            size="25"
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 2' && player.position === 6
-              )
-            "
-          />
-
-          <div>{{ playersStore?.players[1]?.lastBet }}</div>
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) =>
-                  player.name === 'Player 2' && player.currentPlayerId === true
-              )
-            "
-          >
-            <button @click="fold('Player 2')">Fold</button>
-            <div class="input">
-              <button @click="toggleInput">Raise</button>
-              <input v-if="showInput" v-model="sum" type="text" size="1" />
-
-              <button v-if="showInput" @click="raise('Player 2')">Raise</button>
-            </div>
-            <button @click="coll('Player 2')">Coll</button>
-
-            <button @click="userTern">Bet</button>
-          </div>
-        </div>
-
-        <div class="player">
-          <Icon
-            class="table-position"
-            :name="createIconComputed(3).value"
-            @click="joinAndGetInfo(3)"
-          ></Icon>
-          <Icon
-            class="table-position"
-            name="pepicons-pop:leave"
-            @click="leaveAndGetInfo('Player 3')"
-            v-if="
-              playersStore.players.some((player) => player.name === 'Player 3')
-            "
-          />
-
-          <Icon
-            name="ph:poker-chip-fill"
-            size="25"
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 3' && player.position === 6
-              )
-            "
-          />
-
-          <div>{{ playersStore?.players[2]?.lastBet }}</div>
-
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) =>
-                  player.name === 'Player 3' && player.currentPlayerId === true
-              )
-            "
-          >
-            <button @click="fold('Player 3')">Fold</button>
-            <div class="input">
-              <button @click="toggleInput">Raise</button>
-              <input v-if="showInput" v-model="sum" type="text" size="1" />
-
-              <button v-if="showInput" @click="raise('Player 3')">Raise</button>
-            </div>
-            <button @click="coll('Player 3')">Coll</button>
-
-            <button @click="userTern">Bet</button>
-          </div>
-        </div>
+        <Player name="Player 1" :position="1" />
+        <Player name="Player 2" :position="2" />
+        <Player name="Player 3" :position="3" />
       </div>
-
       <div class="second">
-        <div class="player">
-          <Icon
-            class="table-position"
-            :name="createIconComputed(4).value"
-            @click="joinAndGetInfo(4)"
-          ></Icon>
-          <Icon
-            class="table-position"
-            name="pepicons-pop:leave"
-            @click="leaveAndGetInfo('Player 4')"
-            v-if="
-              playersStore.players.some((player) => player.name === 'Player 4')
-            "
-          ></Icon>
-
-          <Icon
-            name="ph:poker-chip-fill"
-            size="25"
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 4' && player.position === 6
-              )
-            "
-          />
-
-          <div>{{ playersStore?.players[3]?.lastBet }}</div>
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) =>
-                  player.name === 'Player 4' && player.currentPlayerId === true
-              )
-            "
-          >
-            <button @click="fold('Player 4')">Fold</button>
-            <div class="input">
-              <button @click="toggleInput">Raise</button>
-              <input v-if="showInput" v-model="sum" type="text" size="1" />
-
-              <button v-if="showInput" @click="raise('Player 4')">Raise</button>
-            </div>
-            <button @click="coll('Player 4')">Coll</button>
-
-            <button @click="userTern">Bet</button>
-          </div>
-        </div>
-
-        <div class="player">
-          <Icon
-            class="table-position"
-            :name="createIconComputed(5).value"
-            @click="joinAndGetInfo(5)"
-          ></Icon>
-          <Icon
-            class="table-position"
-            name="pepicons-pop:leave"
-            @click="leaveAndGetInfo('Player 5')"
-            v-if="
-              playersStore.players.some((player) => player.name === 'Player 5')
-            "
-          ></Icon>
-
-          <Icon
-            name="ph:poker-chip-fill"
-            size="25"
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 5' && player.position === 6
-              )
-            "
-          />
-          <div>{{ playersStore?.players[4]?.lastBet }}</div>
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) =>
-                  player.name === 'Player 5' && player.currentPlayerId === true
-              )
-            "
-          >
-            <button @click="fold('Player 5')">Fold</button>
-            <div class="input">
-              <button @click="toggleInput">Raise</button>
-              <input v-if="showInput" v-model="sum" type="text" size="1" />
-
-              <button v-if="showInput" @click="raise('Player 5')">Raise</button>
-            </div>
-            <button @click="coll('Player 5')">Coll</button>
-
-            <button @click="userTern">Bet</button>
-          </div>
-        </div>
-
-        <div class="player">
-          <Icon
-            class="table-position"
-            :name="createIconComputed(6).value"
-            @click="joinAndGetInfo(6)"
-          ></Icon>
-          <Icon
-            class="table-position"
-            name="pepicons-pop:leave"
-            @click="leaveAndGetInfo('Player 6')"
-            v-if="
-              playersStore.players.some((player) => player.name === 'Player 6')
-            "
-          ></Icon>
-          <Icon
-            name="ph:poker-chip-fill"
-            size="25"
-            v-if="
-              playersStore.players.some(
-                (player) => player.name === 'Player 6' && player.position === 6
-              )
-            "
-          />
-          <div>{{ playersStore?.players[5]?.lastBet }}</div>
-          <div
-            v-if="
-              playersStore.players.some(
-                (player) =>
-                  player.name === 'Player 6' && player.currentPlayerId === true
-              )
-            "
-          >
-            <button @click="fold('Player 6')">Fold</button>
-            <div class="input">
-              <button @click="toggleInput">Raise</button>
-              <input v-if="showInput" v-model="sum" type="text" size="1" />
-
-              <button v-if="showInput" @click="raise('Player 6')">Raise</button>
-            </div>
-            <button @click="coll('Player 6')">Coll</button>
-
-            <button @click="userTern">Bet</button>
-          </div>
-        </div>
+        <Player name="Player 4" :position="4" />
+        <Player name="Player 5" :position="5" />
+        <Player name="Player 6" :position="6" />
       </div>
     </div>
   </div>
@@ -552,13 +137,13 @@ onMounted(async () => {
     height: 250px;
     background-color: rgb(35, 110, 54);
 
-    border: solid orange;
+    border: solid black;
     border-width: 15px;
     border-radius: 90px;
 
     .table-position {
-      width: 50px;
-      height: 50px;
+      width: 25px;
+      height: 25px;
       text-align: center;
       line-height: 50px;
       z-index: 1;
@@ -567,7 +152,7 @@ onMounted(async () => {
     .first {
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
+      align-items: center;
       width: 470px;
       gap: 35px;
 
@@ -575,6 +160,18 @@ onMounted(async () => {
         display: flex;
         justify-content: center;
         align-items: center;
+
+        .cards {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          .first_card {
+            display: flex;
+          }
+          .second_card {
+            display: flex;
+          }
+        }
 
         .buttons {
           display: grid;
@@ -591,7 +188,7 @@ onMounted(async () => {
     .second {
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
+      align-items: center;
       width: 470px;
       gap: 35px;
       flex-direction: row-reverse;
@@ -600,6 +197,12 @@ onMounted(async () => {
         display: flex;
         justify-content: center;
         align-items: center;
+
+        .cards {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
 
         .buttons {
           display: grid;
