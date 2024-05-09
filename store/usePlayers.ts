@@ -20,11 +20,16 @@ export const usePlayers = defineStore({
 
   state: () => ({
     players: [] as IPlayers[],
+    showInput: false,
   }),
 
   actions: {
     setPlayers(players: IPlayers[]) {
       this.players = players;
     },
+    toggleInput() {
+      this.showInput = !this.showInput;
+    },
+    
   },
 });

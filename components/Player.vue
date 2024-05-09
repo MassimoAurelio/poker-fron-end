@@ -1,5 +1,15 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
+import {
+  BASE_URL,
+  NEXT_PLAYER,
+  COLL,
+  JOIN,
+  LEAVE,
+  PLAYERS,
+  FOLD,
+  RAISE,
+} from "@/utils/api";
 const playersStore = usePlayers();
 
 const props = defineProps({
@@ -14,15 +24,10 @@ const props = defineProps({
 });
 
 const sum = ref("");
-const showInput = ref(false);
-
-const toggleInput = () => {
-  showInput.value = !showInput.value;
-};
 
 const joinTable = async (position: number) => {
   try {
-    const response = await fetch("http://localhost:5000/join", {
+    const response = await fetch(`${BASE_URL}${JOIN}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -41,9 +46,28 @@ const joinTable = async (position: number) => {
   }
 };
 
+const leaveFromTable = async (player: string) => {
+  try {
+    const response = await fetch(`${BASE_URL}${LEAVE}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        player: player,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при выполнении запроса");
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const getInfo = async () => {
   try {
-    const response = await fetch("http://localhost:5000/players");
+    const response = await fetch(`${BASE_URL}${PLAYERS}`);
     if (!response.ok) {
       throw new Error("Ошибка при получении данных");
     }
@@ -63,25 +87,6 @@ const joinAndGetInfo = async (position: number) => {
   }
 };
 
-const leaveFromTable = async (player: string) => {
-  try {
-    const response = await fetch("http://localhost:5000/leave", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        player: player,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
-
 const leaveAndGetInfo = async (player: string) => {
   try {
     await leaveFromTable(player);
@@ -92,7 +97,7 @@ const leaveAndGetInfo = async (player: string) => {
 };
 const fold = async (name: string) => {
   try {
-    const response = await fetch("http://localhost:5000/fold", {
+    const response = await fetch(`${BASE_URL}${FOLD}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -113,7 +118,7 @@ const fold = async (name: string) => {
 
 const raise = async (name: string) => {
   try {
-    const response = await fetch("http://localhost:5000/raise", {
+    const response = await fetch(`${BASE_URL}${RAISE}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -126,7 +131,7 @@ const raise = async (name: string) => {
     if (!response.ok) {
       throw new Error("Ошибка при выполнении запроса");
     }
-    showInput.value = false;
+    playersStore.showInput = false;
     await userTern();
   } catch (error) {
     console.error(error);
@@ -134,7 +139,7 @@ const raise = async (name: string) => {
 };
 const coll = async (name: string) => {
   try {
-    const response = await fetch("http://localhost:5000/coll", {
+    const response = await fetch(`${BASE_URL}${COLL}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -154,7 +159,7 @@ const coll = async (name: string) => {
 
 const userTern = async () => {
   try {
-    const response = await fetch("http://localhost:5000/nextplayer", {
+    const response = await fetch(`${BASE_URL}${NEXT_PLAYER}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -163,6 +168,7 @@ const userTern = async () => {
     if (!response.ok) {
       throw new Error("Ошибка при выполнении запроса");
     }
+    playersStore.showInput = false;
     await getInfo();
   } catch (error) {
     console.error(error);
@@ -217,10 +223,17 @@ const playerAndCurrentPlayerId = () => {
       <div class="buttons">
         <button @click="fold(props.name)">Fold</button>
         <div class="input">
-          <button @click="toggleInput">Raise</button>
-          <input v-if="showInput" v-model="sum" type="text" size="1" />
+          <button @click="playersStore.toggleInput">Raise</button>
+          <input
+            v-if="playersStore.showInput"
+            v-model="sum"
+            type="text"
+            size="1"
+          />
 
-          <button v-if="showInput" @click="raise(props.name)">Raise</button>
+          <button v-if="playersStore.showInput" @click="raise(props.name)">
+            Raise
+          </button>
         </div>
         <button @click="coll(props.name)">Coll</button>
 
