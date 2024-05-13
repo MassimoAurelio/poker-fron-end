@@ -1,13 +1,11 @@
-
-
 <template>
-  <NuxtLayout>
-    <ContainersContainer>
+  <ContainersContainer>
+    <NuxtLayout>
       <div class="animate-from-bottom">
         <NuxtPage />
       </div>
-    </ContainersContainer>
-  </NuxtLayout>
+    </NuxtLayout>
+  </ContainersContainer>
 </template>
 
 <style></style>
