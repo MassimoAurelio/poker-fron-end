@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useAuthStore } from "@/store/auth";
+
+const authStore = useAuthStore();
+const router = useRouter();
 
 definePageMeta({
   layout: "auth",
@@ -24,6 +28,13 @@ const login = async (username: string, password: string) => {
     if (!response.ok) {
       throw new Error("Ошибка при выполнении запроса");
     }
+    const data = await response.json();
+    if (data.token) {
+      authStore.login(data.token);
+      router.push("/");
+    } else {
+      throw new Error("Аутентификация не удалась");
+    }
   } catch (error) {
     console.error(error);
   }
@@ -33,18 +44,18 @@ const login = async (username: string, password: string) => {
 <template>
   <div class="main-container">
     <h2>Авторизация</h2>
-    <form class="main-container" @submit.prevent="login(authField.username, authField.password)">
+    <form
+      class="main-container"
+      @submit.prevent="login(authField.username, authField.password)"
+    >
       <input type="text" placeholder="name" v-model="authField.username" />
       <input
         type="password"
         placeholder="password"
         v-model="authField.password"
       />
-      <button
-        type="submit"
-      >
-        Login
-      </button>
+      <button type="submit">Login</button>
+      <p>{{ authStore.isAuthenticated }}</p>
     </form>
   </div>
 </template>
