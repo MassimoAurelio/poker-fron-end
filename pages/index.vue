@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { usePlayers } from "~/store/usePlayers";
 const playersStore = usePlayers();
+import { useAuthStore } from "@/store/auth";
+
+const authStore = useAuthStore();
 
 useSeoMeta({
   title: "POKER",
@@ -71,6 +74,10 @@ const giveCards = async () => {
 };
 
 onMounted(async () => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    authStore.login(token);
+  }
   await getInfo();
 });
 </script>
@@ -106,6 +113,7 @@ onMounted(async () => {
         <Player name="Player 5" :position="5" />
         <Player name="Player 6" :position="6" />
       </div>
+      <p>{{ authStore.isAuthenticated }}</p>
     </div>
   </div>
 </template>
