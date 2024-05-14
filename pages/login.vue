@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/store/auth";
 
+useSeoMeta({
+  title: "LOGIN PAGE",
+});
+
 const authStore = useAuthStore();
 const router = useRouter();
 
@@ -26,9 +30,9 @@ const login = async (username: string, password: string) => {
     }
     const data = await response.json();
     if (data.token) {
-      authStore.login(data.token);
+      authStore.login(data.token, { username: data.user.username });
       localStorage.setItem("token", data.token);
-      router.push("/rooms");
+      router.push("/");
     } else {
       throw new Error("Аутентификация не удалась");
     }
@@ -39,8 +43,9 @@ const login = async (username: string, password: string) => {
 
 onMounted(() => {
   const token = localStorage.getItem("token");
-  if (token) {
-    authStore.login(token);
+  const username = localStorage.getItem("username");
+  if (token && username) {
+    authStore.login(token, { username: username });
   }
 });
 </script>

@@ -1,6 +1,9 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: "auth",
+import { useAuthStore } from "@/store/auth";
+const authStore = useAuthStore();
+
+useSeoMeta({
+  title: "REGISTRATION PAGE",
 });
 
 const authField = {
@@ -27,6 +30,14 @@ const registration = async (username: string, password: string) => {
     console.error(error);
   }
 };
+
+onMounted(() => {
+  const token = localStorage.getItem("token");
+  const username = localStorage.getItem("username");
+  if (token && username) {
+    authStore.login(token, { username: username });
+  }
+});
 </script>
 
 <template>

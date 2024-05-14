@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/store/auth";
 
+
+useSeoMeta({
+  title: "ROOMS PAGE",
+});
+
 const authStore = useAuthStore();
 const router = useRouter();
 const authField = {
@@ -54,8 +59,9 @@ const enterRoom = async (name: string, password: string) => {
 
 onMounted(() => {
   const token = localStorage.getItem("token");
-  if (token) {
-    authStore.login(token);
+  const username = localStorage.getItem("username");
+  if (token && username) {
+    authStore.login(token, { username: username });
   }
 });
 </script>
@@ -92,6 +98,12 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .main-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15vh;
+
   .create-room,
   .enter-room {
     width: 300px;

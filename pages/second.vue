@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { usePlayers } from "~/store/usePlayers";
+const playersStore = usePlayers();
 import { useAuthStore } from "@/store/auth";
 
-const route = useRoute();
 const authStore = useAuthStore();
-const playersStore = usePlayers();
-const username = computed(() => authStore.getUsername()?.username);
 
 useSeoMeta({
-  title: `Комната ${route.params.id}`,
+  title: "POKER",
 });
 
 const getInfo = async () => {
@@ -81,7 +79,7 @@ onMounted(() => {
   if (token && username) {
     authStore.login(token, { username: username });
   }
-  getInfo()
+  getInfo();
 });
 </script>
 
@@ -107,15 +105,16 @@ onMounted(() => {
   <div class="main-container">
     <div class="table">
       <div class="first">
-        <Player :name="username || ''" :position="1" />
-        <Player :name="username || ''" :position="2" />
-        <Player :name="username || ''" :position="3" />
+        <Player name="Player 1" :position="1" />
+        <Player name="Player 2" :position="2" />
+        <Player name="Player 3" :position="3" />
       </div>
       <div class="second">
-        <Player :name="username || ''" :position="4" />
-        <Player :name="username || ''" :position="5" />
-        <Player :name="username || ''" :position="6" />
+        <Player name="Player 4" :position="4" />
+        <Player name="Player 5" :position="5" />
+        <Player name="Player 6" :position="6" />
       </div>
+      <p>{{ authStore.isAuthenticated }}</p>
     </div>
   </div>
 </template>

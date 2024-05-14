@@ -6,14 +6,19 @@ const authStore = useAuthStore();
 <template>
   <header>
     <div class="main-container">
-      <a href="/rooms">ROOMS</a>
-      <a @click="authStore.logout">LOG OUT</a>
+      <a href="/">ROOMS</a>
+      <a href="/login">LOGIN</a>
+      <a href="/registration">REGISTRATION</a>
+      <a href="/login" @click="authStore.logout">LOG OUT</a>
+      <a>АВТОРИЗОВАН? {{ authStore.isAuthenticated }}</a>
     </div>
   </header>
 </template>
 
 <style scoped>
 .main-container {
+  display: flex;
+  gap: 15px;
   padding-top: 15px;
   padding-bottom: 15px;
 }

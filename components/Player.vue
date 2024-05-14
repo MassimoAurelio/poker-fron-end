@@ -10,6 +10,7 @@ import {
   FOLD,
   RAISE,
 } from "@/utils/api";
+
 const playersStore = usePlayers();
 
 const props = defineProps({
@@ -23,8 +24,6 @@ const props = defineProps({
   },
 });
 
-const sum = ref("");
-
 const joinTable = async (position: number) => {
   try {
     const response = await fetch(`${BASE_URL}${JOIN}`, {
@@ -33,7 +32,7 @@ const joinTable = async (position: number) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        player: `Player ${position}`,
+        player: props.name,
         stack: 1000,
         position: position,
       }),
@@ -46,7 +45,7 @@ const joinTable = async (position: number) => {
   }
 };
 
-const leaveFromTable = async (player: string) => {
+const leaveFromTable = async (position: number) => {
   try {
     const response = await fetch(`${BASE_URL}${LEAVE}`, {
       method: "POST",
@@ -54,7 +53,7 @@ const leaveFromTable = async (player: string) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        player: player,
+        position: position,
       }),
     });
     if (!response.ok) {
@@ -87,9 +86,9 @@ const joinAndGetInfo = async (position: number) => {
   }
 };
 
-const leaveAndGetInfo = async (player: string) => {
+const leaveAndGetInfo = async (positon: number) => {
   try {
-    await leaveFromTable(player);
+    await leaveFromTable(positon);
     await getInfo();
   } catch (error) {
     console.error(error);
@@ -116,6 +115,7 @@ const fold = async (name: string) => {
   }
 };
 
+const sum = ref("");
 const raise = async (name: string) => {
   try {
     const response = await fetch(`${BASE_URL}${RAISE}`, {
@@ -175,6 +175,26 @@ const userTern = async () => {
   }
 };
 
+const check = async (name: string) => {
+  try {
+    const response = await fetch("http://localhost:5000/check", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при выполнении запроса");
+    }
+    await userTern();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 function createIconComputed(position: number) {
   return computed(() => {
     return playersStore.players.some((player) => player.position === position)
@@ -213,7 +233,7 @@ const playerAndCurrentPlayerId = () => {
       class="table-position"
       size="50"
       name="pepicons-pop:leave"
-      @click="leaveAndGetInfo(props.name)"
+      @click="leaveAndGetInfo(props.position)"
       v-if="playerExists()"
     />
     <div>
@@ -237,7 +257,7 @@ const playerAndCurrentPlayerId = () => {
         </div>
         <button @click="coll(props.name)">Coll</button>
 
-        <button @click="userTern">Check</button>
+        <button @click="check(props.name)">Check</button>
       </div>
     </div>
   </div>

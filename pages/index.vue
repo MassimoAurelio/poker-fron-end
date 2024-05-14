@@ -1,13 +1,41 @@
 <script setup lang="ts">
-import { usePlayers } from "~/store/usePlayers";
-const playersStore = usePlayers();
 import { useAuthStore } from "@/store/auth";
+import { usePlayers } from "@/store/usePlayers";
 
-const authStore = useAuthStore();
+const playersStore = usePlayers();
 
 useSeoMeta({
-  title: "POKER",
+  title: "ROOMS PAGE",
 });
+
+const authStore = useAuthStore();
+const router = useRouter();
+const authField = {
+  name: "",
+  password: "",
+};
+
+const createRoom = async (name: string, password: string) => {
+  try {
+    const response = await fetch("http://localhost:5000/createroom", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+        password: password,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при выполнении запроса");
+    }
+    const data = await response.json();
+    await router.push(`/room/${data.roomId}`);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 const getInfo = async () => {
   try {
@@ -22,208 +50,84 @@ const getInfo = async () => {
   }
 };
 
-const updatepos = async () => {
+const enterRoom = async (name: string, password: string) => {
   try {
-    const response = await fetch("http://localhost:5000/updatepos", {
+    const response = await fetch("http://localhost:5000/enterroom", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        name: name,
+        password: password,
+      }),
     });
     if (!response.ok) {
       throw new Error("Ошибка при выполнении запроса");
     }
-    await mbbb();
-    await getInfo();
+    const data = await response.json();
+    await router.push(`/room/${data.roomId}`);
   } catch (error) {
     console.error(error);
   }
 };
 
-const mbbb = async () => {
-  try {
-    const response = await fetch("http://localhost:5000/mbbb", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const giveCards = async () => {
-  try {
-    const response = await fetch("http://localhost:5000/deal", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
-    await getInfo();
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-onMounted(async () => {
+onMounted(() => {
   const token = localStorage.getItem("token");
-  if (token) {
-    authStore.login(token);
+  const username = localStorage.getItem("username");
+  if (token && username) {
+    authStore.login(token, { username: username });
   }
-  await getInfo();
+  getInfo();
 });
 </script>
 
 <template>
-  <div class="info-container">
-    <h1 v-if="playersStore.players.length === 0">Стол пуст</h1>
-    <h1 v-else>За столом сидят</h1>
-
-    <div
-      class="table-info"
-      v-for="item in playersStore.players"
-      :key="item.position"
-    >
-      <p>{{ item?.name }},</p>
-      <p>Stack: {{ item.stack }},</p>
-      <p>Position{{ item.position }},</p>
-    </div>
-  </div>
-
-  <button @click="updatepos">NEXT ROUND</button>
-  <button @click="giveCards">Give Card</button>
-
   <div class="main-container">
-    <div class="table">
-      <div class="first">
-        <Player name="Player 1" :position="1" />
-        <Player name="Player 2" :position="2" />
-        <Player name="Player 3" :position="3" />
-      </div>
-      <div class="second">
-        <Player name="Player 4" :position="4" />
-        <Player name="Player 5" :position="5" />
-        <Player name="Player 6" :position="6" />
-      </div>
-      <p>{{ authStore.isAuthenticated }}</p>
+    <div class="create-room">
+      <h1>Create Room</h1>
+      <form @submit.prevent="createRoom(authField.name, authField.password)">
+        <input type="text" placeholder="Room name" v-model="authField.name" />
+        <input
+          type="password"
+          placeholder="Room password"
+          v-model="authField.password"
+        />
+        <button type="submit">Create</button>
+      </form>
+    </div>
+
+    <div class="enter-room">
+      <h1>Enter Room</h1>
+      <form @submit.prevent="enterRoom(authField.name, authField.password)">
+        <input type="text" placeholder="Room name" v-model="authField.name" />
+        <input
+          type="password"
+          placeholder="Room password"
+          v-model="authField.password"
+        />
+        <button type="submit">Enter</button>
+      </form>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.info-container {
-  min-height: 200px;
-  height: auto;
-  .table-info {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-}
-
 .main-container {
-  padding: 20%;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
-  gap: 25px;
+  align-items: center;
+  gap: 15vh;
 
-  .table {
-    position: relative;
+  .create-room,
+  .enter-room {
+    width: 300px;
+  }
+  form {
     display: flex;
     flex-direction: column;
-    gap: 150px;
-    width: 500px;
-    height: 250px;
-    background-color: rgb(35, 110, 54);
-
-    border: solid black;
-    border-width: 15px;
-    border-radius: 90px;
-
-    .table-position {
-      width: 25px;
-      height: 25px;
-      text-align: center;
-      line-height: 50px;
-      z-index: 1;
-    }
-
-    .first {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 470px;
-      gap: 35px;
-
-      .player {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        .cards {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          .first_card {
-            display: flex;
-          }
-          .second_card {
-            display: flex;
-          }
-        }
-
-        .buttons {
-          display: grid;
-          grid-template-columns: 2fr 2fr;
-          max-width: 50px;
-
-          .input {
-            display: flex;
-            max-width: 10px;
-          }
-        }
-      }
-    }
-    .second {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 470px;
-      gap: 35px;
-      flex-direction: row-reverse;
-
-      .player {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        .cards {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        .buttons {
-          display: grid;
-          grid-template-columns: 2fr 2fr;
-          max-width: 50px;
-
-          .input {
-            display: flex;
-            max-width: 10px;
-          }
-        }
-      }
-    }
+    gap: 10px;
   }
 }
 </style>
