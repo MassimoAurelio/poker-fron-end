@@ -84,21 +84,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="info-container">
-    <h1 v-if="playersStore.players.length === 0">Стол пуст</h1>
-    <h1 v-else>За столом сидят</h1>
-
-    <div
-      class="table-info"
-      v-for="item in playersStore.players"
-      :key="item.position"
-    >
-      <p>{{ item?.name }},</p>
-      <p>Stack: {{ item.stack }},</p>
-      <p>Position{{ item.position }},</p>
-    </div>
-  </div>
-
   <button @click="updatepos">NEXT ROUND</button>
   <button @click="giveCards">Give Card</button>
 
@@ -114,8 +99,8 @@ onMounted(() => {
         <Player name="Player 5" :position="5" />
         <Player name="Player 6" :position="6" />
       </div>
-      <p>{{ authStore.isAuthenticated }}</p>
     </div>
+    <UiPlayerPanel name="Player 3" :position="3" />
   </div>
 </template>
 
@@ -131,11 +116,17 @@ onMounted(() => {
 }
 
 .main-container {
+  position: relative;
   padding: 20%;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 25px;
+  border: 1px solid rgb(255, 255, 255);
+  border-radius: 33px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  background: url(),
+    radial-gradient(76% 100% at 50% 0%, rgb(54, 68, 78), rgb(16, 25, 30) 100%);
 
   .table {
     position: relative;
@@ -143,12 +134,11 @@ onMounted(() => {
     flex-direction: column;
     gap: 150px;
     width: 500px;
-    height: 250px;
     background-color: rgb(35, 110, 54);
 
     border: solid black;
     border-width: 15px;
-    border-radius: 90px;
+    border-radius: 200px;
 
     .table-position {
       width: 25px;
@@ -200,7 +190,6 @@ onMounted(() => {
       align-items: center;
       width: 470px;
       gap: 35px;
-      flex-direction: row-reverse;
 
       .player {
         display: flex;

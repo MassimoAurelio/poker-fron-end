@@ -6,6 +6,11 @@
   box-sizing: border-box;
 }
 
+@font-face {
+  font-family: "Dela Gothic One";
+  src: url("../fonts/DelaGothicOne-Regular.woff2") format("truetype");
+}
+
 body {
   @include vars.common-styles;
   background-color: #582727;
@@ -43,6 +48,7 @@ a {
 }
 
 button {
+  font-family: "Dela Gothic One", sans-serif;
   color: vars.$colorWhiteTheme;
   font-weight: 400;
   text-decoration: none;
@@ -55,6 +61,7 @@ button {
 }
 
 .dark-mode button {
+  font-family: "Dela Gothic One", sans-serif;
   color: vars.$colorDarkTheme;
   font-weight: 400;
   text-decoration: none;
