@@ -95,9 +95,68 @@ const leaveAndGetInfo = async (positon: number) => {
   }
 };
 
+const fold = async (name: string) => {
+  try {
+    const response = await fetch(`${BASE_URL}${FOLD}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при выполнении запроса");
+    }
+    await userTern();
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-
-
+const sum = ref("");
+const raise = async (name: string) => {
+  try {
+    const response = await fetch(`${BASE_URL}${RAISE}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+        raiseAmount: sum.value,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при выполнении запроса");
+    }
+    playersStore.showInput = false;
+    await userTern();
+  } catch (error) {
+    console.error(error);
+  }
+};
+const coll = async (name: string) => {
+  try {
+    const response = await fetch(`${BASE_URL}${COLL}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при выполнении запроса");
+    }
+    await userTern();
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const userTern = async () => {
   try {
@@ -117,6 +176,25 @@ const userTern = async () => {
   }
 };
 
+const check = async (name: string) => {
+  try {
+    const response = await fetch("http://localhost:5000/check", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при выполнении запроса");
+    }
+    await userTern();
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 function createIconComputed(position: number) {
   return computed(() => {
@@ -162,38 +240,12 @@ const playerAndCurrentPlayerId = () => {
     <div>
       {{ getLastBet() }}
     </div>
-    <div v-if="playerAndCurrentPlayerId()">
-      <!-- <div class="buttons">
-        <button @click="fold(props.name)">Fold</button>
-        <div class="input">
-          <button @click="playersStore.toggleInput">Raise</button>
-          <input
-            v-if="playersStore.showInput"
-            v-model="sum"
-            type="text"
-            size="1"
-          />
-
-          <button v-if="playersStore.showInput" @click="raise(props.name)">
-            Raise
-          </button>
-        </div>
-        <button @click="coll(props.name)">Coll</button>
-
-        <button @click="check(props.name)">Check</button>
-      </div> -->
+    <div class="panel" v-if="playerAndCurrentPlayerId()">
+      <UiPlayerPanel :name="props.name" :position="props.position" />
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.buttons {
-  position: absolute;
-  width: 200px;
-  height: 100px;
-  left: 538px;
-  right: 0px;
-  top: 400px;
-  bottom: 279px;
-}
+
 </style>

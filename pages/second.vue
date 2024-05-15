@@ -100,7 +100,6 @@ onMounted(() => {
         <Player name="Player 6" :position="6" />
       </div>
     </div>
-    <UiPlayerPanel name="Player 3" :position="3" />
   </div>
 </template>
 
@@ -188,6 +187,7 @@ onMounted(() => {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-direction: row-reverse;
       width: 470px;
       gap: 35px;
 
