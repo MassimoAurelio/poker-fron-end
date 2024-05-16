@@ -1,15 +1,6 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
-import {
-  BASE_URL,
-  NEXT_PLAYER,
-  COLL,
-  JOIN,
-  LEAVE,
-  PLAYERS,
-  FOLD,
-  RAISE,
-} from "@/utils/api";
+import { BASE_URL, JOIN, LEAVE, PLAYERS } from "@/utils/api";
 
 const playersStore = usePlayers();
 
@@ -95,106 +86,6 @@ const leaveAndGetInfo = async (positon: number) => {
   }
 };
 
-const fold = async (name: string) => {
-  try {
-    const response = await fetch(`${BASE_URL}${FOLD}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: name,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
-    await userTern();
-    await getInfo();
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const sum = ref("");
-const raise = async (name: string) => {
-  try {
-    const response = await fetch(`${BASE_URL}${RAISE}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: name,
-        raiseAmount: sum.value,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
-    playersStore.showInput = false;
-    await userTern();
-  } catch (error) {
-    console.error(error);
-  }
-};
-const coll = async (name: string) => {
-  try {
-    const response = await fetch(`${BASE_URL}${COLL}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: name,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
-    await userTern();
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const userTern = async () => {
-  try {
-    const response = await fetch(`${BASE_URL}${NEXT_PLAYER}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
-    playersStore.showInput = false;
-    await getInfo();
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const check = async (name: string) => {
-  try {
-    const response = await fetch("http://localhost:5000/check", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: name,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
-    await userTern();
-  } catch (error) {
-    console.error(error);
-  }
-};
 
 function createIconComputed(position: number) {
   return computed(() => {

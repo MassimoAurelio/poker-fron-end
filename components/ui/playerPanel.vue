@@ -189,6 +189,7 @@ const check = async (name: string) => {
       .range_input_container {
         display: flex;
         align-items: center;
+        cursor: pointer;
 
         .range_input {
           -webkit-appearance: none;
@@ -215,6 +216,7 @@ const check = async (name: string) => {
       width: 77px;
       height: 60px;
       left: 1901px;
+      cursor: pointer;
       right: -1901px;
       top: 1148px;
       bottom: -1148px;
@@ -234,23 +236,65 @@ const check = async (name: string) => {
       border-radius: 24px;
       backdrop-filter: blur(2px);
       border: none;
+      cursor: pointer;
       background: rgba(64, 82, 94, 0.24);
     }
   }
   .main-buttons {
     display: flex;
     gap: 8px;
-    button {
+
+    .fold_button {
       width: 104px;
       height: 64px;
-      left: 1762px;
-      right: -1426px;
+      left: 1874px;
+      right: -1538px;
       top: 1232px;
       bottom: -1232px;
-      color: rgb(4, 7, 6);
-      border: none;
       border-radius: 16px;
       background: rgb(152, 222, 227);
+      border: none;
+      color: rgb(4, 7, 6);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 117%;
+      letter-spacing: 1%;
+      text-align: center;
+    }
+    .check_button,
+    .call_button {
+      width: 104px;
+      height: 64px;
+      left: 1650px;
+      right: -1314px;
+      top: 1232px;
+      bottom: -1232px;
+      border-radius: 16px;
+      background: rgb(64, 82, 94);
+      border: none;
+      color: rgb(152, 222, 227);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 132%;
+      letter-spacing: 4%;
+      text-align: center;
+    }
+    .bet_button {
+      width: 104px;
+      height: 64px;
+      left: 1874px;
+      right: -1538px;
+      top: 1232px;
+      bottom: -1232px;
+      border-radius: 16px;
+      background: rgb(152, 222, 227);
+      border: none;
+      color: rgb(4, 7, 6);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 117%;
+      letter-spacing: 1%;
+      text-align: center;
     }
   }
 }

@@ -90,22 +90,10 @@ onMounted(() => {
   <div class="main-container">
     <div class="table">
       <div class="first">
-       <!--  <PlayerNew name="Player 1" :position="1" />
-        <PlayerNew name="Player 1" :position="1" />
-        <PlayerNew name="Player 1" :position="1" /> -->
-        <Player name="Player 1" :position="1" />
-        <Player name="Player 2" :position="2" />
-        <Player name="Player 3" :position="3" />
+        <ActivePlayer name="Player 4" :position="4" />
+        <FreeSpace name="Player 1" :position="1" />
       </div>
-      <div class="second">
-       <!--  <PlayerNew name="Player 1" :position="1" />
-        <PlayerNew name="Player 1" :position="1" />
-        <PlayerNew name="Player 1" :position="1" /> -->
-
-        <Player name="Player 4" :position="4" />
-        <Player name="Player 5" :position="5" />
-        <Player name="Player 6" :position="6" />
-      </div>
+      <div class="second"></div>
     </div>
   </div>
 </template>
@@ -139,7 +127,7 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     gap: 150px;
-    width: 600px;
+    width: 800px;
     background: radial-gradient(
         55% 100% at 50% 0%,
         rgba(47, 60, 69, 0),
@@ -163,7 +151,7 @@ onMounted(() => {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      width: 600px;
+      width: 900px;
       gap: 35px;
 
       .player {
@@ -196,12 +184,11 @@ onMounted(() => {
       }
     }
     .second {
-  
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-direction: row-reverse;
-      width: 600px;
+      width: 900px;
       gap: 35px;
 
       .player {
