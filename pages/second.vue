@@ -99,6 +99,7 @@ onMounted(() => {
         <Player name="Player 5" :position="5" />
         <Player name="Player 6" :position="6" />
       </div>
+      
     </div>
   </div>
 </template>

@@ -109,6 +109,8 @@ const userTern = async () => {
   }
 };
 
+const sliderValue = ref<number>(50);
+
 const check = async (name: string) => {
   try {
     const response = await fetch("http://localhost:5000/check", {
@@ -133,17 +135,30 @@ const check = async (name: string) => {
 <template>
   <div class="main-container">
     <div class="second-buttons">
-      <button>MIN</button>
-      <button>3/4</button>
-      <button>POT</button>
-      <button>MAX</button>
-      <input class="input" type="number" />
+      <div class="up_buttons">
+        <div class="buttons_">
+          <button>MIN</button>
+          <button>3/4</button>
+          <button>POT</button>
+          <button>MAX</button>
+        </div>
+        <div class="range_input_container">
+          <input
+            class="range_input"
+            type="range"
+            min="0"
+            max="1000"
+            v-model="sliderValue"
+          />
+        </div>
+      </div>
+      <input class="input" type="number" v-model="sliderValue" />
     </div>
     <div class="main-buttons">
-      <button @click="fold(props.name)">FOLD</button>
-      <button @click="check(props.name)">CHECK</button>
-      <button @click="coll(props.name)">CALL</button>
-      <button @click="raise(props.name)">BET</button>
+      <button @click="fold(props.name)" class="fold_button">FOLD</button>
+      <button @click="check(props.name)" class="check_button">CHECK</button>
+      <button @click="coll(props.name)" class="call_button">CALL</button>
+      <button @click="raise(props.name)" class="bet_button">BET</button>
     </div>
   </div>
 </template>
@@ -162,6 +177,40 @@ const check = async (name: string) => {
   bottom: 279px;
   .second-buttons {
     display: flex;
+    gap: 10px;
+
+    .up_buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      .buttons_ {
+        display: flex;
+      }
+      .range_input_container {
+        display: flex;
+        align-items: center;
+
+        .range_input {
+          -webkit-appearance: none;
+          width: 100%;
+          height: 5px;
+          outline: none;
+          opacity: 0.7;
+          transition: opacity 0.2s;
+          border-radius: 26px;
+          background: rgb(152, 222, 227);
+        }
+        .range_input::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 15px;
+          height: 15px;
+          background: rgb(214, 233, 253);
+          border-radius: 50%;
+          cursor: pointer;
+        }
+      }
+    }
     .input {
       width: 77px;
       height: 60px;
@@ -170,6 +219,8 @@ const check = async (name: string) => {
       top: 1148px;
       bottom: -1148px;
       border-radius: 1px;
+      border: none;
+      color: rgb(214, 233, 253);
       backdrop-filter: blur(2px);
       background: rgba(64, 82, 94, 0.24);
     }
@@ -196,9 +247,10 @@ const check = async (name: string) => {
       right: -1426px;
       top: 1232px;
       bottom: -1232px;
-      border-radius: 16px;
+      color: rgb(4, 7, 6);
       border: none;
-      background: rgb(233, 123, 136);
+      border-radius: 16px;
+      background: rgb(152, 222, 227);
     }
   }
 }

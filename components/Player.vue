@@ -240,12 +240,18 @@ const playerAndCurrentPlayerId = () => {
     <div>
       {{ getLastBet() }}
     </div>
-    <div class="panel" v-if="playerAndCurrentPlayerId()">
-      <UiPlayerPanel :name="props.name" :position="props.position" />
-    </div>
+  </div>
+  <div class="panel" v-if="playerAndCurrentPlayerId()">
+    <UiPlayerPanel :name="props.name" :position="props.position" />
   </div>
 </template>
 
 <style scoped lang="scss">
-
+.panel {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin-bottom: 150px;
+  margin-right: 210px;
+}
 </style>
