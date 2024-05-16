@@ -90,18 +90,11 @@ onMounted(() => {
   <div class="main-container">
     <div class="table">
       <div class="first">
-       <!--  <PlayerNew name="Player 1" :position="1" />
-        <PlayerNew name="Player 1" :position="1" />
-        <PlayerNew name="Player 1" :position="1" /> -->
         <Player name="Player 1" :position="1" />
         <Player name="Player 2" :position="2" />
         <Player name="Player 3" :position="3" />
       </div>
       <div class="second">
-       <!--  <PlayerNew name="Player 1" :position="1" />
-        <PlayerNew name="Player 1" :position="1" />
-        <PlayerNew name="Player 1" :position="1" /> -->
-
         <Player name="Player 4" :position="4" />
         <Player name="Player 5" :position="5" />
         <Player name="Player 6" :position="6" />

@@ -35,6 +35,28 @@ const joinTable = async (position: number) => {
     console.error(error);
   }
 };
+
+const joinAndGetInfo = async (position: number) => {
+  try {
+    await joinTable(position);
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const getInfo = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}${PLAYERS}`);
+    if (!response.ok) {
+      throw new Error("Ошибка при получении данных");
+    }
+    const data = await response.json();
+    playersStore.setPlayers(data);
+  } catch (error) {
+    console.error(error);
+  }
+};
 </script>
 
 <template>

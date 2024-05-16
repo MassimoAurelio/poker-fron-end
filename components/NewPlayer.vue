@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
-import { BASE_URL, JOIN, LEAVE, PLAYERS } from "@/utils/api";
+import { BASE_URL, NEXT_PLAYER, JOIN, LEAVE, PLAYERS } from "@/utils/api";
 
 const playersStore = usePlayers();
 
@@ -113,35 +113,21 @@ const playerAndCurrentPlayerId = () => {
 </script>
 
 <template>
-  <div class="player">
-    <Icon
-      class="table-position"
-      size="50"
-      :name="createIconComputed(props.position).value"
-      @click="joinAndGetInfo(props.position)"
+  <div>
+    <ActivePlayer
+      :name="props.name"
+      :position="1"
+      @click="joinAndGetInfo(1)"
+      v-if="playersStore.players.some((player) => player.name === props.name)"
     />
-    <Icon
-      class="table-position"
-      size="50"
-      name="pepicons-pop:leave"
-      @click="leaveAndGetInfo(props.position)"
-      v-if="playerExists()"
-    />
-    <div>
-      {{ getLastBet() }}
-    </div>
-  </div>
-  <div class="panel" v-if="playerAndCurrentPlayerId()">
-    <UiPlayerPanel :name="props.name" :position="props.position" />
+
+    <FreeSpace
+      :name="props.name"
+      :position="1"
+      @click="joinAndGetInfo(1)"
+      v-if="!playersStore.players.some((player) => player.name === props.name)"
+    ></FreeSpace>
   </div>
 </template>
 
-<style scoped lang="scss">
-.panel {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  margin-bottom: 150px;
-  margin-right: 210px;
-}
-</style>
+<style scoped lang="scss"></style>

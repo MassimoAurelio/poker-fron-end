@@ -9,6 +9,17 @@ useSeoMeta({
   title: "POKER",
 });
 
+const props = defineProps({
+  name: {
+    type: String,
+    required: true,
+  },
+  position: {
+    type: Number,
+    required: true,
+  },
+});
+
 const getInfo = async () => {
   try {
     const response = await fetch("http://localhost:5000/players");
@@ -56,6 +67,36 @@ const mbbb = async () => {
   }
 };
 
+const joinTable = async (position: number) => {
+  try {
+    const response = await fetch(`${BASE_URL}${JOIN}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        player: props.name,
+        stack: 1000,
+        position: position,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при отправке данных");
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const joinAndGetInfo = async (position: number) => {
+  try {
+    await joinTable(position);
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const giveCards = async () => {
   try {
     const response = await fetch("http://localhost:5000/deal", {
@@ -90,8 +131,7 @@ onMounted(() => {
   <div class="main-container">
     <div class="table">
       <div class="first">
-        <ActivePlayer name="Player 4" :position="4" />
-        <FreeSpace name="Player 1" :position="1" />
+        <NewPlayer name="Player 1" :position="1" />
       </div>
       <div class="second"></div>
     </div>

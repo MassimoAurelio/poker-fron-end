@@ -253,4 +253,11 @@ const playerAndCurrentPlayerId = () => {
     }
   }
 }
+.panel {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin-bottom: 150px;
+  margin-right: 300px;
+}
 </style>
