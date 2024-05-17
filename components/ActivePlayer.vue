@@ -63,6 +63,14 @@ const getBalance = () => {
   return balance?.stack || 0;
 };
 
+const getLastBet = () => {
+  const lastBet = playersStore.players.find(
+    (player) => player.name === props.name
+  );
+
+  return lastBet?.lastBet || 0;
+};
+
 const getValueFirstCard = () => {
   const firstCard = playersStore.players.find(
     (player) => player.name === props.name
@@ -120,9 +128,12 @@ const getUserName = () => {
     <div class="player-footer">
       <div class="player-avatar"><NuxtImg src="/dealer.svg" /></div>
       <div class="first-block">
-        <div>{{ getBalance() }}</div>
+        <div class="player-balance">{{ getBalance() }}</div>
       </div>
-      {{ getUserName() }}
+      <div class="player-footer-info">
+        <div class="name">{{ getUserName() }}</div>
+        <div class="lastBet">{{ getLastBet() }} chips</div>
+      </div>
     </div>
     <NuxtImg
       src="/del.svg"
@@ -221,6 +232,15 @@ const getUserName = () => {
     height: 80px;
     background-color: #33414bcc;
     border-radius: 10px;
+
+    .player-footer-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
     .player-avatar {
       position: absolute;
       z-index: 1000;
@@ -243,6 +263,10 @@ const getUserName = () => {
       border-radius: 1px;
       backdrop-filter: blur(16px);
       background-color: #40525ecc;
+
+      .player-balance {
+        padding-right: 10px;
+      }
     }
   }
 }

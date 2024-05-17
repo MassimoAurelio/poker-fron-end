@@ -84,6 +84,23 @@ const giveCards = async () => {
   }
 };
 
+const giveFlop = async () => {
+  try {
+    const response = await fetch("http://localhost:5000/giveflop", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Ошибка при выполнении запроса");
+    }
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 onMounted(() => {
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
@@ -97,6 +114,7 @@ onMounted(() => {
 <template>
   <button @click="updatepos">NEXT ROUND</button>
   <button @click="giveCards">Give Card</button>
+  <button @click="giveFlop">Give Flop</button>
 
   <div class="main-container">
     <div class="table">
