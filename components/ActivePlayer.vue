@@ -97,7 +97,6 @@ const getUserName = () => {
   );
   return name?.name || " ";
 };
-
 </script>
 
 <template>
@@ -125,11 +124,20 @@ const getUserName = () => {
       </div>
       {{ getUserName() }}
     </div>
+    <NuxtImg
+      src="/del.svg"
+      sizes="40"
+      v-if="
+        playersStore.players.find(
+          (player) => player.position === 6 && player.name === props.name
+        )
+      "
+    />
     <div class="leave">
       <NuxtImg
         src="/leave.svg"
         class="table-position"
-        size="50"
+        sizes="40"
         name="pepicons-pop:leave"
         @click="leaveAndGetInfo(props.position)"
       />
@@ -238,5 +246,4 @@ const getUserName = () => {
     }
   }
 }
-
 </style>

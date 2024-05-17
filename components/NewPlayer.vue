@@ -48,8 +48,14 @@ const getInfo = async () => {
     console.error(error);
   }
 };
+const playerExists = () => {
+  return playersStore.players.some((player) => player.name === props.name);
+};
+const playerNotExists = () => {
+  return !playersStore.players.some((player) => player.name === props.name);
+};
 
-const joinAndGetInfo = async (position: number) => {
+const joinAndGetInfo = async (position:number) => {
   try {
     await joinTable(position);
     await getInfo();
@@ -69,15 +75,14 @@ const playerAndCurrentPlayerId = () => {
     <ActivePlayer
       :name="props.name"
       :position="props.position"
-      @click="joinAndGetInfo(props.position)"
-      v-if="playersStore.players.some((player) => player.name === props.name)"
+      v-if="playerExists()"
     />
 
     <FreeSpace
       :name="props.name"
       :position="props.position"
-      @click="joinAndGetInfo(props.position)"
-      v-if="!playersStore.players.some((player) => player.name === props.name)"
+      @click="joinAndGetInfo(position)"
+      v-if="playerNotExists()"
     ></FreeSpace>
     <div class="panel" v-if="playerAndCurrentPlayerId()">
       <UiPlayerPanel :name="props.name" :position="props.position" />

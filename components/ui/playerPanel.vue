@@ -49,7 +49,7 @@ const fold = async (name: string) => {
   }
 };
 
-const sum = ref("");
+const sum = ref<number>(50);
 const raise = async (name: string) => {
   try {
     const response = await fetch(`${BASE_URL}${RAISE}`, {
@@ -109,7 +109,7 @@ const userTern = async () => {
   }
 };
 
-const sliderValue = ref<number>(50);
+
 
 const check = async (name: string) => {
   try {
@@ -148,11 +148,11 @@ const check = async (name: string) => {
             type="range"
             min="0"
             max="1000"
-            v-model="sliderValue"
+            v-model="sum"
           />
         </div>
       </div>
-      <input class="input" type="number" v-model="sliderValue" />
+      <input class="input" type="number" v-model="sum" />
     </div>
     <div class="main-buttons">
       <button @click="fold(props.name)" class="fold_button">FOLD</button>

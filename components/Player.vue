@@ -105,6 +105,7 @@ const playerExists = () => {
   return playersStore.players.some((player) => player.name === props.name);
 };
 
+
 const playerAndCurrentPlayerId = () => {
   return playersStore.players.some(
     (player) => player.name === props.name && player.currentPlayerId === true

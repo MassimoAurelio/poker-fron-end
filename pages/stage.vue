@@ -67,36 +67,6 @@ const mbbb = async () => {
   }
 };
 
-const joinTable = async (position: number) => {
-  try {
-    const response = await fetch(`${BASE_URL}${JOIN}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        player: props.name,
-        stack: 1000,
-        position: position,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при отправке данных");
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const joinAndGetInfo = async (position: number) => {
-  try {
-    await joinTable(position);
-    await getInfo();
-  } catch (error) {
-    console.error(error);
-  }
-};
-
 const giveCards = async () => {
   try {
     const response = await fetch("http://localhost:5000/deal", {
@@ -113,7 +83,6 @@ const giveCards = async () => {
     console.error(error);
   }
 };
-
 
 onMounted(() => {
   const token = localStorage.getItem("token");
@@ -138,7 +107,6 @@ onMounted(() => {
       <NewPlayer name="Player 5" :position="5" class="Player5" />
       <NewPlayer name="Player 6" :position="6" class="Player6" />
     </div>
-    
   </div>
 </template>
 

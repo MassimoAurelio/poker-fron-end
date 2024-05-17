@@ -9,6 +9,7 @@ useSeoMeta({
   title: "POKER",
 });
 
+
 const getInfo = async () => {
   try {
     const response = await fetch("http://localhost:5000/players");
@@ -89,16 +90,12 @@ onMounted(() => {
 
   <div class="main-container">
     <div class="table">
-      <div class="first">
-        <Player name="Player 1" :position="1" />
-        <Player name="Player 2" :position="2" />
-        <Player name="Player 3" :position="3" />
-      </div>
-      <div class="second">
-        <Player name="Player 4" :position="4" />
-        <Player name="Player 5" :position="5" />
-        <Player name="Player 6" :position="6" />
-      </div>
+      <NewPlayer name="Player 1" :position="1" class="Player1" />
+      <NewPlayer name="Player 2" :position="2" class="Player2" />
+      <NewPlayer name="Player 3" :position="3" class="Player3" />
+      <NewPlayer name="Player 4" :position="4" class="Player4" />
+      <NewPlayer name="Player 5" :position="5" class="Player5" />
+      <NewPlayer name="Player 6" :position="6" class="Player6" />
     </div>
   </div>
 </template>
@@ -116,110 +113,80 @@ onMounted(() => {
 
 .main-container {
   position: relative;
-  padding: 20%;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 25px;
+  width: 1500px;
+  height: 1200px;
   border: 1px solid rgb(255, 255, 255);
   border-radius: 33px;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
   background: url(),
     radial-gradient(76% 100% at 50% 0%, rgb(54, 68, 78), rgb(16, 25, 30) 100%);
+}
 
-  .table {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 150px;
-    width: 600px;
-    background: radial-gradient(
-        55% 100% at 50% 0%,
-        rgba(47, 60, 69, 0),
-        rgba(7, 12, 15, 0.48) 100%
-      ),
-      url(), rgba(52, 66, 77, 0.56);
-    opacity: 0.88;
-    border: solid black;
-    border-width: 15px;
-    border-radius: 200px;
+.table {
+  position: relative;
+  width: 1108px;
+  height: 500px;
+  background: radial-gradient(
+      55% 100% at 50% 0%,
+      rgba(47, 60, 69, 0),
+      rgba(7, 12, 15, 0.48) 100%
+    ),
+    rgba(52, 66, 77, 0.56);
+  opacity: 0.88;
+  border: solid black;
+  border-width: 15px;
+  border-radius: 300px;
+}
 
-    .table-position {
-      width: 25px;
-      height: 25px;
-      text-align: center;
-      line-height: 50px;
-      z-index: 1;
-    }
+.Player1 {
+  position: absolute;
+  width: 264px;
+  height: 144px;
+  left: -100px;
+  top: -100px;
+}
 
-    .first {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 600px;
-      gap: 35px;
+.Player2 {
+  position: absolute;
+  width: 264px;
+  height: 144px;
+  left: 400px;
+  top: -170px;
+}
 
-      .player {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+.Player3 {
+  position: absolute;
+  width: 264px;
+  height: 144px;
+  left: 900px;
+  top: -100px;
+  right: 336px;
+}
 
-        .cards {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          .first_card {
-            display: flex;
-          }
-          .second_card {
-            display: flex;
-          }
-        }
+.Player4 {
+  position: absolute;
+  width: 264px;
+  height: 144px;
+  left: 900px;
+  top: 350px;
+}
 
-        .buttons {
-          display: grid;
-          grid-template-columns: 2fr 2fr;
-          max-width: 50px;
+.Player5 {
+  position: absolute;
+  width: 264px;
+  height: 144px;
+  left: 400px;
+  top: 400px;
+}
 
-          .input {
-            display: flex;
-            max-width: 10px;
-          }
-        }
-      }
-    }
-    .second {
-  
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-direction: row-reverse;
-      width: 600px;
-      gap: 35px;
-
-      .player {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        .cards {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        .buttons {
-          display: grid;
-          grid-template-columns: 2fr 2fr;
-          max-width: 50px;
-
-          .input {
-            display: flex;
-            max-width: 10px;
-          }
-        }
-      }
-    }
-  }
+.Player6 {
+  position: absolute;
+  width: 264px;
+  height: 144px;
+  left: -100px;
+  top: 350px;
 }
 </style>

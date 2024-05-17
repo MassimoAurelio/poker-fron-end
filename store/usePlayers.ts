@@ -15,6 +15,7 @@ interface IPlayers {
   cards: ICard[];
 }
 
+
 export const usePlayers = defineStore({
   id: "players",
 
