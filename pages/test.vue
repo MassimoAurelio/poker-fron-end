@@ -132,8 +132,14 @@ onMounted(() => {
     <div class="table">
       <div class="first">
         <NewPlayer name="Player 1" :position="1" />
+        <NewPlayer name="Player 2" :position="2" />
+        <NewPlayer name="Player 3" :position="3" />
       </div>
-      <div class="second"></div>
+      <div class="second">
+        <NewPlayer name="Player 4" :position="4" />
+        <NewPlayer name="Player 5" :position="5" />
+        <NewPlayer name="Player 6" :position="6" />
+      </div>
     </div>
   </div>
 </template>

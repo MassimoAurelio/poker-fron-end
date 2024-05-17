@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
-import { BASE_URL, NEXT_PLAYER, JOIN, LEAVE, PLAYERS } from "@/utils/api";
+import { BASE_URL, LEAVE, PLAYERS } from "@/utils/api";
 
 const playersStore = usePlayers();
 
@@ -14,27 +14,6 @@ const props = defineProps({
     required: true,
   },
 });
-
-const joinTable = async (position: number) => {
-  try {
-    const response = await fetch(`${BASE_URL}${JOIN}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        player: props.name,
-        stack: 1000,
-        position: position,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при отправке данных");
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
 
 const leaveFromTable = async (position: number) => {
   try {
@@ -68,15 +47,6 @@ const getInfo = async () => {
   }
 };
 
-const joinAndGetInfo = async (position: number) => {
-  try {
-    await joinTable(position);
-    await getInfo();
-  } catch (error) {
-    console.error(error);
-  }
-};
-
 const leaveAndGetInfo = async (positon: number) => {
   try {
     await leaveFromTable(positon);
@@ -86,23 +56,39 @@ const leaveAndGetInfo = async (positon: number) => {
   }
 };
 
-function createIconComputed(position: number) {
-  return computed(() => {
-    return playersStore.players.some((player) => player.position === position)
-      ? "fluent-emoji-flat:wheelchair-symbol"
-      : "flat-color-icons:plus";
-  });
-}
-
-const getLastBet = () => {
-  const player = playersStore.players.find(
+const getBalance = () => {
+  const balance = playersStore.players.find(
     (player) => player.name === props.name
   );
-  return player?.lastBet || 0;
+  return balance?.stack || 0;
 };
 
-const playerExists = () => {
-  return playersStore.players.some((player) => player.name === props.name);
+const getValueFirstCard = () => {
+  const firstCard = playersStore.players.find(
+    (player) => player.name === props.name
+  );
+  return firstCard?.cards[0]?.value;
+};
+
+const getSuiteFirstCard = () => {
+  const firstCard = playersStore.players.find(
+    (player) => player.name === props.name
+  );
+  return firstCard?.cards[0]?.suit;
+};
+
+const getValueSecondCard = () => {
+  const firstCard = playersStore.players.find(
+    (player) => player.name === props.name
+  );
+  return firstCard?.cards[1]?.value;
+};
+
+const getSuiteSecondCard = () => {
+  const firstCard = playersStore.players.find(
+    (player) => player.name === props.name
+  );
+  return firstCard?.cards[1]?.suit;
 };
 
 const playerAndCurrentPlayerId = () => {
@@ -117,23 +103,23 @@ const playerAndCurrentPlayerId = () => {
     <div class="card-container">
       <div class="first-card">
         <div class="suit">
-          <Icon name="bi:suit-club-fill" size="25" />
+          {{ getSuiteSecondCard() }}
           <div class="card_number-container">
-            <div class="card-number">3</div>
+            <div class="card-number">{{ getValueSecondCard() }}</div>
           </div>
         </div>
       </div>
       <div class="second-card">
-        <Icon name="bi:suit-diamond-fill" size="25" />
+        {{ getSuiteFirstCard() }}
         <div class="card_number-container">
-          <div class="card-number">9</div>
+          <div class="card-number">{{ getValueFirstCard() }}</div>
         </div>
       </div>
     </div>
     <div class="player-footer">
       <div class="player-avatar"><NuxtImg src="/dealer.svg" /></div>
       <div class="first-block">
-        <div>1000</div>
+        <div>{{ getBalance() }}</div>
       </div>
       №2
     </div>
