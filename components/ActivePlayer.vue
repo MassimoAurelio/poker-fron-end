@@ -91,11 +91,13 @@ const getSuiteSecondCard = () => {
   return firstCard?.cards[1]?.suit;
 };
 
-const playerAndCurrentPlayerId = () => {
-  return playersStore.players.some(
-    (player) => player.name === props.name && player.currentPlayerId === true
+const getUserName = () => {
+  const name = playersStore.players.find(
+    (player) => player.name === props.name
   );
+  return name?.name || " ";
 };
+
 </script>
 
 <template>
@@ -121,7 +123,7 @@ const playerAndCurrentPlayerId = () => {
       <div class="first-block">
         <div>{{ getBalance() }}</div>
       </div>
-      №2
+      {{ getUserName() }}
     </div>
     <div class="leave">
       <NuxtImg
@@ -132,9 +134,6 @@ const playerAndCurrentPlayerId = () => {
         @click="leaveAndGetInfo(props.position)"
       />
     </div>
-  </div>
-  <div class="panel" v-if="playerAndCurrentPlayerId()">
-    <UiPlayerPanel :name="props.name" :position="props.position" />
   </div>
 </template>
 
@@ -239,11 +238,5 @@ const playerAndCurrentPlayerId = () => {
     }
   }
 }
-.panel {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  margin-bottom: 150px;
-  margin-right: 300px;
-}
+
 </style>

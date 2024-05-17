@@ -57,10 +57,15 @@ const joinAndGetInfo = async (position: number) => {
     console.error(error);
   }
 };
+const playerAndCurrentPlayerId = () => {
+  return playersStore.players.some(
+    (player) => player.name === props.name && player.currentPlayerId === true
+  );
+};
 </script>
 
 <template>
-  <div>
+  <div class="player">
     <ActivePlayer
       :name="props.name"
       :position="props.position"
@@ -74,5 +79,20 @@ const joinAndGetInfo = async (position: number) => {
       @click="joinAndGetInfo(props.position)"
       v-if="!playersStore.players.some((player) => player.name === props.name)"
     ></FreeSpace>
+    <div class="panel" v-if="playerAndCurrentPlayerId()">
+      <UiPlayerPanel :name="props.name" :position="props.position" />
+    </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+.player {
+  .panel {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin-bottom: 150px;
+    margin-right: 300px;
+  }
+}
+</style>
