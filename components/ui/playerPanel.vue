@@ -15,6 +15,7 @@ const props = defineProps({
   },
 });
 
+
 const getInfo = async () => {
   try {
     const response = await fetch(`${BASE_URL}${PLAYERS}`);
@@ -130,6 +131,8 @@ const check = async (name: string) => {
     console.error(error);
   }
 };
+
+
 </script>
 
 <template>

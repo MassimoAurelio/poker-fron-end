@@ -171,8 +171,10 @@ const getUserName = () => {
     margin-right: 50px;
     display: flex;
     .first-card {
+      position: relative;
       width: 64px;
       height: 88px;
+      font-size: 30px;
       border-radius: 3px;
       box-shadow: -1px 0px 2px 0px rgba(20, 28, 33, 0.56);
       background: radial-gradient(
@@ -182,9 +184,11 @@ const getUserName = () => {
       );
 
       .card_number-container {
+        position: absolute;
         width: 100%;
         display: flex;
         justify-content: center;
+        top: 40px;
         .card-number {
           width: 31px;
           height: 36px;
@@ -199,8 +203,10 @@ const getUserName = () => {
       }
     }
     .second-card {
+      position: relative;
       width: 64px;
       height: 88px;
+      font-size: 30px;
       border-radius: 3px;
       box-shadow: -1px 0px 2px 0px rgba(20, 28, 33, 0.56);
       background: radial-gradient(
@@ -209,9 +215,11 @@ const getUserName = () => {
         rgb(44, 58, 68) 100%
       );
       .card_number-container {
+        position: absolute;
         width: 100%;
         display: flex;
         justify-content: center;
+        top: 40px;
         .card-number {
           width: 31px;
           height: 36px;

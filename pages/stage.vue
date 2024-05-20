@@ -9,17 +9,6 @@ useSeoMeta({
   title: "POKER",
 });
 
-const props = defineProps({
-  name: {
-    type: String,
-    required: true,
-  },
-  position: {
-    type: Number,
-    required: true,
-  },
-});
-
 const getInfo = async () => {
   try {
     const response = await fetch("http://localhost:5000/players");
@@ -97,6 +86,7 @@ const giveFlop = async () => {
     }
     const data = await response.json();
     playersStore.setFlop(data);
+    sessionStorage.setItem("flop", JSON.stringify(data));
     await getInfo();
   } catch (error) {
     console.error(error);
@@ -109,8 +99,12 @@ onMounted(() => {
   if (token && username) {
     authStore.login(token, { username: username });
   }
+
+  const savedFlop = sessionStorage.getItem("flop");
+  if (savedFlop) {
+    playersStore.setFlop(JSON.parse(savedFlop));
+  }
   getInfo();
-  giveFlop();
 });
 </script>
 
@@ -128,7 +122,7 @@ onMounted(() => {
       <NewPlayer name="Player 5" :position="5" class="Player5" />
       <NewPlayer name="Player 6" :position="6" class="Player6" />
       <div class="flop">
-        <UiFlop />
+        <UiFlop v-if="playersStore.players.length > 0" />
       </div>
     </div>
   </div>
