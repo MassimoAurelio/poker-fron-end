@@ -15,17 +15,23 @@ interface IPlayers {
   lastBet: number;
   cards: ICard[];
 }
-
+interface IFlop {
+  flopCards: ICard[];
+}
 export const usePlayers = defineStore({
   id: "players",
 
   state: () => ({
     players: [] as IPlayers[],
+    flop: {} as IFlop,
   }),
 
   actions: {
     setPlayers(players: IPlayers[]) {
       this.players = players;
+    },
+    setFlop(flop: IFlop) {
+      this.flop = flop;
     },
   },
 });

@@ -1,30 +1,27 @@
 <script setup lang="ts">
 import { usePlayers } from "~/store/usePlayers";
 const playersStore = usePlayers();
+
+const totalPot = () => {
+  const returnLastBet = () => {
+    return playersStore.players.map((item) => item.lastBet);
+  };
+
+  const lastBet = returnLastBet();
+  return lastBet.reduce((acc, bet) => acc + bet, 0);
+};
 </script>
 
 <template>
-  <div class="total-pot">TOTAL POT: 5000</div>
+  <div class="total-pot">TOTAL POT: {{ totalPot() }}</div>
   <div class="flop-container">
-    <div class="flop-card">
-      <div class="flop-suite">♠</div>
-      <div class="flop-value">A</div>
-    </div>
-    <div class="flop-card">
-      <div class="flop-suite">♠</div>
-      <div class="flop-value">K</div>
-    </div>
-    <div class="flop-card">
-      <div class="flop-suite">♠</div>
-      <div class="flop-value">Q</div>
-    </div>
-    <div class="flop-card">
-      <div class="flop-suite">♠</div>
-      <div class="flop-value">J</div>
-    </div>
-    <div class="flop-card">
-      <div class="flop-suite">♠</div>
-      <div class="flop-value">10</div>
+    <div
+      class="flop-card"
+      v-for="(card, index) in playersStore.flop.flopCards"
+      :key="index"
+    >
+      <div class="flop-suite">{{ card.suit }}</div>
+      <div class="flop-value">{{ card.value }}</div>
     </div>
   </div>
 </template>

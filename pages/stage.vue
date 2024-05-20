@@ -96,6 +96,7 @@ const giveFlop = async () => {
       throw new Error("Ошибка при выполнении запроса");
     }
     const data = await response.json();
+    playersStore.setFlop(data);
     await getInfo();
   } catch (error) {
     console.error(error);
@@ -109,6 +110,7 @@ onMounted(() => {
     authStore.login(token, { username: username });
   }
   getInfo();
+  giveFlop();
 });
 </script>
 
@@ -158,6 +160,9 @@ onMounted(() => {
 }
 
 .table {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
   width: 1108px;
   height: 500px;
@@ -173,12 +178,12 @@ onMounted(() => {
   border-radius: 300px;
 }
 
-.flop {
+/* .flop {
   position: absolute;
   right: 300px;
   top: 150px;
 }
-
+ */
 .Player1 {
   position: absolute;
   width: 264px;

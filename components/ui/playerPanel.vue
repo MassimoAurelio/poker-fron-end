@@ -65,7 +65,7 @@ const raise = async (name: string) => {
     if (!response.ok) {
       throw new Error("Ошибка при выполнении запроса");
     }
-    playersStore.showInput = false;
+    
     await userTern();
   } catch (error) {
     console.error(error);
@@ -102,7 +102,7 @@ const userTern = async () => {
     if (!response.ok) {
       throw new Error("Ошибка при выполнении запроса");
     }
-    playersStore.showInput = false;
+ 
     await getInfo();
   } catch (error) {
     console.error(error);
