@@ -3,6 +3,7 @@ interface ICard {
   suit: string;
   _id: string;
 }
+
 interface IPlayers {
   id: string;
   name: string;
@@ -15,22 +16,16 @@ interface IPlayers {
   cards: ICard[];
 }
 
-
 export const usePlayers = defineStore({
   id: "players",
 
   state: () => ({
     players: [] as IPlayers[],
-    showInput: false,
   }),
 
   actions: {
     setPlayers(players: IPlayers[]) {
       this.players = players;
     },
-    toggleInput() {
-      this.showInput = !this.showInput;
-    },
-    
   },
 });

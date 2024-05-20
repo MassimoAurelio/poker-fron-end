@@ -95,6 +95,7 @@ const giveFlop = async () => {
     if (!response.ok) {
       throw new Error("Ошибка при выполнении запроса");
     }
+    const data = await response.json();
     await getInfo();
   } catch (error) {
     console.error(error);
@@ -124,6 +125,9 @@ onMounted(() => {
       <NewPlayer name="Player 4" :position="4" class="Player4" />
       <NewPlayer name="Player 5" :position="5" class="Player5" />
       <NewPlayer name="Player 6" :position="6" class="Player6" />
+      <div class="flop">
+        <UiFlop />
+      </div>
     </div>
   </div>
 </template>
@@ -167,6 +171,12 @@ onMounted(() => {
   border: solid black;
   border-width: 15px;
   border-radius: 300px;
+}
+
+.flop {
+  position: absolute;
+  right: 300px;
+  top: 150px;
 }
 
 .Player1 {
