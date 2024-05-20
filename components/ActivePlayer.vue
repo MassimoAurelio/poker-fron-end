@@ -130,9 +130,28 @@ const getUserName = () => {
       <div class="first-block">
         <div class="player-balance">{{ getBalance() }}</div>
       </div>
-      <div class="player-footer-info">
+      <div
+        class="player-footer-info"
+        v-if="
+          playersStore.players.some(
+            (player) => player.name === props.name && player.fold === false
+          )
+        "
+      >
         <div class="name">{{ getUserName() }}</div>
         <div class="lastBet">{{ getLastBet() }} chips</div>
+      </div>
+
+      <div
+        class="player-footer-infoFold"
+        v-if="
+          playersStore.players.some(
+            (player) => player.name === props.name && player.fold === true
+          )
+        "
+      >
+        <div class="name">{{ getUserName() }}</div>
+        <div class="lastBet">FOLD</div>
       </div>
     </div>
     <NuxtImg
@@ -248,6 +267,22 @@ const getUserName = () => {
       gap: 10px;
       padding-left: 10px;
       padding-right: 10px;
+    }
+
+    .player-footer-infoFold {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-left: 10px;
+      padding-right: 10px;
+      border-radius: 1px;
+      backdrop-filter: blur(16px);
+      background: linear-gradient(
+        90deg,
+        rgb(233, 123, 136) 6.289%,
+        rgba(55, 71, 82, 0) 91.893%
+      );
     }
     .player-avatar {
       position: absolute;

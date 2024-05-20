@@ -15,7 +15,6 @@ const props = defineProps({
   },
 });
 
-
 const getInfo = async () => {
   try {
     const response = await fetch(`${BASE_URL}${PLAYERS}`);
@@ -66,7 +65,7 @@ const raise = async (name: string) => {
     if (!response.ok) {
       throw new Error("Ошибка при выполнении запроса");
     }
-    
+
     await userTern();
   } catch (error) {
     console.error(error);
@@ -103,14 +102,12 @@ const userTern = async () => {
     if (!response.ok) {
       throw new Error("Ошибка при выполнении запроса");
     }
- 
+
     await getInfo();
   } catch (error) {
     console.error(error);
   }
 };
-
-
 
 const check = async (name: string) => {
   try {
@@ -131,8 +128,27 @@ const check = async (name: string) => {
     console.error(error);
   }
 };
+const time = ref(30);
+let timer: NodeJS.Timeout | null = null;
 
+const tick = () => {
+  time.value--;
+  if (time.value === 0) {
+    fold(props.name);
 
+    time.value = 30;
+  }
+};
+
+onMounted(() => {
+  timer = setInterval(tick, 1000);
+});
+
+onBeforeUnmount(() => {
+  if (timer) {
+    clearInterval(timer);
+  }
+});
 </script>
 
 <template>
@@ -163,6 +179,7 @@ const check = async (name: string) => {
       <button @click="coll(props.name)" class="call_button">CALL</button>
       <button @click="raise(props.name)" class="bet_button">BET</button>
     </div>
+    <p>Time remaining: {{ time }}</p>
   </div>
 </template>
 
