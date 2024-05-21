@@ -93,6 +93,23 @@ const giveFlop = async () => {
   }
 };
 
+const tern = async () => {
+  try {
+    const response = await fetch("http://localhost:5000/tern", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response) {
+      throw new Error("WARNING");
+    }
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 onMounted(() => {
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
@@ -112,6 +129,7 @@ onMounted(() => {
   <button @click="updatepos">NEXT ROUND</button>
   <button @click="giveCards">Give Card</button>
   <button @click="giveFlop">Give Flop</button>
+  <button @click="tern">Tern</button>
 
   <div class="main-container">
     <div class="table">
