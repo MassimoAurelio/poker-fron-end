@@ -264,6 +264,8 @@ onBeforeUnmount(() => {
     display: flex;
     gap: 8px;
 
+    
+
     .fold_button {
       width: 104px;
       height: 64px;

@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
-import { BASE_URL, LEAVE, PLAYERS } from "@/utils/api";
+import {
+  BASE_URL,
+  PLAYERS,
+  LEAVE,
+  sendRequest,
+  checkResponse,
+  sendRequestWithBody,
+} from "@/utils/api";
 
 const playersStore = usePlayers();
 
@@ -17,18 +24,11 @@ const props = defineProps({
 
 const leaveFromTable = async (position: number) => {
   try {
-    const response = await fetch(`${BASE_URL}${LEAVE}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        position: position,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
+    const body = {
+      position: position,
+    };
+    const response = sendRequestWithBody(`${BASE_URL}${LEAVE}`, "POST", body);
+    checkResponse(response);
   } catch (error) {
     console.error(error);
   }
@@ -36,10 +36,8 @@ const leaveFromTable = async (position: number) => {
 
 const getInfo = async () => {
   try {
-    const response = await fetch(`${BASE_URL}${PLAYERS}`);
-    if (!response.ok) {
-      throw new Error("Ошибка при получении данных");
-    }
+    const response = await sendRequest(`${BASE_URL}${PLAYERS}`, "GET");
+    checkResponse(response);
     const data = await response.json();
     playersStore.setPlayers(data);
   } catch (error) {

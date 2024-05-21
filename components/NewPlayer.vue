@@ -1,6 +1,18 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
-import { BASE_URL, JOIN, PLAYERS } from "@/utils/api";
+import {
+  BASE_URL,
+  UPDATEPOSITION,
+  JOIN,
+  PLAYERS,
+  MBBB,
+  DEAL,
+  GIVEFLOP,
+  TERN,
+  sendRequest,
+  checkResponse,
+  sendRequestWithBody,
+} from "@/utils/api";
 
 const playersStore = usePlayers();
 
@@ -17,20 +29,17 @@ const props = defineProps({
 
 const joinTable = async (position: number) => {
   try {
-    const response = await fetch(`${BASE_URL}${JOIN}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        player: props.name,
-        stack: 1000,
-        position: position,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при отправке данных");
-    }
+    const body = {
+      player: props.name,
+      stack: 1000,
+      position: position,
+    };
+    const response = await sendRequestWithBody(
+      `${BASE_URL}${JOIN}`,
+      "POST",
+      body
+    );
+    checkResponse(response);
   } catch (error) {
     console.error(error);
   }
@@ -38,16 +47,15 @@ const joinTable = async (position: number) => {
 
 const getInfo = async () => {
   try {
-    const response = await fetch(`${BASE_URL}${PLAYERS}`);
-    if (!response.ok) {
-      throw new Error("Ошибка при получении данных");
-    }
+    const response = await sendRequest(`${BASE_URL}${PLAYERS}`, "GET");
+    checkResponse(response);
     const data = await response.json();
     playersStore.setPlayers(data);
   } catch (error) {
     console.error(error);
   }
 };
+
 const playerExists = () => {
   return playersStore.players.some((player) => player.name === props.name);
 };
@@ -55,7 +63,7 @@ const playerNotExists = () => {
   return !playersStore.players.some((player) => player.name === props.name);
 };
 
-const joinAndGetInfo = async (position:number) => {
+const joinAndGetInfo = async (position: number) => {
   try {
     await joinTable(position);
     await getInfo();
@@ -63,6 +71,7 @@ const joinAndGetInfo = async (position:number) => {
     console.error(error);
   }
 };
+
 const playerAndCurrentPlayerId = () => {
   return playersStore.players.some(
     (player) => player.name === props.name && player.currentPlayerId === true

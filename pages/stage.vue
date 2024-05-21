@@ -1,20 +1,29 @@
 <script setup lang="ts">
 import { usePlayers } from "~/store/usePlayers";
-const playersStore = usePlayers();
 import { useAuthStore } from "@/store/auth";
+import {
+  BASE_URL,
+  UPDATEPOSITION,
+  PLAYERS,
+  MBBB,
+  DEAL,
+  GIVEFLOP,
+  TERN,
+  sendRequest,
+  checkResponse,
+} from "@/utils/api";
 
+const playersStore = usePlayers();
 const authStore = useAuthStore();
 
 useSeoMeta({
-  title: "POKER",
+  title: "POKER STAGE",
 });
 
 const getInfo = async () => {
   try {
-    const response = await fetch("http://localhost:5000/players");
-    if (!response.ok) {
-      throw new Error("Ошибка при получении данных");
-    }
+    const response = await sendRequest(`${BASE_URL}${PLAYERS}`, "GET");
+    checkResponse(response);
     const data = await response.json();
     playersStore.setPlayers(data);
   } catch (error) {
@@ -24,15 +33,8 @@ const getInfo = async () => {
 
 const updatepos = async () => {
   try {
-    const response = await fetch("http://localhost:5000/updatepos", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
+    const response = await sendRequest(`${BASE_URL}${UPDATEPOSITION}`, "POST");
+    checkResponse(response);
     await mbbb();
     await getInfo();
   } catch (error) {
@@ -42,15 +44,8 @@ const updatepos = async () => {
 
 const mbbb = async () => {
   try {
-    const response = await fetch("http://localhost:5000/mbbb", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
+    const response = await sendRequest(`${BASE_URL}${MBBB}`, "GET");
+    checkResponse(response);
   } catch (error) {
     console.error(error);
   }
@@ -58,15 +53,8 @@ const mbbb = async () => {
 
 const giveCards = async () => {
   try {
-    const response = await fetch("http://localhost:5000/deal", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
+    const response = await sendRequest(`${BASE_URL}${DEAL}`, "GET");
+    checkResponse(response);
     await getInfo();
   } catch (error) {
     console.error(error);
@@ -75,15 +63,8 @@ const giveCards = async () => {
 
 const giveFlop = async () => {
   try {
-    const response = await fetch("http://localhost:5000/giveflop", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
+    const response = await sendRequest(`${BASE_URL}${GIVEFLOP}`, "GET");
+    checkResponse(response);
     const data = await response.json();
     playersStore.setFlop(data);
     sessionStorage.setItem("flop", JSON.stringify(data));
@@ -95,15 +76,10 @@ const giveFlop = async () => {
 
 const tern = async () => {
   try {
-    const response = await fetch("http://localhost:5000/tern", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response) {
-      throw new Error("WARNING");
-    }
+    const response = await sendRequest(`${BASE_URL}${TERN}`, "POST");
+    checkResponse(response);
+    const data = await response.json();
+    playersStore.setFlop(data);
     await getInfo();
   } catch (error) {
     console.error(error);
@@ -189,13 +165,6 @@ onMounted(() => {
   border-width: 15px;
   border-radius: 300px;
 }
-
-/* .flop {
-  position: absolute;
-  right: 300px;
-  top: 150px;
-}
- */
 .Player1 {
   position: absolute;
   width: 264px;
