@@ -57,6 +57,7 @@ const fold = async (name: string) => {
 };
 
 const sum = ref<number>(50);
+
 const raise = async (name: string) => {
   try {
     const body = {
@@ -121,6 +122,14 @@ const check = async (name: string) => {
     console.error(error);
   }
 };
+
+const stack = () => {
+  const stack = playersStore.players.find(
+    (player) => player.name === props.name
+  );
+  return stack?.stack;
+};
+
 const time = ref(30);
 let timer: NodeJS.Timeout | null = null;
 
@@ -149,17 +158,17 @@ onBeforeUnmount(() => {
     <div class="second-buttons">
       <div class="up_buttons">
         <div class="buttons_">
-          <button>MIN</button>
-          <button>3/4</button>
-          <button>POT</button>
-          <button>MAX</button>
+          <UiButton color="default" size="S" radius="M">MIN</UiButton>
+          <UiButton color="default" size="S" radius="M">3/4</UiButton>
+          <UiButton color="default" size="S" radius="M">POT</UiButton>
+          <UiButton color="default" size="S" radius="M">MAX</UiButton>
         </div>
         <div class="range_input_container">
           <input
             class="range_input"
             type="range"
             min="0"
-            max="1000"
+            :max="stack()"
             v-model="sum"
           />
         </div>
@@ -167,12 +176,22 @@ onBeforeUnmount(() => {
       <input class="input" type="number" v-model="sum" />
     </div>
     <div class="main-buttons">
-      <button @click="fold(props.name)" class="fold_button">FOLD</button>
-      <button @click="check(props.name)" class="check_button">CHECK</button>
-      <button @click="coll(props.name)" class="call_button">CALL</button>
-      <button @click="raise(props.name)" class="bet_button">BET</button>
+      <UiButton @click="fold(props.name)" color="fold" size="M" radius="M"
+        >FOLD</UiButton
+      >
+      <UiButton @click="check(props.name)" color="check" size="M" radius="M"
+        >CHECK</UiButton
+      >
+      <UiButton @click="coll(props.name)" color="check" size="M" radius="M"
+        >CALL</UiButton
+      >
+      <UiButton @click="raise(props.name)" color="bet" size="M" radius="M"
+        >BET</UiButton
+      >
     </div>
-    <p>Time remaining: {{ time }}</p>
+    <div class="timer">
+      <p class="text">Time: {{ time }}</p>
+    </div>
   </div>
 </template>
 
@@ -188,6 +207,7 @@ onBeforeUnmount(() => {
   left: 100px;
   top: 234px;
   bottom: 279px;
+
   .second-buttons {
     display: flex;
     gap: 10px;
@@ -239,76 +259,10 @@ onBeforeUnmount(() => {
       backdrop-filter: blur(2px);
       background: rgba(64, 82, 94, 0.24);
     }
-    button {
-      width: 61px;
-      height: 32px;
-      left: 1622px;
-      right: -1622px;
-      top: 1148px;
-      bottom: -1148px;
-      border-radius: 24px;
-      backdrop-filter: blur(2px);
-      border: none;
-      cursor: pointer;
-      background: rgba(64, 82, 94, 0.24);
-    }
   }
   .main-buttons {
     display: flex;
     gap: 8px;
-
-    .fold_button {
-      width: 104px;
-      height: 64px;
-      left: 1874px;
-      right: -1538px;
-      top: 1232px;
-      bottom: -1232px;
-      border-radius: 16px;
-      background: rgb(152, 222, 227);
-      border: none;
-      color: rgb(4, 7, 6);
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 117%;
-      letter-spacing: 1%;
-      text-align: center;
-    }
-    .check_button,
-    .call_button {
-      width: 104px;
-      height: 64px;
-      left: 1650px;
-      right: -1314px;
-      top: 1232px;
-      bottom: -1232px;
-      border-radius: 16px;
-      background: rgb(64, 82, 94);
-      border: none;
-      color: rgb(152, 222, 227);
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 132%;
-      letter-spacing: 4%;
-      text-align: center;
-    }
-    .bet_button {
-      width: 104px;
-      height: 64px;
-      left: 1874px;
-      right: -1538px;
-      top: 1232px;
-      bottom: -1232px;
-      border-radius: 16px;
-      background: rgb(152, 222, 227);
-      border: none;
-      color: rgb(4, 7, 6);
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 117%;
-      letter-spacing: 1%;
-      text-align: center;
-    }
   }
 }
 </style>

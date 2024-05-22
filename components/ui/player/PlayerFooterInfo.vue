@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { getPlayerName, getBalance, getLastBet, isFold } from "@/utils/api";
+import { getPlayerName, getBalance, getLastBet } from "@/utils/api";
+import { usePlayers } from "@/store/usePlayers";
+const playersStore = usePlayers();
 
 const props = defineProps({
   name: {
@@ -8,7 +10,12 @@ const props = defineProps({
   },
 });
 
-const fold = ref(isFold(props));
+const isFold = () => {
+  return playersStore.players.some(
+    (player) => player.name === props.name && player.fold === false
+  );
+};
+
 const balance = ref(getBalance(props));
 const lastBet = ref(getLastBet(props));
 const userName = ref(getPlayerName(props));
@@ -20,7 +27,7 @@ const userName = ref(getPlayerName(props));
     <div class="first-block">
       <div class="player-balance">{{ balance }}</div>
     </div>
-    <div class="player-footer-info" v-if="fold">
+    <div class="player-footer-info" v-if="isFold()">
       <div class="name">{{ userName }}</div>
       <div class="lastBet">{{ lastBet }} chips</div>
     </div>

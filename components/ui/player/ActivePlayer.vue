@@ -55,6 +55,7 @@ const leaveAndGetInfo = async (positon: number) => {
   }
 };
 
+
 const getValueFirstCard = () => {
   const firstCard = playersStore.players.find(
     (player) => player.name === props.name
@@ -84,6 +85,8 @@ const getSuiteSecondCard = () => {
 };
 
 const pos6 = ref(pos(props));
+
+
 </script>
 
 <template>
@@ -125,6 +128,18 @@ const pos6 = ref(pos(props));
   align-items: flex-end;
   width: 264px;
   height: 160px;
+
+  .timer {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    height: 48px;
+    left: -50px;
+    top: 120px;
+    border-radius: 80px;
+  }
 
   .card-container {
     position: absolute;

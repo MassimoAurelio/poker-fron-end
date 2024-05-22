@@ -7,7 +7,6 @@ import {
   sendRequest,
   checkResponse,
   sendRequestWithBody,
-  playerAndCurrentPlayerId,
 } from "@/utils/api";
 
 const playersStore = usePlayers();
@@ -65,7 +64,11 @@ const playerExists = () => {
   return playersStore.players.some((player) => player.name === props.name);
 };
 
-const playerAndCurrentId = ref(playerAndCurrentPlayerId(props));
+const playerAndCurrentPlayerId = () => {
+  return playersStore.players.some(
+    (player) => player.name === props.name && player.currentPlayerId === true
+  );
+};
 </script>
 
 <template>
@@ -83,7 +86,7 @@ const playerAndCurrentId = ref(playerAndCurrentPlayerId(props));
       v-else
     />
 
-    <div class="panel" v-if="playerAndCurrentId">
+    <div class="panel" v-if="playerAndCurrentPlayerId()">
       <UiPlayerPanel :name="props.name" :position="props.position" />
     </div>
   </div>
