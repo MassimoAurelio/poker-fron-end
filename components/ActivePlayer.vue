@@ -54,21 +54,6 @@ const leaveAndGetInfo = async (positon: number) => {
   }
 };
 
-const getBalance = () => {
-  const balance = playersStore.players.find(
-    (player) => player.name === props.name
-  );
-  return balance?.stack || 0;
-};
-
-const getLastBet = () => {
-  const lastBet = playersStore.players.find(
-    (player) => player.name === props.name
-  );
-
-  return lastBet?.lastBet || 0;
-};
-
 const getValueFirstCard = () => {
   const firstCard = playersStore.players.find(
     (player) => player.name === props.name
@@ -97,12 +82,6 @@ const getSuiteSecondCard = () => {
   return firstCard?.cards[1]?.suit;
 };
 
-const getUserName = () => {
-  const name = playersStore.players.find(
-    (player) => player.name === props.name
-  );
-  return name?.name || " ";
-};
 </script>
 
 <template>
@@ -123,35 +102,7 @@ const getUserName = () => {
         </div>
       </div>
     </div>
-    <div class="player-footer">
-      <div class="player-avatar"><NuxtImg src="/dealer.svg" /></div>
-      <div class="first-block">
-        <div class="player-balance">{{ getBalance() }}</div>
-      </div>
-      <div
-        class="player-footer-info"
-        v-if="
-          playersStore.players.some(
-            (player) => player.name === props.name && player.fold === false
-          )
-        "
-      >
-        <div class="name">{{ getUserName() }}</div>
-        <div class="lastBet">{{ getLastBet() }} chips</div>
-      </div>
-
-      <div
-        class="player-footer-infoFold"
-        v-if="
-          playersStore.players.some(
-            (player) => player.name === props.name && player.fold === true
-          )
-        "
-      >
-        <div class="name">{{ getUserName() }}</div>
-        <div class="lastBet">FOLD</div>
-      </div>
-    </div>
+    <UiPlayerFooterInfo :name="props.name" />
     <NuxtImg
       src="/del.svg"
       sizes="40"
@@ -248,65 +199,6 @@ const getUserName = () => {
           letter-spacing: -2%;
           text-align: center;
         }
-      }
-    }
-  }
-
-  .player-footer {
-    width: 265px;
-    height: 80px;
-    background-color: #33414bcc;
-    border-radius: 10px;
-
-    .player-footer-info {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding-left: 10px;
-      padding-right: 10px;
-    }
-
-    .player-footer-infoFold {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding-left: 10px;
-      padding-right: 10px;
-      border-radius: 1px;
-      backdrop-filter: blur(16px);
-      background: linear-gradient(
-        90deg,
-        rgb(233, 123, 136) 6.289%,
-        rgba(55, 71, 82, 0) 91.893%
-      );
-    }
-    .player-avatar {
-      position: absolute;
-      z-index: 1000;
-      top: 0;
-      margin-top: 50px;
-      width: 72px;
-      height: 72px;
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-    }
-    .first-block {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      width: 264px;
-      height: 48px;
-      border-radius: 1px;
-      backdrop-filter: blur(16px);
-      background-color: #40525ecc;
-
-      .player-balance {
-        padding-right: 10px;
       }
     }
   }
