@@ -7,6 +7,7 @@ import {
   sendRequest,
   checkResponse,
   sendRequestWithBody,
+  playerAndCurrentPlayerId,
 } from "@/utils/api";
 
 const playersStore = usePlayers();
@@ -51,13 +52,6 @@ const getInfo = async () => {
   }
 };
 
-const playerExists = () => {
-  return playersStore.players.some((player) => player.name === props.name);
-};
-const playerNotExists = () => {
-  return !playersStore.players.some((player) => player.name === props.name);
-};
-
 const joinAndGetInfo = async (position: number) => {
   try {
     await joinTable(position);
@@ -67,28 +61,29 @@ const joinAndGetInfo = async (position: number) => {
   }
 };
 
-const playerAndCurrentPlayerId = () => {
-  return playersStore.players.some(
-    (player) => player.name === props.name && player.currentPlayerId === true
-  );
+const playerExists = () => {
+  return playersStore.players.some((player) => player.name === props.name);
 };
+
+const playerAndCurrentId = ref(playerAndCurrentPlayerId(props));
 </script>
 
 <template>
   <div class="player">
-    <ActivePlayer
+    <UiPlayerActivePlayer
       :name="props.name"
       :position="props.position"
       v-if="playerExists()"
     />
 
-    <FreeSpace
+    <UiPlayerFreeSpace
       :name="props.name"
       :position="props.position"
       @click="joinAndGetInfo(position)"
-      v-if="playerNotExists()"
-    ></FreeSpace>
-    <div class="panel" v-if="playerAndCurrentPlayerId()">
+      v-else
+    />
+
+    <div class="panel" v-if="playerAndCurrentId">
       <UiPlayerPanel :name="props.name" :position="props.position" />
     </div>
   </div>

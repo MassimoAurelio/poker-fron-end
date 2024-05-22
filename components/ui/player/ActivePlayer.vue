@@ -7,6 +7,7 @@ import {
   sendRequest,
   checkResponse,
   sendRequestWithBody,
+  pos,
 } from "@/utils/api";
 
 const playersStore = usePlayers();
@@ -82,6 +83,7 @@ const getSuiteSecondCard = () => {
   return firstCard?.cards[1]?.suit;
 };
 
+const pos6 = ref(pos(props));
 </script>
 
 <template>
@@ -103,15 +105,7 @@ const getSuiteSecondCard = () => {
       </div>
     </div>
     <UiPlayerFooterInfo :name="props.name" />
-    <NuxtImg
-      src="/del.svg"
-      sizes="40"
-      v-if="
-        playersStore.players.find(
-          (player) => player.position === 6 && player.name === props.name
-        )
-      "
-    />
+    <NuxtImg src="/del.svg" sizes="40" v-if="pos6" />
     <div class="leave">
       <NuxtImg
         src="/leave.svg"

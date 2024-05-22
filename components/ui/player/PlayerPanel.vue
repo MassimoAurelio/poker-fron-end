@@ -1,6 +1,17 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
-import { BASE_URL, NEXT_PLAYER, COLL, PLAYERS, FOLD, RAISE } from "@/utils/api";
+import {
+  BASE_URL,
+  NEXT_PLAYER,
+  COLL,
+  PLAYERS,
+  FOLD,
+  RAISE,
+  CHECK,
+  sendRequest,
+  sendRequestWithBody,
+  checkResponse,
+} from "@/utils/api";
 
 const playersStore = usePlayers();
 
@@ -17,10 +28,8 @@ const props = defineProps({
 
 const getInfo = async () => {
   try {
-    const response = await fetch(`${BASE_URL}${PLAYERS}`);
-    if (!response.ok) {
-      throw new Error("Ошибка при получении данных");
-    }
+    const response = await sendRequest(`${BASE_URL}${PLAYERS}`, "GET");
+    checkResponse(response);
     const data = await response.json();
     playersStore.setPlayers(data);
   } catch (error) {
@@ -30,18 +39,16 @@ const getInfo = async () => {
 
 const fold = async (name: string) => {
   try {
-    const response = await fetch(`${BASE_URL}${FOLD}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: name,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
+    const body = {
+      name: name,
+    };
+    const response = await sendRequestWithBody(
+      `${BASE_URL}${FOLD}`,
+      "POST",
+      body
+    );
+    checkResponse(response);
+
     await userTern();
     await getInfo();
   } catch (error) {
@@ -52,19 +59,16 @@ const fold = async (name: string) => {
 const sum = ref<number>(50);
 const raise = async (name: string) => {
   try {
-    const response = await fetch(`${BASE_URL}${RAISE}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: name,
-        raiseAmount: sum.value,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
+    const body = {
+      name: name,
+      raiseAmount: sum.value,
+    };
+    const response = await sendRequestWithBody(
+      `${BASE_URL}${RAISE}`,
+      "POST",
+      body
+    );
+    checkResponse(response);
 
     await userTern();
   } catch (error) {
@@ -73,18 +77,16 @@ const raise = async (name: string) => {
 };
 const coll = async (name: string) => {
   try {
-    const response = await fetch(`${BASE_URL}${COLL}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: name,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
+    const body = {
+      name: name,
+    };
+    const response = await sendRequestWithBody(
+      `${BASE_URL}${COLL}`,
+      "POST",
+      body
+    );
+    checkResponse(response);
+
     await userTern();
   } catch (error) {
     console.log(error);
@@ -93,15 +95,8 @@ const coll = async (name: string) => {
 
 const userTern = async () => {
   try {
-    const response = await fetch(`${BASE_URL}${NEXT_PLAYER}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
+    const response = await sendRequest(`${BASE_URL}${NEXT_PLAYER}`, "POST");
+    checkResponse(response);
 
     await getInfo();
   } catch (error) {
@@ -111,18 +106,16 @@ const userTern = async () => {
 
 const check = async (name: string) => {
   try {
-    const response = await fetch("http://localhost:5000/check", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: name,
-      }),
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
+    const body = {
+      name: name,
+    };
+    const response = await sendRequestWithBody(
+      `${BASE_URL}${CHECK}`,
+      "POST",
+      body
+    );
+    checkResponse(response);
+
     await userTern();
   } catch (error) {
     console.error(error);
@@ -263,8 +256,6 @@ onBeforeUnmount(() => {
   .main-buttons {
     display: flex;
     gap: 8px;
-
-    
 
     .fold_button {
       width: 104px;

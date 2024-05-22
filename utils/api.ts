@@ -13,6 +13,7 @@ export const MBBB = "mbbb";
 export const DEAL = "deal";
 export const GIVEFLOP = "giveflop";
 export const TERN = "tern";
+export const CHECK = "check";
 
 // Функция для отправки запроса
 export const sendRequest = async (url: string, method: string) => {
@@ -105,3 +106,30 @@ export function getSecondCard(props: { name: string }) {
   };
   return secondCard;
 }
+
+export function isFold(props: { name: string }) {
+  const playersStore = usePlayers();
+  return playersStore.players.some(
+    (player) => player.name === props.name && player.fold === false
+  );
+}
+
+export function pos(props: { name: string }) {
+  const playersStore = usePlayers();
+  return playersStore.players.find(
+    (player) => player.position === 6 && player.name === props.name
+  );
+}
+
+export function playerAndCurrentPlayerId(props: { name: string }) {
+  const playersStore = usePlayers();
+  return playersStore.players.some(
+    (player) => player.name === props.name && player.currentPlayerId === true
+  );
+}
+
+export function playerExists(props: { name: string }) {
+  const playersStore = usePlayers();
+  return playersStore.players.some((player) => player.name === props.name);
+}
+
