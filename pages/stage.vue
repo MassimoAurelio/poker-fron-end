@@ -9,6 +9,7 @@ import {
   DEAL,
   GIVEFLOP,
   TERN,
+  RIVER,
   sendRequest,
   checkResponse,
 } from "@/utils/api";
@@ -97,6 +98,17 @@ const tern = async () => {
   }
 };
 
+const river = async ()=>{
+  try {
+    const response = await sendRequest(`${BASE_URL}${RIVER}`, "POST");
+    checkResponse(response);
+    const data = await response.json();
+    playersStore.setFlop(data);
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 onMounted(() => {
   const token = localStorage.getItem("token");
@@ -126,6 +138,7 @@ onMounted(() => {
   <button @click="giveCards">Give Card</button>
   <button @click="giveFlop">Give Flop</button>
   <button @click="tern">Tern</button>
+  <button @click="river">River</button>
 
   <div class="main-container">
     <div class="table">

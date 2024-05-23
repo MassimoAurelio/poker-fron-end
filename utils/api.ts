@@ -13,6 +13,7 @@ export const MBBB = "mbbb";
 export const DEAL = "deal";
 export const GIVEFLOP = "giveflop";
 export const TERN = "tern";
+export const RIVER = "river";
 export const CHECK = "check";
 
 // Функция для отправки запроса
