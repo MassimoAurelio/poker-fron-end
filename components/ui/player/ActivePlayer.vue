@@ -55,7 +55,6 @@ const leaveAndGetInfo = async (positon: number) => {
   }
 };
 
-
 const getValueFirstCard = () => {
   const firstCard = playersStore.players.find(
     (player) => player.name === props.name
@@ -85,8 +84,6 @@ const getSuiteSecondCard = () => {
 };
 
 const pos6 = ref(pos(props));
-
-
 </script>
 
 <template>

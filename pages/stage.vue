@@ -20,6 +20,17 @@ useSeoMeta({
   title: "POKER STAGE",
 });
 
+const props = defineProps({
+  name: {
+    type: String,
+    required: true,
+  },
+  position: {
+    type: Number,
+    required: true,
+  },
+});
+
 const getInfo = async () => {
   try {
     const response = await sendRequest(`${BASE_URL}${PLAYERS}`, "GET");
@@ -86,6 +97,7 @@ const tern = async () => {
   }
 };
 
+
 onMounted(() => {
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
@@ -98,6 +110,14 @@ onMounted(() => {
     playersStore.setFlop(JSON.parse(savedFlop));
   }
   getInfo();
+  watch(
+    () => playersStore.players.length,
+    (newLength) => {
+      if (newLength === 6) {
+        giveCards();
+      }
+    }
+  );
 });
 </script>
 
