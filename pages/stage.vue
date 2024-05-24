@@ -56,7 +56,7 @@ const updatepos = async () => {
 
 const mbbb = async () => {
   try {
-    const response = await sendRequest(`${BASE_URL}${MBBB}`, "GET");
+    const response = await sendRequest(`${BASE_URL}${MBBB}`, "POST");
     checkResponse(response);
   } catch (error) {
     console.error(error);
@@ -110,26 +110,44 @@ const river = async () => {
   }
 };
 
-/* function maxBet(){
-  const maxBet = playersStore.players.find((player)=>player.lastBet)
-}
- */
-const checkPreFlopCondition = () => {
-  const preFlopPlayers = playersStore.players.filter(
-    (player) => !player.fold && player.roundStage === "preflop"
-  );
-
-  if (preFlopPlayers.length === 0) {
-    return;
+const endPreflop = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}endpreflop`, "POST");
+    checkResponse(response);
+    await getInfo();
+  } catch (error) {
+    console.error(error);
   }
+};
 
-/*   const allHaveMaxBet = preFlopPlayers.every(
-    (player) => player.lastBet === maxBet.lastBet
-  );
- */
-  /* if (allHaveMaxBet) {
-    giveFlop();
-  } */
+const endflop = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}endflop`, "POST");
+    checkResponse(response);
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const endtern = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}endtern`, "POST");
+    checkResponse(response);
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const endriver = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}endriver`, "POST");
+    checkResponse(response);
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 onMounted(() => {
@@ -144,20 +162,22 @@ onMounted(() => {
     playersStore.setFlop(JSON.parse(savedFlop));
   }
   getInfo();
+
   watch(
     () => playersStore.players.length,
     (newLength) => {
-      if (newLength === 6) {
-        giveCards();
-      }
+      if (newLength === 6) giveCards();
     }
   );
 });
-watchEffect(checkPreFlopCondition);
 </script>
 
 <template>
-  <button @click="updatepos">NEXT ROUND</button>
+  <button @click="updatepos">UPDATE POS</button>
+  <button @click="endPreflop">End preFlop</button>
+  <button @click="endflop">End Flop</button>
+  <button @click="endtern">End Tern</button>
+  <button @click="endriver">End River</button>
   <button @click="giveCards">Give Card</button>
   <button @click="giveFlop">Give Flop</button>
   <button @click="tern">Tern</button>

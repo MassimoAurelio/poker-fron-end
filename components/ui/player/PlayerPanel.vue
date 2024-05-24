@@ -130,7 +130,7 @@ const stack = () => {
   return stack?.stack;
 };
 
-const time = ref(30);
+/* const time = ref(30);
 let timer: NodeJS.Timeout | null = null;
 
 const tick = () => {
@@ -150,7 +150,7 @@ onBeforeUnmount(() => {
   if (timer) {
     clearInterval(timer);
   }
-});
+}); */
 </script>
 
 <template>
@@ -190,7 +190,7 @@ onBeforeUnmount(() => {
       >
     </div>
     <div class="timer">
-      <p class="text">Time: {{ time }}</p>
+      <!-- <p class="text">Time: {{ time }}</p> -->
     </div>
   </div>
 </template>

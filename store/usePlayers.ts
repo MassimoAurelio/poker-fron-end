@@ -9,6 +9,10 @@ interface IPlayers {
   name: string;
   position: number;
   currentPlayerId: boolean;
+  preflopEnd: boolean;
+  flopEnd: boolean;
+  ternEnd: boolean;
+  riverEnd: boolean;
   stack: number;
   icon: string;
   fold: boolean;

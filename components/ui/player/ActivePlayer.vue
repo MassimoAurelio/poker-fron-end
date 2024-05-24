@@ -28,13 +28,16 @@ const leaveFromTable = async (position: number) => {
     const body = {
       position: position,
     };
-    const response = sendRequestWithBody(`${BASE_URL}${LEAVE}`, "POST", body);
+    const response = await sendRequestWithBody(
+      `${BASE_URL}${LEAVE}`,
+      "POST",
+      body
+    );
     checkResponse(response);
   } catch (error) {
     console.error(error);
   }
 };
-
 const getInfo = async () => {
   try {
     const response = await sendRequest(`${BASE_URL}${PLAYERS}`, "GET");
