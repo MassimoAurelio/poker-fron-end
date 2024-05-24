@@ -13,6 +13,7 @@ interface IPlayers {
   icon: string;
   fold: boolean;
   lastBet: number;
+  roundStage: string;
   cards: ICard[];
 }
 interface IFlop {

@@ -98,7 +98,7 @@ const tern = async () => {
   }
 };
 
-const river = async ()=>{
+const river = async () => {
   try {
     const response = await sendRequest(`${BASE_URL}${RIVER}`, "POST");
     checkResponse(response);
@@ -108,7 +108,29 @@ const river = async ()=>{
   } catch (error) {
     console.error(error);
   }
+};
+
+/* function maxBet(){
+  const maxBet = playersStore.players.find((player)=>player.lastBet)
 }
+ */
+const checkPreFlopCondition = () => {
+  const preFlopPlayers = playersStore.players.filter(
+    (player) => !player.fold && player.roundStage === "preflop"
+  );
+
+  if (preFlopPlayers.length === 0) {
+    return;
+  }
+
+/*   const allHaveMaxBet = preFlopPlayers.every(
+    (player) => player.lastBet === maxBet.lastBet
+  );
+ */
+  /* if (allHaveMaxBet) {
+    giveFlop();
+  } */
+};
 
 onMounted(() => {
   const token = localStorage.getItem("token");
@@ -131,6 +153,7 @@ onMounted(() => {
     }
   );
 });
+watchEffect(checkPreFlopCondition);
 </script>
 
 <template>
