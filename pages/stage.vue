@@ -13,23 +13,14 @@ import {
   sendRequest,
   checkResponse,
 } from "@/utils/api";
+import NewPlayer from "~/components/NewPlayer.vue";
 
 const playersStore = usePlayers();
 const authStore = useAuthStore();
+const flopGiven = ref(false);
 
 useSeoMeta({
   title: "POKER STAGE",
-});
-
-const props = defineProps({
-  name: {
-    type: String,
-    required: true,
-  },
-  position: {
-    type: Number,
-    required: true,
-  },
 });
 
 const getInfo = async () => {
@@ -80,6 +71,7 @@ const giveFlop = async () => {
     const data = await response.json();
     playersStore.setFlop(data);
     sessionStorage.setItem("flop", JSON.stringify(data));
+    flopGiven.value = true;
     await getInfo();
   } catch (error) {
     console.error(error);
@@ -169,6 +161,19 @@ onMounted(() => {
       if (newLength === 6) giveCards();
     }
   );
+  watchEffect(() => {
+    const playerInPosition2 = playersStore.players.find(
+      (player) => player.position === 2
+    );
+    if (
+      playerInPosition2 &&
+      playerInPosition2?.fold === true &&
+      playerInPosition2?.preflopEnd === false &&
+      !flopGiven.value
+    ) {
+      giveFlop();
+    }
+  });
 });
 </script>
 
