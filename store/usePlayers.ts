@@ -29,6 +29,8 @@ export const usePlayers = defineStore({
   state: () => ({
     players: [] as IPlayers[],
     flop: {} as IFlop,
+    cards: {} as IFlop,
+    flopGiven: false,
   }),
 
   actions: {
@@ -37,6 +39,12 @@ export const usePlayers = defineStore({
     },
     setFlop(flop: IFlop) {
       this.flop = flop;
+    },
+    setCards(cards: IFlop) {
+      this.cards = cards;
+    },
+    markFlopGiven() {
+      this.flopGiven = true;
     },
   },
 });

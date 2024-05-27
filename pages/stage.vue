@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { usePlayers } from "~/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
+import { io } from "socket.io-client";
 import {
   BASE_URL,
   UPDATEPOSITION,
@@ -17,7 +18,20 @@ import NewPlayer from "~/components/NewPlayer.vue";
 
 const playersStore = usePlayers();
 const authStore = useAuthStore();
-const flopGiven = ref(false);
+const socketUrl = "http://localhost:5000";
+const socket = io(socketUrl);
+
+// Слушаем событие deal от сервера
+socket.on("deal", (data) => {
+  console.log("Карты успешно разданы", data);
+  // Здесь вы можете обновить состояние вашего приложения, например:
+  playersStore.setCards(data.playerCards);
+  // Если необходимо, обновите другие части состояния, связанные с раздачей карт
+});
+
+socket.on("playerAction", () => {
+  console.log("Привет");
+});
 
 useSeoMeta({
   title: "POKER STAGE",
@@ -58,6 +72,9 @@ const giveCards = async () => {
   try {
     const response = await sendRequest(`${BASE_URL}${DEAL}`, "GET");
     checkResponse(response);
+    const data = await response.json();
+    playersStore.setCards(data);
+    sessionStorage.setItem("cardsDealt", "true");
     await getInfo();
   } catch (error) {
     console.error(error);
@@ -71,7 +88,7 @@ const giveFlop = async () => {
     const data = await response.json();
     playersStore.setFlop(data);
     sessionStorage.setItem("flop", JSON.stringify(data));
-    flopGiven.value = true;
+
     await getInfo();
   } catch (error) {
     console.error(error);
@@ -143,6 +160,7 @@ const endriver = async () => {
 };
 
 onMounted(() => {
+  getInfo();
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
   if (token && username) {
@@ -153,27 +171,17 @@ onMounted(() => {
   if (savedFlop) {
     playersStore.setFlop(JSON.parse(savedFlop));
   }
-  getInfo();
 
-  watch(
+  const cardsDealt = sessionStorage.getItem("cardsDealt");
+
+ /*  watch(
     () => playersStore.players.length,
     (newLength) => {
-      if (newLength === 6) giveCards();
+      if (newLength === 6 && !cardsDealt) {
+        giveCards();
+      }
     }
-  );
-  watchEffect(() => {
-    const playerInPosition2 = playersStore.players.find(
-      (player) => player.position === 2
-    );
-    if (
-      playerInPosition2 &&
-      playerInPosition2?.fold === true &&
-      playerInPosition2?.preflopEnd === false &&
-      !flopGiven.value
-    ) {
-      giveFlop();
-    }
-  });
+  ); */
 });
 </script>
 
