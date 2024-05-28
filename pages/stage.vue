@@ -18,20 +18,6 @@ import NewPlayer from "~/components/NewPlayer.vue";
 
 const playersStore = usePlayers();
 const authStore = useAuthStore();
-const socketUrl = "http://localhost:5000";
-const socket = io(socketUrl);
-
-// Слушаем событие deal от сервера
-socket.on("deal", (data) => {
-  console.log("Карты успешно разданы", data);
-  // Здесь вы можете обновить состояние вашего приложения, например:
-  playersStore.setCards(data.playerCards);
-  // Если необходимо, обновите другие части состояния, связанные с раздачей карт
-});
-
-socket.on("playerAction", () => {
-  console.log("Привет");
-});
 
 useSeoMeta({
   title: "POKER STAGE",
@@ -159,6 +145,10 @@ const endriver = async () => {
   }
 };
 
+const userName = computed(() =>
+  typeof window !== "undefined" ? localStorage.getItem("username") ?? "" : ""
+);
+
 onMounted(() => {
   getInfo();
   const token = localStorage.getItem("token");
@@ -171,17 +161,6 @@ onMounted(() => {
   if (savedFlop) {
     playersStore.setFlop(JSON.parse(savedFlop));
   }
-
-  const cardsDealt = sessionStorage.getItem("cardsDealt");
-
- /*  watch(
-    () => playersStore.players.length,
-    (newLength) => {
-      if (newLength === 6 && !cardsDealt) {
-        giveCards();
-      }
-    }
-  ); */
 });
 </script>
 

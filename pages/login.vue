@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/store/auth";
+import { useRouter } from "vue-router";
 
 useSeoMeta({
   title: "LOGIN PAGE",
@@ -29,9 +30,9 @@ const login = async (username: string, password: string) => {
       throw new Error("Ошибка при выполнении запроса");
     }
     const data = await response.json();
+    console.log("Server response:", data);
     if (data.token) {
       authStore.login(data.token, { username: data.user.username });
-      localStorage.setItem("token", data.token);
       router.push("/");
     } else {
       throw new Error("Аутентификация не удалась");
@@ -41,13 +42,6 @@ const login = async (username: string, password: string) => {
   }
 };
 
-onMounted(() => {
-  const token = localStorage.getItem("token");
-  const username = localStorage.getItem("username");
-  if (token && username) {
-    authStore.login(token, { username: username });
-  }
-});
 </script>
 
 <template>

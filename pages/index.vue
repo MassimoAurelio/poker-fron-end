@@ -10,6 +10,10 @@ useSeoMeta({
 
 const authStore = useAuthStore();
 const router = useRouter();
+const route = useRoute();
+
+console.log(route.params);
+
 const authField = {
   name: "",
   password: "",

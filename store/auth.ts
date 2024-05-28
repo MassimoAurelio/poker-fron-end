@@ -23,6 +23,9 @@ export const useAuthStore = defineStore("auth", {
       localStorage.setItem("token", token);
       localStorage.setItem("username", user.username);
     },
+    getUsername() {
+      return this.user?.username ?? "";
+    },
 
     logout() {
       this.isAuthenticated = false;
@@ -31,9 +34,7 @@ export const useAuthStore = defineStore("auth", {
       localStorage.removeItem("token");
       localStorage.removeItem("username");
     },
-    getUsername() {
-      return this.user;
-    },
+
     getToken() {
       return this.token;
     },

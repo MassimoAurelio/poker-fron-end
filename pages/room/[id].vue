@@ -1,22 +1,44 @@
 <script setup lang="ts">
 import { usePlayers } from "~/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
+import { io } from "socket.io-client";
+import {
+  BASE_URL,
+  UPDATEPOSITION,
+  PLAYERS,
+  MBBB,
+  DEAL,
+  GIVEFLOP,
+  TERN,
+  RIVER,
+  sendRequest,
+  checkResponse,
+} from "@/utils/api";
+import NewPlayer from "~/components/NewPlayer.vue";
 
-const route = useRoute();
-const authStore = useAuthStore();
 const playersStore = usePlayers();
-const username = computed(() => authStore.getUsername()?.username);
+const authStore = useAuthStore();
+const socketUrl = "http://localhost:5000";
+const socket = io(socketUrl);
+
+// Слушаем событие deal от сервера
+socket.on("deal", (data) => {
+  console.log("Карты успешно разданы", data);
+  playersStore.setCards(data.playerCards);
+});
+
+socket.on("playerAction", () => {
+  console.log("Привет");
+});
 
 useSeoMeta({
-  title: `Комната ${route.params.id}`,
+  title: "POKER STAGE",
 });
 
 const getInfo = async () => {
   try {
-    const response = await fetch("http://localhost:5000/players");
-    if (!response.ok) {
-      throw new Error("Ошибка при получении данных");
-    }
+    const response = await sendRequest(`${BASE_URL}${PLAYERS}`, "GET");
+    checkResponse(response);
     const data = await response.json();
     playersStore.setPlayers(data);
   } catch (error) {
@@ -26,15 +48,8 @@ const getInfo = async () => {
 
 const updatepos = async () => {
   try {
-    const response = await fetch("http://localhost:5000/updatepos", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
+    const response = await sendRequest(`${BASE_URL}${UPDATEPOSITION}`, "POST");
+    checkResponse(response);
     await mbbb();
     await getInfo();
   } catch (error) {
@@ -44,15 +59,8 @@ const updatepos = async () => {
 
 const mbbb = async () => {
   try {
-    const response = await fetch("http://localhost:5000/mbbb", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
+    const response = await sendRequest(`${BASE_URL}${MBBB}`, "POST");
+    checkResponse(response);
   } catch (error) {
     console.error(error);
   }
@@ -60,15 +68,89 @@ const mbbb = async () => {
 
 const giveCards = async () => {
   try {
-    const response = await fetch("http://localhost:5000/deal", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
+    const response = await sendRequest(`${BASE_URL}${DEAL}`, "GET");
+    checkResponse(response);
+    const data = await response.json();
+    playersStore.setCards(data);
+    sessionStorage.setItem("cardsDealt", "true");
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const giveFlop = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}${GIVEFLOP}`, "GET");
+    checkResponse(response);
+    const data = await response.json();
+    playersStore.setFlop(data);
+    sessionStorage.setItem("flop", JSON.stringify(data));
+
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const tern = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}${TERN}`, "POST");
+    checkResponse(response);
+    const data = await response.json();
+    playersStore.setFlop(data);
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const river = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}${RIVER}`, "POST");
+    checkResponse(response);
+    const data = await response.json();
+    playersStore.setFlop(data);
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const endPreflop = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}endpreflop`, "POST");
+    checkResponse(response);
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const endflop = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}endflop`, "POST");
+    checkResponse(response);
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const endtern = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}endtern`, "POST");
+    checkResponse(response);
+    await getInfo();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const endriver = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}endriver`, "POST");
+    checkResponse(response);
     await getInfo();
   } catch (error) {
     console.error(error);
@@ -76,45 +158,52 @@ const giveCards = async () => {
 };
 
 onMounted(() => {
+  getInfo();
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
   if (token && username) {
     authStore.login(token, { username: username });
   }
-  getInfo()
+
+  const savedFlop = sessionStorage.getItem("flop");
+  if (savedFlop) {
+    playersStore.setFlop(JSON.parse(savedFlop));
+  }
+
+  const cardsDealt = sessionStorage.getItem("cardsDealt");
+
+  /*  watch(
+    () => playersStore.players.length,
+    (newLength) => {
+      if (newLength === 6 && !cardsDealt) {
+        giveCards();
+      }
+    }
+  ); */
 });
 </script>
 
 <template>
-  <div class="info-container">
-    <h1 v-if="playersStore.players.length === 0">Стол пуст</h1>
-    <h1 v-else>За столом сидят</h1>
-
-    <div
-      class="table-info"
-      v-for="item in playersStore.players"
-      :key="item.position"
-    >
-      <p>{{ item?.name }},</p>
-      <p>Stack: {{ item.stack }},</p>
-      <p>Position{{ item.position }},</p>
-    </div>
-  </div>
-
-  <button @click="updatepos">NEXT ROUND</button>
+  <button @click="updatepos">UPDATE POS</button>
+  <button @click="endPreflop">End preFlop</button>
+  <button @click="endflop">End Flop</button>
+  <button @click="endtern">End Tern</button>
+  <button @click="endriver">End River</button>
   <button @click="giveCards">Give Card</button>
+  <button @click="giveFlop">Give Flop</button>
+  <button @click="tern">Tern</button>
+  <button @click="river">River</button>
 
   <div class="main-container">
     <div class="table">
-      <div class="first">
-        <Player :name="username || ''" :position="1" />
-        <Player :name="username || ''" :position="2" />
-        <Player :name="username || ''" :position="3" />
-      </div>
-      <div class="second">
-        <Player :name="username || ''" :position="4" />
-        <Player :name="username || ''" :position="5" />
-        <Player :name="username || ''" :position="6" />
+      <NewPlayer name="Player 1" :position="1" class="Player1" />
+      <NewPlayer name="Player 2" :position="2" class="Player2" />
+      <NewPlayer name="Player 3" :position="3" class="Player3" />
+      <NewPlayer name="Player 4" :position="4" class="Player4" />
+      <NewPlayer name="Player 5" :position="5" class="Player5" />
+      <NewPlayer name="Player 6" :position="6" class="Player6" />
+      <div class="flop">
+        <UiFlop v-if="playersStore.players.length > 0" />
       </div>
     </div>
   </div>
@@ -132,100 +221,83 @@ onMounted(() => {
 }
 
 .main-container {
-  padding: 20%;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 25px;
+  width: 1500px;
+  height: 1200px;
+  border: 1px solid rgb(255, 255, 255);
+  border-radius: 33px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  background: url(),
+    radial-gradient(76% 100% at 50% 0%, rgb(54, 68, 78), rgb(16, 25, 30) 100%);
+}
 
-  .table {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 150px;
-    width: 500px;
-    height: 250px;
-    background-color: rgb(35, 110, 54);
+.table {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 1108px;
+  height: 500px;
+  background: radial-gradient(
+      55% 100% at 50% 0%,
+      rgba(47, 60, 69, 0),
+      rgba(7, 12, 15, 0.48) 100%
+    ),
+    rgba(52, 66, 77, 0.56);
+  opacity: 0.88;
+  border: solid black;
+  border-width: 15px;
+  border-radius: 300px;
+}
+.Player1 {
+  position: absolute;
+  width: 264px;
+  height: 144px;
+  left: -100px;
+  top: -100px;
+}
 
-    border: solid black;
-    border-width: 15px;
-    border-radius: 90px;
+.Player2 {
+  position: absolute;
+  width: 264px;
+  height: 144px;
+  left: 400px;
+  top: -170px;
+}
 
-    .table-position {
-      width: 25px;
-      height: 25px;
-      text-align: center;
-      line-height: 50px;
-      z-index: 1;
-    }
+.Player3 {
+  position: absolute;
+  width: 264px;
+  height: 144px;
+  left: 900px;
+  top: -100px;
+  right: 336px;
+}
 
-    .first {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 470px;
-      gap: 35px;
+.Player4 {
+  position: absolute;
+  width: 264px;
+  height: 144px;
+  left: 900px;
+  top: 350px;
+}
 
-      .player {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+.Player5 {
+  position: absolute;
+  width: 264px;
+  height: 144px;
+  left: 400px;
+  top: 400px;
+}
 
-        .cards {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          .first_card {
-            display: flex;
-          }
-          .second_card {
-            display: flex;
-          }
-        }
-
-        .buttons {
-          display: grid;
-          grid-template-columns: 2fr 2fr;
-          max-width: 50px;
-
-          .input {
-            display: flex;
-            max-width: 10px;
-          }
-        }
-      }
-    }
-    .second {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 470px;
-      gap: 35px;
-      flex-direction: row-reverse;
-
-      .player {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        .cards {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        .buttons {
-          display: grid;
-          grid-template-columns: 2fr 2fr;
-          max-width: 50px;
-
-          .input {
-            display: flex;
-            max-width: 10px;
-          }
-        }
-      }
-    }
-  }
+.Player6 {
+  position: absolute;
+  width: 264px;
+  height: 144px;
+  left: -100px;
+  top: 350px;
 }
 </style>

@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
+import { useAuthStore } from "@/store/auth";
 import {
   BASE_URL,
   JOIN,
-  PLAYERS,
-  sendRequest,
   checkResponse,
   sendRequestWithBody,
 } from "@/utils/api";
 
 const playersStore = usePlayers();
-
+const authUser = useAuthStore();
 const props = defineProps({
   name: {
     type: String,
@@ -40,28 +39,18 @@ const joinTable = async (position: number) => {
   }
 };
 
-const getInfo = async () => {
-  try {
-    const response = await sendRequest(`${BASE_URL}${PLAYERS}`, "GET");
-    checkResponse(response);
-    const data = await response.json();
-    playersStore.setPlayers(data);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
 const joinAndGetInfo = async (position: number) => {
   try {
     await joinTable(position);
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
 };
 
 const playerExists = () => {
-  return playersStore.players.some((player) => player.name === props.name);
+  return playersStore.players.some(
+    (player) => player.name === props.name && player.position === props.position
+  );
 };
 
 const playerAndCurrentPlayerId = () => {

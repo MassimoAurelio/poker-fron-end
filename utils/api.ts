@@ -1,4 +1,5 @@
 import { usePlayers } from "@/store/usePlayers";
+import { useAuthStore } from "@/store/auth";
 
 export const BASE_URL = "http://localhost:5000/";
 export const NEXT_PLAYER = "nextplayer";
@@ -133,4 +134,3 @@ export function playerExists(props: { name: string }) {
   const playersStore = usePlayers();
   return playersStore.players.some((player) => player.name === props.name);
 }
-
