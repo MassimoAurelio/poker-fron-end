@@ -11,30 +11,9 @@ const socket = io("http://localhost:5000");
 const playersStore = usePlayers();
 const authStore = useAuthStore();
 
-async function fetchPlayers() {
-  try {
-    socket.emit("getPlayers");
-    socket.on("playersData", (receivedPlayers) => {
-      playersStore.setPlayers(receivedPlayers);
-    });
-  } catch (error) {
-    console.error("Error sending request:", error);
-  }
-}
-
-const props = defineProps({
-  name: {
-    type: String,
-    required: true,
-  },
-  position: {
-    type: Number,
-    required: true,
-  },
-});
-
-const username = authStore.getUsername();
-console.log(`НИКНЕЙМ! ${username}`);
+const username = () => {
+  return localStorage.getItem("username") ?? "";
+};
 
 const joinTable = async (nickname: string, position: number) => {
   try {
@@ -54,18 +33,60 @@ const joinTable = async (nickname: string, position: number) => {
   }
 };
 
-fetchPlayers();
+let intervalId: unknown;
+
+async function fetchPlayers() {
+  try {
+    socket.emit("getPlayers");
+    socket.on("playersData", (receivedPlayers) => {
+      playersStore.setPlayers(receivedPlayers);
+    });
+  } catch (error) {
+    console.error("Error sending request:", error);
+  }
+}
+
+function startFetchingPlayers() {
+  intervalId = window.setInterval(fetchPlayers, 2000);
+}
+
+function stopFetchingPlayers() {
+  if (typeof intervalId === "number") {
+    clearInterval(intervalId);
+  }
+}
+
+onMounted(() => {
+  startFetchingPlayers();
+  const token = localStorage.getItem("token");
+  const username = localStorage.getItem("username");
+  if (token && username) {
+    authStore.login(token, { username: username });
+  }
+
+  const savedFlop = sessionStorage.getItem("flop");
+  if (savedFlop) {
+    playersStore.setFlop(JSON.parse(savedFlop));
+  }
+});
+onUnmounted(stopFetchingPlayers);
 </script>
 
 <template>
   <div class="main-container">
     <div class="table">
-      <UiPlayerFreeSpace @click="joinTable(username, 1)" />
-      <UiPlayerFreeSpace @click="joinTable(username, 2)" />
-      <UiPlayerFreeSpace @click="joinTable(username, 3)" />
-
+      <UiPlayerFreeSpace @click="joinTable(username(), 1)" class="Player1" />
+      <UiPlayerFreeSpace @click="joinTable(username(), 2)" class="Player2" />
+      <UiPlayerFreeSpace @click="joinTable(username(), 3)" class="Player3" />
+      <UiPlayerFreeSpace @click="joinTable(username(), 4)" class="Player4" />
+      <UiPlayerFreeSpace @click="joinTable(username(), 5)" class="Player5" />
+      <UiPlayerFreeSpace @click="joinTable(username(), 6)" class="Player6" />
       <div v-for="item in playersStore.players" :key="item.id">
-        <NewPlayer :name="item.name" :position="item.position" />
+        <NewPlayer
+          :name="item.name"
+          :position="item.position"
+          :class="`Player${item.position}`"
+        />
       </div>
     </div>
   </div>

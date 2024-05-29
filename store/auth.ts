@@ -23,8 +23,8 @@ export const useAuthStore = defineStore("auth", {
       localStorage.setItem("token", token);
       localStorage.setItem("username", user.username);
     },
-    getUsername() {
-      return this.user?.username ?? "";
+    getStoredUsername() {
+      return localStorage.getItem("username") || "";
     },
 
     logout() {

@@ -145,10 +145,6 @@ const endriver = async () => {
   }
 };
 
-const userName = computed(() =>
-  typeof window !== "undefined" ? localStorage.getItem("username") ?? "" : ""
-);
-
 onMounted(() => {
   getInfo();
   const token = localStorage.getItem("token");
