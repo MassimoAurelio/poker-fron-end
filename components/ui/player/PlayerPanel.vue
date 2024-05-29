@@ -4,7 +4,6 @@ import {
   BASE_URL,
   NEXT_PLAYER,
   COLL,
-  PLAYERS,
   FOLD,
   RAISE,
   CHECK,
@@ -26,17 +25,6 @@ const props = defineProps({
   },
 });
 
-const getInfo = async () => {
-  try {
-    const response = await sendRequest(`${BASE_URL}${PLAYERS}`, "GET");
-    checkResponse(response);
-    const data = await response.json();
-    playersStore.setPlayers(data);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
 const fold = async (name: string) => {
   try {
     const body = {
@@ -50,7 +38,6 @@ const fold = async (name: string) => {
     checkResponse(response);
 
     await userTern();
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
@@ -98,8 +85,6 @@ const userTern = async () => {
   try {
     const response = await sendRequest(`${BASE_URL}${NEXT_PLAYER}`, "POST");
     checkResponse(response);
-
-    await getInfo();
   } catch (error) {
     console.error(error);
   }

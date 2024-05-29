@@ -9,7 +9,6 @@ import {
 } from "@/utils/api";
 
 const playersStore = usePlayers();
-const authUser = useAuthStore();
 const props = defineProps({
   name: {
     type: String,

@@ -5,10 +5,8 @@ import { io } from "socket.io-client";
 import {
   BASE_URL,
   UPDATEPOSITION,
-  PLAYERS,
   MBBB,
   DEAL,
-  GIVEFLOP,
   TERN,
   RIVER,
   sendRequest,
@@ -18,28 +16,17 @@ import NewPlayer from "~/components/NewPlayer.vue";
 
 const playersStore = usePlayers();
 const authStore = useAuthStore();
+const socket = io("http://localhost:5000");
 
 useSeoMeta({
   title: "POKER STAGE",
 });
-
-const getInfo = async () => {
-  try {
-    const response = await sendRequest(`${BASE_URL}${PLAYERS}`, "GET");
-    checkResponse(response);
-    const data = await response.json();
-    playersStore.setPlayers(data);
-  } catch (error) {
-    console.error(error);
-  }
-};
 
 const updatepos = async () => {
   try {
     const response = await sendRequest(`${BASE_URL}${UPDATEPOSITION}`, "POST");
     checkResponse(response);
     await mbbb();
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
@@ -61,7 +48,6 @@ const giveCards = async () => {
     const data = await response.json();
     playersStore.setCards(data);
     sessionStorage.setItem("cardsDealt", "true");
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
@@ -69,13 +55,11 @@ const giveCards = async () => {
 
 const giveFlop = async () => {
   try {
-    const response = await sendRequest(`${BASE_URL}${GIVEFLOP}`, "GET");
+    const response = await sendRequest("http://localhost:5000/giveflop", "GET");
     checkResponse(response);
     const data = await response.json();
     playersStore.setFlop(data);
     sessionStorage.setItem("flop", JSON.stringify(data));
-
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
@@ -87,7 +71,6 @@ const tern = async () => {
     checkResponse(response);
     const data = await response.json();
     playersStore.setFlop(data);
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
@@ -99,7 +82,6 @@ const river = async () => {
     checkResponse(response);
     const data = await response.json();
     playersStore.setFlop(data);
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
@@ -109,7 +91,6 @@ const endPreflop = async () => {
   try {
     const response = await sendRequest(`${BASE_URL}endpreflop`, "POST");
     checkResponse(response);
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
@@ -119,7 +100,6 @@ const endflop = async () => {
   try {
     const response = await sendRequest(`${BASE_URL}endflop`, "POST");
     checkResponse(response);
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
@@ -129,7 +109,6 @@ const endtern = async () => {
   try {
     const response = await sendRequest(`${BASE_URL}endtern`, "POST");
     checkResponse(response);
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
@@ -139,14 +118,50 @@ const endriver = async () => {
   try {
     const response = await sendRequest(`${BASE_URL}endriver`, "POST");
     checkResponse(response);
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
 };
 
+let intervalId: unknown;
+
+async function fetchPlayers() {
+  try {
+    socket.emit("getPlayers");
+    socket.on("playersData", (receivedPlayers) => {
+      playersStore.setPlayers(receivedPlayers);
+    });
+  } catch (error) {
+    console.error("Error sending request:", error);
+  }
+}
+
+function startFetchingPlayers() {
+  intervalId = window.setInterval(fetchPlayers, 1000);
+}
+
+function stopFetchingPlayers() {
+  if (typeof intervalId === "number") {
+    clearInterval(intervalId);
+  }
+}
+
+const foo = () => {
+  const activePlayers = playersStore.players.filter(
+    (player) => player.fold === false
+  );
+  const maxBet = activePlayers.reduce((maxSum, currentPlayer) =>
+    maxSum.lastBet > currentPlayer.lastBet ? maxSum : currentPlayer
+  );
+  const allSameMaxBet = activePlayers.every(
+    (player) => player.lastBet === maxBet.lastBet
+  );
+
+  return allSameMaxBet;
+};
+
 onMounted(() => {
-  getInfo();
+  startFetchingPlayers();
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
   if (token && username) {
@@ -157,7 +172,21 @@ onMounted(() => {
   if (savedFlop) {
     playersStore.setFlop(JSON.parse(savedFlop));
   }
+
+  watch(
+    () => playersStore.players.length,
+    (newLength) => {
+      if (newLength === 6) giveCards();
+    }
+  );
+  watch(
+    () => foo(),
+    (newPlayer) => {
+      if (newPlayer) giveFlop();
+    }
+  );
 });
+onUnmounted(stopFetchingPlayers);
 </script>
 
 <template>

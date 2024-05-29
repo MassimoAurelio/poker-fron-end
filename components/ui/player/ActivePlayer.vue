@@ -2,9 +2,7 @@
 import { usePlayers } from "@/store/usePlayers";
 import {
   BASE_URL,
-  PLAYERS,
   LEAVE,
-  sendRequest,
   checkResponse,
   sendRequestWithBody,
   pos,
@@ -38,21 +36,11 @@ const leaveFromTable = async (position: number) => {
     console.error(error);
   }
 };
-const getInfo = async () => {
-  try {
-    const response = await sendRequest(`${BASE_URL}${PLAYERS}`, "GET");
-    checkResponse(response);
-    const data = await response.json();
-    playersStore.setPlayers(data);
-  } catch (error) {
-    console.error(error);
-  }
-};
+
 
 const leaveAndGetInfo = async (positon: number) => {
   try {
     await leaveFromTable(positon);
-    await getInfo();
   } catch (error) {
     console.error(error);
   }

@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { getPlayerName, getBalance, getLastBet } from "@/utils/api";
-import { useAuthStore } from "@/store/auth";
 import { usePlayers } from "@/store/usePlayers";
 const playersStore = usePlayers();
-const authStore = useAuthStore();
 
 const props = defineProps({
   name: {
@@ -17,8 +15,6 @@ const isFold = () => {
     (player) => player.name === props.name && player.fold === false
   );
 };
-
-
 
 const balance = ref(getBalance(props));
 const lastBet = ref(getLastBet(props));
