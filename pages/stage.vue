@@ -146,7 +146,7 @@ function stopFetchingPlayers() {
   }
 }
 
-const foo = () => {
+const flop = () => {
   const activePlayers = playersStore.players.filter(
     (player) => player.fold === false
   );
@@ -154,6 +154,20 @@ const foo = () => {
     maxSum.lastBet > currentPlayer.lastBet ? maxSum : currentPlayer
   );
   const allSameMaxBet = activePlayers.every(
+    (player) => player.lastBet === maxBet.lastBet
+  );
+
+  return allSameMaxBet;
+};
+
+const giveTern = () => {
+  const flopPlayers = playersStore.players.filter(
+    (player) => player.fold === false && player.roundStage === "flop"
+  );
+  const maxBet = flopPlayers.reduce((maxSum, currentPlayer) =>
+    maxSum.lastBet > currentPlayer.lastBet ? maxSum : currentPlayer
+  );
+  const allSameMaxBet = flopPlayers.every(
     (player) => player.lastBet === maxBet.lastBet
   );
 
@@ -180,9 +194,15 @@ onMounted(() => {
     }
   );
   watch(
-    () => foo(),
-    (newPlayer) => {
-      if (newPlayer) giveFlop();
+    () => flop(),
+    (flop) => {
+      if (flop) giveFlop();
+    }
+  );
+  watch(
+    () => giveTern(),
+    (tern1) => {
+      if (tern1) tern();
     }
   );
 });
