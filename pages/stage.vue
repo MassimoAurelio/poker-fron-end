@@ -101,7 +101,7 @@ async function fetchPlayers() {
 }
 
 function startFetchingPlayers() {
-  intervalId = window.setInterval(fetchPlayers, 1000);
+  intervalId = window.setInterval(fetchPlayers, 500);
 }
 
 function stopFetchingPlayers() {
@@ -120,11 +120,13 @@ const flop = () => {
   }
 
   const maxBet = activePlayers.reduce((maxSum, currentPlayer) =>
-    maxSum.lastBet > currentPlayer.lastBet ? maxSum : currentPlayer
+    maxSum.preFlopLastBet > currentPlayer.preFlopLastBet
+      ? maxSum
+      : currentPlayer
   );
 
   const allSameMaxBet = activePlayers.every(
-    (player) => player.lastBet === maxBet.lastBet
+    (player) => player.preFlopLastBet === maxBet.preFlopLastBet
   );
 
   return allSameMaxBet;
@@ -139,11 +141,11 @@ const giveTern = () => {
     return false;
   }
   const maxBet = flopPlayers.reduce((maxSum, currentPlayer) =>
-    maxSum.lastBet > currentPlayer.lastBet ? maxSum : currentPlayer
+    maxSum.flopLastBet > currentPlayer.flopLastBet ? maxSum : currentPlayer
   );
 
   const allSameMaxBet = flopPlayers.every(
-    (player) => player.lastBet === maxBet.lastBet
+    (player) => player.flopLastBet === maxBet.flopLastBet
   );
 
   return allSameMaxBet;
@@ -158,11 +160,11 @@ const giveRiver = () => {
     return false;
   }
   const maxBet = flopPlayers.reduce((maxSum, currentPlayer) =>
-    maxSum.lastBet > currentPlayer.lastBet ? maxSum : currentPlayer
+    maxSum.turnLastBet > currentPlayer.turnLastBet ? maxSum : currentPlayer
   );
 
   const allSameMaxBet = flopPlayers.every(
-    (player) => player.lastBet === maxBet.lastBet
+    (player) => player.turnLastBet === maxBet.turnLastBet
   );
 
   return allSameMaxBet;
@@ -195,19 +197,19 @@ onMounted(() => {
     }
   );
 
-  /*   watch(
+  watch(
     () => giveTern(),
     (tern1) => {
       if (tern1) giveTern();
     }
-  ); */
+  );
 
-  /*   watch(
+  watch(
     () => giveRiver(),
     (giveRiver) => {
       if (giveRiver) river();
     }
-  ); */
+  );
 });
 onUnmounted(stopFetchingPlayers);
 </script>

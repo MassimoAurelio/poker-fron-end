@@ -7,18 +7,17 @@ interface ICard {
 interface IPlayers {
   id: string;
   name: string;
+  stack: number;
   position: number;
   currentPlayerId: boolean;
-  preflopEnd: boolean;
-  flopEnd: boolean;
-  ternEnd: boolean;
-  riverEnd: boolean;
-  stack: number;
-  icon: string;
   fold: boolean;
   lastBet: number;
-  roundStage: string;
+  preFlopLastBet: number;
+  flopLastBet: number;
+  turnLastBet: number;
+  riverLastBet: number;
   cards: ICard[];
+  roundStage: string;
 }
 interface IFlop {
   flopCards: ICard[];
