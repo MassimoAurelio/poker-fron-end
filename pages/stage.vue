@@ -87,42 +87,6 @@ const river = async () => {
   }
 };
 
-const endPreflop = async () => {
-  try {
-    const response = await sendRequest(`${BASE_URL}endpreflop`, "POST");
-    checkResponse(response);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const endflop = async () => {
-  try {
-    const response = await sendRequest(`${BASE_URL}endflop`, "POST");
-    checkResponse(response);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const endtern = async () => {
-  try {
-    const response = await sendRequest(`${BASE_URL}endtern`, "POST");
-    checkResponse(response);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const endriver = async () => {
-  try {
-    const response = await sendRequest(`${BASE_URL}endriver`, "POST");
-    checkResponse(response);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
 let intervalId: unknown;
 
 async function fetchPlayers() {
@@ -148,11 +112,17 @@ function stopFetchingPlayers() {
 
 const flop = () => {
   const activePlayers = playersStore.players.filter(
-    (player) => player.fold === false
+    (player) => player.fold === false && player.roundStage === "preflop"
   );
+
+  if (activePlayers.length === 0) {
+    return false;
+  }
+
   const maxBet = activePlayers.reduce((maxSum, currentPlayer) =>
     maxSum.lastBet > currentPlayer.lastBet ? maxSum : currentPlayer
   );
+
   const allSameMaxBet = activePlayers.every(
     (player) => player.lastBet === maxBet.lastBet
   );
@@ -164,9 +134,33 @@ const giveTern = () => {
   const flopPlayers = playersStore.players.filter(
     (player) => player.fold === false && player.roundStage === "flop"
   );
+
+  if (flopPlayers.length === 0) {
+    return false;
+  }
   const maxBet = flopPlayers.reduce((maxSum, currentPlayer) =>
     maxSum.lastBet > currentPlayer.lastBet ? maxSum : currentPlayer
   );
+
+  const allSameMaxBet = flopPlayers.every(
+    (player) => player.lastBet === maxBet.lastBet
+  );
+
+  return allSameMaxBet;
+};
+
+const giveRiver = () => {
+  const flopPlayers = playersStore.players.filter(
+    (player) => player.fold === false && player.roundStage === "turn"
+  );
+
+  if (flopPlayers.length === 0) {
+    return false;
+  }
+  const maxBet = flopPlayers.reduce((maxSum, currentPlayer) =>
+    maxSum.lastBet > currentPlayer.lastBet ? maxSum : currentPlayer
+  );
+
   const allSameMaxBet = flopPlayers.every(
     (player) => player.lastBet === maxBet.lastBet
   );
@@ -193,28 +187,33 @@ onMounted(() => {
       if (newLength === 6) giveCards();
     }
   );
+
   watch(
     () => flop(),
     (flop) => {
       if (flop) giveFlop();
     }
   );
-  watch(
+
+  /*   watch(
     () => giveTern(),
     (tern1) => {
-      if (tern1) tern();
+      if (tern1) giveTern();
     }
-  );
+  ); */
+
+  /*   watch(
+    () => giveRiver(),
+    (giveRiver) => {
+      if (giveRiver) river();
+    }
+  ); */
 });
 onUnmounted(stopFetchingPlayers);
 </script>
 
 <template>
   <button @click="updatepos">UPDATE POS</button>
-  <button @click="endPreflop">End preFlop</button>
-  <button @click="endflop">End Flop</button>
-  <button @click="endtern">End Tern</button>
-  <button @click="endriver">End River</button>
   <button @click="giveCards">Give Card</button>
   <button @click="giveFlop">Give Flop</button>
   <button @click="tern">Tern</button>
