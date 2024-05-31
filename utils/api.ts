@@ -13,7 +13,7 @@ export const UPDATEPOSITION = "updatepos";
 export const MBBB = "mbbb";
 export const DEAL = "deal";
 export const GIVEFLOP = "giveflop";
-export const TERN = "tern";
+export const TURN = "turn";
 export const RIVER = "river";
 export const CHECK = "check";
 

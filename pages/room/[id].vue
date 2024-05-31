@@ -9,7 +9,7 @@ import {
   MBBB,
   DEAL,
   GIVEFLOP,
-  TERN,
+  TURN,
   RIVER,
   sendRequest,
   checkResponse,
@@ -93,9 +93,9 @@ const giveFlop = async () => {
   }
 };
 
-const tern = async () => {
+const turn = async () => {
   try {
-    const response = await sendRequest(`${BASE_URL}${TERN}`, "POST");
+    const response = await sendRequest(`${BASE_URL}${TURN}`, "POST");
     checkResponse(response);
     const data = await response.json();
     playersStore.setFlop(data);
@@ -191,7 +191,7 @@ onMounted(() => {
   <button @click="endriver">End River</button>
   <button @click="giveCards">Give Card</button>
   <button @click="giveFlop">Give Flop</button>
-  <button @click="tern">Tern</button>
+  <button @click="turn">Turn</button>
   <button @click="river">River</button>
 
   <div class="main-container">

@@ -7,7 +7,7 @@ import {
   UPDATEPOSITION,
   MBBB,
   DEAL,
-  TERN,
+  TURN,
   RIVER,
   sendRequest,
   checkResponse,
@@ -65,9 +65,9 @@ const giveFlop = async () => {
   }
 };
 
-const tern = async () => {
+const turn = async () => {
   try {
-    const response = await sendRequest(`${BASE_URL}${TERN}`, "POST");
+    const response = await sendRequest(`${BASE_URL}${TURN}`, "POST");
     checkResponse(response);
     const data = await response.json();
     playersStore.setFlop(data);
@@ -128,11 +128,10 @@ const flop = () => {
   const allSameMaxBet = activePlayers.every(
     (player) => player.preFlopLastBet === maxBet.preFlopLastBet
   );
-
   return allSameMaxBet;
 };
 
-const giveTern = () => {
+const giveTurn = () => {
   const flopPlayers = playersStore.players.filter(
     (player) => player.fold === false && player.roundStage === "flop"
   );
@@ -140,31 +139,40 @@ const giveTern = () => {
   if (flopPlayers.length === 0) {
     return false;
   }
+
+  const allMadeBetsOnFlop = flopPlayers.every(
+    (player) => player.flopLastBet > 0
+  );
+
   const maxBet = flopPlayers.reduce((maxSum, currentPlayer) =>
     maxSum.flopLastBet > currentPlayer.flopLastBet ? maxSum : currentPlayer
   );
 
   const allSameMaxBet = flopPlayers.every(
-    (player) => player.flopLastBet === maxBet.flopLastBet
+    (player) => player.flopLastBet === maxBet.flopLastBet && allMadeBetsOnFlop
   );
 
   return allSameMaxBet;
 };
 
 const giveRiver = () => {
-  const flopPlayers = playersStore.players.filter(
+  const turnPlayers = playersStore.players.filter(
     (player) => player.fold === false && player.roundStage === "turn"
   );
 
-  if (flopPlayers.length === 0) {
+  if (turnPlayers.length === 0) {
     return false;
   }
-  const maxBet = flopPlayers.reduce((maxSum, currentPlayer) =>
+
+  const allMadeBetsOnTurn = turnPlayers.every(
+    (player) => player.turnLastBet > 0
+  );
+  const maxBet = turnPlayers.reduce((maxSum, currentPlayer) =>
     maxSum.turnLastBet > currentPlayer.turnLastBet ? maxSum : currentPlayer
   );
 
-  const allSameMaxBet = flopPlayers.every(
-    (player) => player.turnLastBet === maxBet.turnLastBet
+  const allSameMaxBet = turnPlayers.every(
+    (player) => player.turnLastBet === maxBet.turnLastBet && allMadeBetsOnTurn
   );
 
   return allSameMaxBet;
@@ -193,21 +201,33 @@ onMounted(() => {
   watch(
     () => flop(),
     (flop) => {
-      if (flop) giveFlop();
+      if (flop) {
+        setTimeout(() => {
+          giveFlop();
+        }, 500);
+      }
     }
   );
 
   watch(
-    () => giveTern(),
+    () => giveTurn(),
     (tern1) => {
-      if (tern1) giveTern();
+      if (tern1) {
+        setTimeout(() => {
+          turn();
+        }, 500);
+      }
     }
   );
 
   watch(
     () => giveRiver(),
     (giveRiver) => {
-      if (giveRiver) river();
+      if (giveRiver) {
+        setTimeout(() => {
+          river();
+        }, 500);
+      }
     }
   );
 });
@@ -218,7 +238,7 @@ onUnmounted(stopFetchingPlayers);
   <button @click="updatepos">UPDATE POS</button>
   <button @click="giveCards">Give Card</button>
   <button @click="giveFlop">Give Flop</button>
-  <button @click="tern">Tern</button>
+  <button @click="turn">Turn</button>
   <button @click="river">River</button>
 
   <div class="main-container">
