@@ -15,6 +15,7 @@ export const DEAL = "deal";
 export const GIVEFLOP = "giveflop";
 export const TURN = "turn";
 export const RIVER = "river";
+export const WINNER = "winner";
 export const CHECK = "check";
 
 // Функция для отправки запроса

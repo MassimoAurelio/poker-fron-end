@@ -9,6 +9,7 @@ import {
   DEAL,
   TURN,
   RIVER,
+  WINNER,
   sendRequest,
   checkResponse,
 } from "@/utils/api";
@@ -87,6 +88,15 @@ const river = async () => {
   }
 };
 
+const winner = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}${WINNER}`, "POST");
+    checkResponse(response);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 let intervalId: unknown;
 
 async function fetchPlayers() {
@@ -119,16 +129,18 @@ const flop = () => {
     return false;
   }
 
-  const maxBet = activePlayers.reduce((maxSum, currentPlayer) =>
-    maxSum.preFlopLastBet > currentPlayer.preFlopLastBet
-      ? maxSum
-      : currentPlayer
-  );
+  if (activePlayers.length > 2) {
+    const maxBet = activePlayers.reduce((maxSum, currentPlayer) =>
+      maxSum.preFlopLastBet > currentPlayer.preFlopLastBet
+        ? maxSum
+        : currentPlayer
+    );
 
-  const allSameMaxBet = activePlayers.every(
-    (player) => player.preFlopLastBet === maxBet.preFlopLastBet
-  );
-  return allSameMaxBet;
+    const allSameMaxBet = activePlayers.every(
+      (player) => player.preFlopLastBet === maxBet.preFlopLastBet
+    );
+    return allSameMaxBet;
+  }
 };
 
 const giveTurn = () => {
@@ -166,6 +178,29 @@ const giveRiver = () => {
 
   const allMadeBetsOnTurn = turnPlayers.every(
     (player) => player.turnLastBet > 0
+  );
+  const maxBet = turnPlayers.reduce((maxSum, currentPlayer) =>
+    maxSum.turnLastBet > currentPlayer.turnLastBet ? maxSum : currentPlayer
+  );
+
+  const allSameMaxBet = turnPlayers.every(
+    (player) => player.turnLastBet === maxBet.turnLastBet && allMadeBetsOnTurn
+  );
+
+  return allSameMaxBet;
+};
+
+const giveWinner = () => {
+  const turnPlayers = playersStore.players.filter(
+    (player) => player.fold === false && player.roundStage === "river"
+  );
+
+  if (turnPlayers.length === 0) {
+    return false;
+  }
+
+  const allMadeBetsOnTurn = turnPlayers.every(
+    (player) => player.riverLastBet > 0
   );
   const maxBet = turnPlayers.reduce((maxSum, currentPlayer) =>
     maxSum.turnLastBet > currentPlayer.turnLastBet ? maxSum : currentPlayer
@@ -226,6 +261,16 @@ onMounted(() => {
       if (giveRiver) {
         setTimeout(() => {
           river();
+        }, 500);
+      }
+    }
+  );
+  watch(
+    () => giveWinner(),
+    (winner1) => {
+      if (winner1) {
+        setTimeout(() => {
+          winner();
         }, 500);
       }
     }
