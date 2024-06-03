@@ -95,6 +95,7 @@ const winner = async () => {
   try {
     const response = await sendRequest(`${BASE_URL}${WINNER}`, "POST");
     checkResponse(response);
+    await updatepos();
   } catch (error) {
     console.error(error);
   }
