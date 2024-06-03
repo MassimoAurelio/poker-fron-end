@@ -22,6 +22,7 @@ interface IPlayers {
 interface IFlop {
   flopCards: ICard[];
 }
+
 export const usePlayers = defineStore({
   id: "players",
 
@@ -37,6 +38,12 @@ export const usePlayers = defineStore({
       this.players = players;
     },
     setFlop(flop: IFlop) {
+      this.flop = flop;
+    },
+    setTurn(flop: IFlop) {
+      this.flop = flop;
+    },
+    setRiver(flop: IFlop) {
       this.flop = flop;
     },
     setCards(cards: IFlop) {

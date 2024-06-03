@@ -61,6 +61,7 @@ const giveFlop = async () => {
     const data = await response.json();
     playersStore.setFlop(data);
     sessionStorage.setItem("flop", JSON.stringify(data));
+    console.log(playersStore.flop);
   } catch (error) {
     console.error(error);
   }
@@ -71,7 +72,8 @@ const turn = async () => {
     const response = await sendRequest(`${BASE_URL}${TURN}`, "POST");
     checkResponse(response);
     const data = await response.json();
-    playersStore.setFlop(data);
+    playersStore.setTurn(data);
+    sessionStorage.setItem("turn", JSON.stringify(data));
   } catch (error) {
     console.error(error);
   }
@@ -82,7 +84,8 @@ const river = async () => {
     const response = await sendRequest(`${BASE_URL}${RIVER}`, "POST");
     checkResponse(response);
     const data = await response.json();
-    playersStore.setFlop(data);
+    playersStore.setRiver(data);
+    sessionStorage.setItem("river", JSON.stringify(data));
   } catch (error) {
     console.error(error);
   }
@@ -111,7 +114,7 @@ async function fetchPlayers() {
 }
 
 function startFetchingPlayers() {
-  intervalId = window.setInterval(fetchPlayers, 500);
+  intervalId = window.setInterval(fetchPlayers, 1000);
 }
 
 function stopFetchingPlayers() {
@@ -222,9 +225,29 @@ onMounted(() => {
   }
 
   const savedFlop = sessionStorage.getItem("flop");
+
   if (savedFlop) {
-    playersStore.setFlop(JSON.parse(savedFlop));
+    try {
+      const parsedFlop = JSON.parse(savedFlop);
+      const processedFlop = (parsedFlop.flopCards || []).map(
+        (card: string) => card || {}
+      );
+
+      playersStore.setFlop(processedFlop);
+    } catch (error) {
+      console.error("Error parsing savedFlop:", error);
+    }
   }
+
+  watch(
+    () => playersStore.players.length,
+    (newLength) => {
+      if (newLength === 0) {
+        sessionStorage.clear();
+        playersStore.setFlop({ flopCards: [] });
+      }
+    }
+  );
 
   watch(
     () => playersStore.players.length,
@@ -285,6 +308,7 @@ onUnmounted(stopFetchingPlayers);
   <button @click="giveFlop">Give Flop</button>
   <button @click="turn">Turn</button>
   <button @click="river">River</button>
+  <button @click="winner">Winner</button>
 
   <div class="main-container">
     <div class="table">
