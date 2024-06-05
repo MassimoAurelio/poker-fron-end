@@ -12,6 +12,7 @@ const playersStore = usePlayers();
 const authStore = useAuthStore();
 const route = useRoute();
 const roomId = route.params.id;
+
 const username = () => {
   return localStorage.getItem("username") ?? "";
 };

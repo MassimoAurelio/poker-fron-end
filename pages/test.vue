@@ -196,7 +196,6 @@ const giveWinner = () => {
   return allSameMaxBet;
 };
 
-
 let intervalId: unknown;
 
 async function fetchPlayers() {
