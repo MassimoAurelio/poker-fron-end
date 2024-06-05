@@ -95,7 +95,6 @@ const winner = async () => {
   try {
     const response = await sendRequest(`${BASE_URL}${WINNER}`, "POST");
     checkResponse(response);
-    await updatepos();
   } catch (error) {
     console.error(error);
   }
@@ -156,16 +155,13 @@ const giveTurn = () => {
     return false;
   }
 
-  const allMadeBetsOnFlop = flopPlayers.every(
-    (player) => player.flopLastBet > 0
-  );
-
   const maxBet = flopPlayers.reduce((maxSum, currentPlayer) =>
     maxSum.flopLastBet > currentPlayer.flopLastBet ? maxSum : currentPlayer
   );
 
   const allSameMaxBet = flopPlayers.every(
-    (player) => player.flopLastBet === maxBet.flopLastBet && allMadeBetsOnFlop
+    (player) =>
+      player.flopLastBet === maxBet.flopLastBet && player.makeTurn === true
   );
 
   return allSameMaxBet;
@@ -180,15 +176,13 @@ const giveRiver = () => {
     return false;
   }
 
-  const allMadeBetsOnTurn = turnPlayers.every(
-    (player) => player.turnLastBet > 0
-  );
   const maxBet = turnPlayers.reduce((maxSum, currentPlayer) =>
     maxSum.turnLastBet > currentPlayer.turnLastBet ? maxSum : currentPlayer
   );
 
   const allSameMaxBet = turnPlayers.every(
-    (player) => player.turnLastBet === maxBet.turnLastBet && allMadeBetsOnTurn
+    (player) =>
+      player.turnLastBet === maxBet.turnLastBet && player.makeTurn === true
   );
 
   return allSameMaxBet;
@@ -203,15 +197,13 @@ const giveWinner = () => {
     return false;
   }
 
-  const allMadeBetsOnTurn = turnPlayers.every(
-    (player) => player.riverLastBet > 0
-  );
   const maxBet = turnPlayers.reduce((maxSum, currentPlayer) =>
-    maxSum.turnLastBet > currentPlayer.turnLastBet ? maxSum : currentPlayer
+    maxSum.riverLastBet > currentPlayer.riverLastBet ? maxSum : currentPlayer
   );
 
   const allSameMaxBet = turnPlayers.every(
-    (player) => player.turnLastBet === maxBet.turnLastBet && allMadeBetsOnTurn
+    (player) =>
+      player.riverLastBet === maxBet.riverLastBet && player.makeTurn === true
   );
 
   return allSameMaxBet;

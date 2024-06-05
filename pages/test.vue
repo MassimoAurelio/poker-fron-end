@@ -33,6 +33,170 @@ const joinTable = async (nickname: string, position: number) => {
   }
 };
 
+const updatepos = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}${UPDATEPOSITION}`, "POST");
+    checkResponse(response);
+    await mbbb();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const mbbb = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}${MBBB}`, "POST");
+    checkResponse(response);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const giveCards = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}${DEAL}`, "POST");
+    checkResponse(response);
+    const data = await response.json();
+    playersStore.setCards(data);
+    sessionStorage.setItem("cardsDealt", "true");
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const giveFlop = async () => {
+  try {
+    const response = await sendRequest("http://localhost:5000/giveflop", "GET");
+    checkResponse(response);
+    const data = await response.json();
+    playersStore.setFlop(data);
+    sessionStorage.setItem("flop", JSON.stringify(data));
+    console.log(playersStore.flop);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const turn = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}${TURN}`, "POST");
+    checkResponse(response);
+    const data = await response.json();
+    playersStore.setTurn(data);
+    sessionStorage.setItem("turn", JSON.stringify(data));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const river = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}${RIVER}`, "POST");
+    checkResponse(response);
+    const data = await response.json();
+    playersStore.setRiver(data);
+    sessionStorage.setItem("river", JSON.stringify(data));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const winner = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}${WINNER}`, "POST");
+    checkResponse(response);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const flop = () => {
+  const activePlayers = playersStore.players.filter(
+    (player) => player.fold === false && player.roundStage === "preflop"
+  );
+
+  if (activePlayers.length === 0) {
+    return false;
+  }
+
+  if (activePlayers.length > 2) {
+    const maxBet = activePlayers.reduce((maxSum, currentPlayer) =>
+      maxSum.preFlopLastBet > currentPlayer.preFlopLastBet
+        ? maxSum
+        : currentPlayer
+    );
+
+    const allSameMaxBet = activePlayers.every(
+      (player) => player.preFlopLastBet === maxBet.preFlopLastBet
+    );
+    return allSameMaxBet;
+  }
+};
+
+const giveTurn = () => {
+  const flopPlayers = playersStore.players.filter(
+    (player) => player.fold === false && player.roundStage === "flop"
+  );
+
+  if (flopPlayers.length === 0) {
+    return false;
+  }
+
+  const maxBet = flopPlayers.reduce((maxSum, currentPlayer) =>
+    maxSum.flopLastBet > currentPlayer.flopLastBet ? maxSum : currentPlayer
+  );
+
+  const allSameMaxBet = flopPlayers.every(
+    (player) =>
+      player.flopLastBet === maxBet.flopLastBet && player.makeTurn === true
+  );
+
+  return allSameMaxBet;
+};
+
+const giveRiver = () => {
+  const turnPlayers = playersStore.players.filter(
+    (player) => player.fold === false && player.roundStage === "turn"
+  );
+
+  if (turnPlayers.length === 0) {
+    return false;
+  }
+
+  const maxBet = turnPlayers.reduce((maxSum, currentPlayer) =>
+    maxSum.turnLastBet > currentPlayer.turnLastBet ? maxSum : currentPlayer
+  );
+
+  const allSameMaxBet = turnPlayers.every(
+    (player) =>
+      player.turnLastBet === maxBet.turnLastBet && player.makeTurn === true
+  );
+
+  return allSameMaxBet;
+};
+
+const giveWinner = () => {
+  const turnPlayers = playersStore.players.filter(
+    (player) => player.fold === false && player.roundStage === "river"
+  );
+
+  if (turnPlayers.length === 0) {
+    return false;
+  }
+
+  const maxBet = turnPlayers.reduce((maxSum, currentPlayer) =>
+    maxSum.riverLastBet > currentPlayer.riverLastBet ? maxSum : currentPlayer
+  );
+
+  const allSameMaxBet = turnPlayers.every(
+    (player) =>
+      player.riverLastBet === maxBet.riverLastBet && player.makeTurn === true
+  );
+
+  return allSameMaxBet;
+};
+
+
 let intervalId: unknown;
 
 async function fetchPlayers() {
@@ -47,7 +211,7 @@ async function fetchPlayers() {
 }
 
 function startFetchingPlayers() {
-  intervalId = window.setInterval(fetchPlayers, 2000);
+  intervalId = window.setInterval(fetchPlayers, 1000);
 }
 
 function stopFetchingPlayers() {
@@ -65,9 +229,79 @@ onMounted(() => {
   }
 
   const savedFlop = sessionStorage.getItem("flop");
+
   if (savedFlop) {
-    playersStore.setFlop(JSON.parse(savedFlop));
+    try {
+      const parsedFlop = JSON.parse(savedFlop);
+      const processedFlop = (parsedFlop.flopCards || []).map(
+        (card: string) => card || {}
+      );
+
+      playersStore.setFlop(processedFlop);
+    } catch (error) {
+      console.error("Error parsing savedFlop:", error);
+    }
   }
+
+  watch(
+    () => playersStore.players.length,
+    (newLength) => {
+      if (newLength === 0) {
+        sessionStorage.clear();
+        playersStore.setFlop({ flopCards: [] });
+      }
+    }
+  );
+
+  watch(
+    () => playersStore.players.length,
+    (newLength) => {
+      if (newLength === 6) giveCards();
+    }
+  );
+
+  watch(
+    () => flop(),
+    (flop) => {
+      if (flop) {
+        setTimeout(() => {
+          giveFlop();
+        }, 500);
+      }
+    }
+  );
+
+  watch(
+    () => giveTurn(),
+    (tern1) => {
+      if (tern1) {
+        setTimeout(() => {
+          turn();
+        }, 500);
+      }
+    }
+  );
+
+  watch(
+    () => giveRiver(),
+    (giveRiver) => {
+      if (giveRiver) {
+        setTimeout(() => {
+          river();
+        }, 500);
+      }
+    }
+  );
+  watch(
+    () => giveWinner(),
+    (winner1) => {
+      if (winner1) {
+        setTimeout(() => {
+          winner();
+        }, 500);
+      }
+    }
+  );
 });
 onUnmounted(stopFetchingPlayers);
 </script>

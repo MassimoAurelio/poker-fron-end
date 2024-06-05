@@ -1,46 +1,39 @@
 <script setup lang="ts">
-import { usePlayers } from "~/store/usePlayers";
-import { useAuthStore } from "@/store/auth";
 import { io } from "socket.io-client";
-import {
-  BASE_URL,
-  UPDATEPOSITION,
-  PLAYERS,
-  MBBB,
-  DEAL,
-  GIVEFLOP,
-  TURN,
-  RIVER,
-  sendRequest,
-  checkResponse,
-} from "@/utils/api";
-import NewPlayer from "~/components/NewPlayer.vue";
-
-const playersStore = usePlayers();
-const authStore = useAuthStore();
-const socketUrl = "http://localhost:5000";
-const socket = io(socketUrl);
-
-// Слушаем событие deal от сервера
-socket.on("deal", (data) => {
-  console.log("Карты успешно разданы", data);
-  playersStore.setCards(data.playerCards);
-});
-
-socket.on("playerAction", () => {
-  console.log("Привет");
-});
+import { usePlayers } from "@/store/usePlayers";
+import { useAuthStore } from "@/store/auth";
 
 useSeoMeta({
   title: "POKER STAGE",
 });
 
-const getInfo = async () => {
+const socket = io("http://localhost:5000");
+const playersStore = usePlayers();
+const authStore = useAuthStore();
+const route = useRoute();
+const roomId = route.params.id;
+const username = () => {
+  return localStorage.getItem("username") ?? "";
+};
+
+const joinTable = async (
+  nickname: string,
+  position: number,
+  roomId: string
+) => {
   try {
-    const response = await sendRequest(`${BASE_URL}${PLAYERS}`, "GET");
+    const body = {
+      player: nickname,
+      stack: 1000,
+      position: position,
+      roomId: roomId,
+    };
+    const response = await sendRequestWithBody(
+      `${BASE_URL}${JOIN}`,
+      "POST",
+      body
+    );
     checkResponse(response);
-    const data = await response.json();
-    playersStore.setPlayers(data);
   } catch (error) {
     console.error(error);
   }
@@ -51,7 +44,6 @@ const updatepos = async () => {
     const response = await sendRequest(`${BASE_URL}${UPDATEPOSITION}`, "POST");
     checkResponse(response);
     await mbbb();
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
@@ -68,12 +60,11 @@ const mbbb = async () => {
 
 const giveCards = async () => {
   try {
-    const response = await sendRequest(`${BASE_URL}${DEAL}`, "GET");
+    const response = await sendRequest(`${BASE_URL}${DEAL}`, "POST");
     checkResponse(response);
     const data = await response.json();
     playersStore.setCards(data);
     sessionStorage.setItem("cardsDealt", "true");
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
@@ -81,13 +72,12 @@ const giveCards = async () => {
 
 const giveFlop = async () => {
   try {
-    const response = await sendRequest(`${BASE_URL}${GIVEFLOP}`, "GET");
+    const response = await sendRequest("http://localhost:5000/giveflop", "GET");
     checkResponse(response);
     const data = await response.json();
     playersStore.setFlop(data);
     sessionStorage.setItem("flop", JSON.stringify(data));
-
-    await getInfo();
+    console.log(playersStore.flop);
   } catch (error) {
     console.error(error);
   }
@@ -98,8 +88,8 @@ const turn = async () => {
     const response = await sendRequest(`${BASE_URL}${TURN}`, "POST");
     checkResponse(response);
     const data = await response.json();
-    playersStore.setFlop(data);
-    await getInfo();
+    playersStore.setTurn(data);
+    sessionStorage.setItem("turn", JSON.stringify(data));
   } catch (error) {
     console.error(error);
   }
@@ -110,55 +100,133 @@ const river = async () => {
     const response = await sendRequest(`${BASE_URL}${RIVER}`, "POST");
     checkResponse(response);
     const data = await response.json();
-    playersStore.setFlop(data);
-    await getInfo();
+    playersStore.setRiver(data);
+    sessionStorage.setItem("river", JSON.stringify(data));
   } catch (error) {
     console.error(error);
   }
 };
 
-const endPreflop = async () => {
+const winner = async () => {
   try {
-    const response = await sendRequest(`${BASE_URL}endpreflop`, "POST");
+    const response = await sendRequest(`${BASE_URL}${WINNER}`, "POST");
     checkResponse(response);
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
 };
 
-const endflop = async () => {
-  try {
-    const response = await sendRequest(`${BASE_URL}endflop`, "POST");
-    checkResponse(response);
-    await getInfo();
-  } catch (error) {
-    console.error(error);
+const flop = () => {
+  const activePlayers = playersStore.players.filter(
+    (player) => player.fold === false && player.roundStage === "preflop"
+  );
+
+  if (activePlayers.length === 0) {
+    return false;
+  }
+
+  if (activePlayers.length > 2) {
+    const maxBet = activePlayers.reduce((maxSum, currentPlayer) =>
+      maxSum.preFlopLastBet > currentPlayer.preFlopLastBet
+        ? maxSum
+        : currentPlayer
+    );
+
+    const allSameMaxBet = activePlayers.every(
+      (player) => player.preFlopLastBet === maxBet.preFlopLastBet
+    );
+    return allSameMaxBet;
   }
 };
 
-const endtern = async () => {
-  try {
-    const response = await sendRequest(`${BASE_URL}endtern`, "POST");
-    checkResponse(response);
-    await getInfo();
-  } catch (error) {
-    console.error(error);
+const giveTurn = () => {
+  const flopPlayers = playersStore.players.filter(
+    (player) => player.fold === false && player.roundStage === "flop"
+  );
+
+  if (flopPlayers.length === 0) {
+    return false;
   }
+
+  const maxBet = flopPlayers.reduce((maxSum, currentPlayer) =>
+    maxSum.flopLastBet > currentPlayer.flopLastBet ? maxSum : currentPlayer
+  );
+
+  const allSameMaxBet = flopPlayers.every(
+    (player) =>
+      player.flopLastBet === maxBet.flopLastBet && player.makeTurn === true
+  );
+
+  return allSameMaxBet;
 };
 
-const endriver = async () => {
-  try {
-    const response = await sendRequest(`${BASE_URL}endriver`, "POST");
-    checkResponse(response);
-    await getInfo();
-  } catch (error) {
-    console.error(error);
+const giveRiver = () => {
+  const turnPlayers = playersStore.players.filter(
+    (player) => player.fold === false && player.roundStage === "turn"
+  );
+
+  if (turnPlayers.length === 0) {
+    return false;
   }
+
+  const maxBet = turnPlayers.reduce((maxSum, currentPlayer) =>
+    maxSum.turnLastBet > currentPlayer.turnLastBet ? maxSum : currentPlayer
+  );
+
+  const allSameMaxBet = turnPlayers.every(
+    (player) =>
+      player.turnLastBet === maxBet.turnLastBet && player.makeTurn === true
+  );
+
+  return allSameMaxBet;
 };
+
+const giveWinner = () => {
+  const turnPlayers = playersStore.players.filter(
+    (player) => player.fold === false && player.roundStage === "river"
+  );
+
+  if (turnPlayers.length === 0) {
+    return false;
+  }
+
+  const maxBet = turnPlayers.reduce((maxSum, currentPlayer) =>
+    maxSum.riverLastBet > currentPlayer.riverLastBet ? maxSum : currentPlayer
+  );
+
+  const allSameMaxBet = turnPlayers.every(
+    (player) =>
+      player.riverLastBet === maxBet.riverLastBet && player.makeTurn === true
+  );
+
+  return allSameMaxBet;
+};
+
+let intervalId: unknown;
+
+async function fetchPlayers() {
+  try {
+    socket.emit("getPlayers");
+    socket.on("playersData", (receivedPlayers) => {
+      playersStore.setPlayers(receivedPlayers);
+    });
+  } catch (error) {
+    console.error("Error sending request:", error);
+  }
+}
+
+function startFetchingPlayers() {
+  intervalId = window.setInterval(fetchPlayers, 1000);
+}
+
+function stopFetchingPlayers() {
+  if (typeof intervalId === "number") {
+    clearInterval(intervalId);
+  }
+}
 
 onMounted(() => {
-  getInfo();
+  startFetchingPlayers();
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
   if (token && username) {
@@ -166,44 +234,116 @@ onMounted(() => {
   }
 
   const savedFlop = sessionStorage.getItem("flop");
+
   if (savedFlop) {
-    playersStore.setFlop(JSON.parse(savedFlop));
+    try {
+      const parsedFlop = JSON.parse(savedFlop);
+      const processedFlop = (parsedFlop.flopCards || []).map(
+        (card: string) => card || {}
+      );
+
+      playersStore.setFlop(processedFlop);
+    } catch (error) {
+      console.error("Error parsing savedFlop:", error);
+    }
   }
 
-  const cardsDealt = sessionStorage.getItem("cardsDealt");
-
-  /*  watch(
+  watch(
     () => playersStore.players.length,
     (newLength) => {
-      if (newLength === 6 && !cardsDealt) {
-        giveCards();
+      if (newLength === 0) {
+        sessionStorage.clear();
+        playersStore.setFlop({ flopCards: [] });
       }
     }
-  ); */
+  );
+
+  watch(
+    () => playersStore.players.length,
+    (newLength) => {
+      if (newLength === 6) giveCards();
+    }
+  );
+
+  watch(
+    () => flop(),
+    (flop) => {
+      if (flop) {
+        setTimeout(() => {
+          giveFlop();
+        }, 500);
+      }
+    }
+  );
+
+  watch(
+    () => giveTurn(),
+    (tern1) => {
+      if (tern1) {
+        setTimeout(() => {
+          turn();
+        }, 500);
+      }
+    }
+  );
+
+  watch(
+    () => giveRiver(),
+    (giveRiver) => {
+      if (giveRiver) {
+        setTimeout(() => {
+          river();
+        }, 500);
+      }
+    }
+  );
+  watch(
+    () => giveWinner(),
+    (winner1) => {
+      if (winner1) {
+        setTimeout(() => {
+          winner();
+        }, 500);
+      }
+    }
+  );
 });
+onUnmounted(stopFetchingPlayers);
 </script>
 
 <template>
-  <button @click="updatepos">UPDATE POS</button>
-  <button @click="endPreflop">End preFlop</button>
-  <button @click="endflop">End Flop</button>
-  <button @click="endtern">End Tern</button>
-  <button @click="endriver">End River</button>
-  <button @click="giveCards">Give Card</button>
-  <button @click="giveFlop">Give Flop</button>
-  <button @click="turn">Turn</button>
-  <button @click="river">River</button>
-
   <div class="main-container">
     <div class="table">
-      <NewPlayer name="Player 1" :position="1" class="Player1" />
-      <NewPlayer name="Player 2" :position="2" class="Player2" />
-      <NewPlayer name="Player 3" :position="3" class="Player3" />
-      <NewPlayer name="Player 4" :position="4" class="Player4" />
-      <NewPlayer name="Player 5" :position="5" class="Player5" />
-      <NewPlayer name="Player 6" :position="6" class="Player6" />
-      <div class="flop">
-        <UiFlop v-if="playersStore.players.length > 0" />
+      <UiPlayerFreeSpace
+        @click="joinTable(username(), 1, roomId.toString())"
+        class="Player1"
+      />
+      <UiPlayerFreeSpace
+        @click="joinTable(username(), 2, roomId.toString())"
+        class="Player2"
+      />
+      <UiPlayerFreeSpace
+        @click="joinTable(username(), 3, roomId.toString())"
+        class="Player3"
+      />
+      <UiPlayerFreeSpace
+        @click="joinTable(username(), 4, roomId.toString())"
+        class="Player4"
+      />
+      <UiPlayerFreeSpace
+        @click="joinTable(username(), 5, roomId.toString())"
+        class="Player5"
+      />
+      <UiPlayerFreeSpace
+        @click="joinTable(username(), 6, roomId.toString())"
+        class="Player6"
+      />
+      <div v-for="item in playersStore.players" :key="item.id">
+        <NewPlayer
+          :name="item.name"
+          :position="item.position"
+          :class="`Player${item.position}`"
+        />
       </div>
     </div>
   </div>
@@ -251,6 +391,7 @@ onMounted(() => {
   border: solid black;
   border-width: 15px;
   border-radius: 300px;
+  gap: 40px;
 }
 .Player1 {
   position: absolute;

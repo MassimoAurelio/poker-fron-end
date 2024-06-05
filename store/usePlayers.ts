@@ -16,6 +16,7 @@ interface IPlayers {
   flopLastBet: number;
   turnLastBet: number;
   riverLastBet: number;
+  makeTurn: boolean;
   cards: ICard[];
   roundStage: string;
 }

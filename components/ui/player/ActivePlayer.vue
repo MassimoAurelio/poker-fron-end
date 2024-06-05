@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
+import { useAuthStore } from "@/store/auth";
 import {
   BASE_URL,
   LEAVE,
@@ -9,6 +10,7 @@ import {
 } from "@/utils/api";
 
 const playersStore = usePlayers();
+const authStore = useAuthStore();
 
 const props = defineProps({
   name: {
@@ -23,9 +25,7 @@ const props = defineProps({
 
 const leaveFromTable = async (position: number) => {
   try {
-    const body = {
-      position: position,
-    };
+    const body = { position };
     const response = await sendRequestWithBody(
       `${BASE_URL}${LEAVE}`,
       "POST",
@@ -37,7 +37,6 @@ const leaveFromTable = async (position: number) => {
   }
 };
 
-
 const leaveAndGetInfo = async (positon: number) => {
   try {
     await leaveFromTable(positon);
@@ -46,32 +45,34 @@ const leaveAndGetInfo = async (positon: number) => {
   }
 };
 
-const getValueFirstCard = () => {
-  const firstCard = playersStore.players.find(
+const getPlayerCards = () => {
+  const player = playersStore.players.find(
     (player) => player.name === props.name
   );
-  return firstCard?.cards[0]?.value;
+  if (player && player.name === authStore.user?.username) {
+    return player.cards;
+  }
+  return [];
+};
+
+const getValueFirstCard = () => {
+  const cards = getPlayerCards();
+  return cards[0]?.value;
 };
 
 const getSuiteFirstCard = () => {
-  const firstCard = playersStore.players.find(
-    (player) => player.name === props.name
-  );
-  return firstCard?.cards[0]?.suit;
+  const cards = getPlayerCards();
+  return cards[0]?.suit;
 };
 
 const getValueSecondCard = () => {
-  const firstCard = playersStore.players.find(
-    (player) => player.name === props.name
-  );
-  return firstCard?.cards[1]?.value;
+  const cards = getPlayerCards();
+  return cards[1]?.value;
 };
 
 const getSuiteSecondCard = () => {
-  const firstCard = playersStore.players.find(
-    (player) => player.name === props.name
-  );
-  return firstCard?.cards[1]?.suit;
+  const cards = getPlayerCards();
+  return cards[1]?.suit;
 };
 
 const pos6 = ref(pos(props));
@@ -82,16 +83,16 @@ const pos6 = ref(pos(props));
     <div class="card-container">
       <div class="first-card">
         <div class="suit">
-          {{ getSuiteSecondCard() }}
+          {{ getSuiteFirstCard() }}
           <div class="card_number-container">
-            <div class="card-number">{{ getValueSecondCard() }}</div>
+            <div class="card-number">{{ getValueFirstCard() }}</div>
           </div>
         </div>
       </div>
       <div class="second-card">
-        {{ getSuiteFirstCard() }}
+        {{ getSuiteSecondCard() }}
         <div class="card_number-container">
-          <div class="card-number">{{ getValueFirstCard() }}</div>
+          <div class="card-number">{{ getValueSecondCard() }}</div>
         </div>
       </div>
     </div>

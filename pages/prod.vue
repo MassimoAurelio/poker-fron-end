@@ -1,23 +1,33 @@
 <script setup lang="ts">
-import { usePlayers } from "~/store/usePlayers";
-const playersStore = usePlayers();
+import { io } from "socket.io-client";
+import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
 
-const authStore = useAuthStore();
-
 useSeoMeta({
-  title: "POKER",
+  title: "POKER STAGE",
 });
 
+const socket = io("http://localhost:5000");
+const playersStore = usePlayers();
+const authStore = useAuthStore();
 
-const getInfo = async () => {
+const username = () => {
+  return localStorage.getItem("username") ?? "";
+};
+
+const joinTable = async (nickname: string, position: number) => {
   try {
-    const response = await fetch("http://localhost:5000/players");
-    if (!response.ok) {
-      throw new Error("Ошибка при получении данных");
-    }
-    const data = await response.json();
-    playersStore.setPlayers(data);
+    const body = {
+      player: nickname,
+      stack: 1000,
+      position: position,
+    };
+    const response = await sendRequestWithBody(
+      `${BASE_URL}${JOIN}`,
+      "POST",
+      body
+    );
+    checkResponse(response);
   } catch (error) {
     console.error(error);
   }
@@ -25,17 +35,9 @@ const getInfo = async () => {
 
 const updatepos = async () => {
   try {
-    const response = await fetch("http://localhost:5000/updatepos", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
+    const response = await sendRequest(`${BASE_URL}${UPDATEPOSITION}`, "POST");
+    checkResponse(response);
     await mbbb();
-    await getInfo();
   } catch (error) {
     console.error(error);
   }
@@ -43,15 +45,8 @@ const updatepos = async () => {
 
 const mbbb = async () => {
   try {
-    const response = await fetch("http://localhost:5000/mbbb", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
+    const response = await sendRequest(`${BASE_URL}${MBBB}`, "POST");
+    checkResponse(response);
   } catch (error) {
     console.error(error);
   }
@@ -59,43 +54,273 @@ const mbbb = async () => {
 
 const giveCards = async () => {
   try {
-    const response = await fetch("http://localhost:5000/deal", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Ошибка при выполнении запроса");
-    }
-    await getInfo();
+    const response = await sendRequest(`${BASE_URL}${DEAL}`, "GET");
+    checkResponse(response);
+    const data = await response.json();
+    playersStore.setCards(data);
+    sessionStorage.setItem("cardsDealt", "true");
   } catch (error) {
     console.error(error);
   }
 };
 
+const giveFlop = async () => {
+  try {
+    const response = await sendRequest("http://localhost:5000/giveflop", "GET");
+    checkResponse(response);
+    const data = await response.json();
+    playersStore.setFlop(data);
+    sessionStorage.setItem("flop", JSON.stringify(data));
+    console.log(playersStore.flop);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const turn = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}${TURN}`, "POST");
+    checkResponse(response);
+    const data = await response.json();
+    playersStore.setTurn(data);
+    sessionStorage.setItem("turn", JSON.stringify(data));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const river = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}${RIVER}`, "POST");
+    checkResponse(response);
+    const data = await response.json();
+    playersStore.setRiver(data);
+    sessionStorage.setItem("river", JSON.stringify(data));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const winner = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}${WINNER}`, "POST");
+    checkResponse(response);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const flop = () => {
+  const activePlayers = playersStore.players.filter(
+    (player) => player.fold === false && player.roundStage === "preflop"
+  );
+
+  if (activePlayers.length === 0) {
+    return false;
+  }
+
+  if (activePlayers.length > 2) {
+    const maxBet = activePlayers.reduce((maxSum, currentPlayer) =>
+      maxSum.preFlopLastBet > currentPlayer.preFlopLastBet
+        ? maxSum
+        : currentPlayer
+    );
+
+    const allSameMaxBet = activePlayers.every(
+      (player) => player.preFlopLastBet === maxBet.preFlopLastBet
+    );
+    return allSameMaxBet;
+  }
+};
+
+const giveTurn = () => {
+  const flopPlayers = playersStore.players.filter(
+    (player) => player.fold === false && player.roundStage === "flop"
+  );
+
+  if (flopPlayers.length === 0) {
+    return false;
+  }
+
+  const maxBet = flopPlayers.reduce((maxSum, currentPlayer) =>
+    maxSum.flopLastBet > currentPlayer.flopLastBet ? maxSum : currentPlayer
+  );
+
+  const allSameMaxBet = flopPlayers.every(
+    (player) =>
+      player.flopLastBet === maxBet.flopLastBet && player.makeTurn === true
+  );
+
+  return allSameMaxBet;
+};
+
+const giveRiver = () => {
+  const turnPlayers = playersStore.players.filter(
+    (player) => player.fold === false && player.roundStage === "turn"
+  );
+
+  if (turnPlayers.length === 0) {
+    return false;
+  }
+
+  const maxBet = turnPlayers.reduce((maxSum, currentPlayer) =>
+    maxSum.turnLastBet > currentPlayer.turnLastBet ? maxSum : currentPlayer
+  );
+
+  const allSameMaxBet = turnPlayers.every(
+    (player) =>
+      player.turnLastBet === maxBet.turnLastBet && player.makeTurn === true
+  );
+
+  return allSameMaxBet;
+};
+
+const giveWinner = () => {
+  const turnPlayers = playersStore.players.filter(
+    (player) => player.fold === false && player.roundStage === "river"
+  );
+
+  if (turnPlayers.length === 0) {
+    return false;
+  }
+
+  const maxBet = turnPlayers.reduce((maxSum, currentPlayer) =>
+    maxSum.riverLastBet > currentPlayer.riverLastBet ? maxSum : currentPlayer
+  );
+
+  const allSameMaxBet = turnPlayers.every(
+    (player) =>
+      player.riverLastBet === maxBet.riverLastBet && player.makeTurn === true
+  );
+
+  return allSameMaxBet;
+};
+
+let intervalId: unknown;
+
+async function fetchPlayers() {
+  try {
+    socket.emit("getPlayers");
+    socket.on("playersData", (receivedPlayers) => {
+      playersStore.setPlayers(receivedPlayers);
+    });
+  } catch (error) {
+    console.error("Error sending request:", error);
+  }
+}
+
+function startFetchingPlayers() {
+  intervalId = window.setInterval(fetchPlayers, 2000);
+}
+
+function stopFetchingPlayers() {
+  if (typeof intervalId === "number") {
+    clearInterval(intervalId);
+  }
+}
+
 onMounted(() => {
+  startFetchingPlayers();
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
   if (token && username) {
     authStore.login(token, { username: username });
   }
-  getInfo();
+
+  const savedFlop = sessionStorage.getItem("flop");
+
+  if (savedFlop) {
+    try {
+      const parsedFlop = JSON.parse(savedFlop);
+      const processedFlop = (parsedFlop.flopCards || []).map(
+        (card: string) => card || {}
+      );
+
+      playersStore.setFlop(processedFlop);
+    } catch (error) {
+      console.error("Error parsing savedFlop:", error);
+    }
+  }
+
+  watch(
+    () => playersStore.players.length,
+    (newLength) => {
+      if (newLength === 0) {
+        sessionStorage.clear();
+        playersStore.setFlop({ flopCards: [] });
+      }
+    }
+  );
+
+  watch(
+    () => playersStore.players.length,
+    (newLength) => {
+      if (newLength === 6) giveCards();
+    }
+  );
+
+  watch(
+    () => flop(),
+    (flop) => {
+      if (flop) {
+        setTimeout(() => {
+          giveFlop();
+        }, 500);
+      }
+    }
+  );
+
+  watch(
+    () => giveTurn(),
+    (tern1) => {
+      if (tern1) {
+        setTimeout(() => {
+          turn();
+        }, 500);
+      }
+    }
+  );
+
+  watch(
+    () => giveRiver(),
+    (giveRiver) => {
+      if (giveRiver) {
+        setTimeout(() => {
+          river();
+        }, 500);
+      }
+    }
+  );
+  watch(
+    () => giveWinner(),
+    (winner1) => {
+      if (winner1) {
+        setTimeout(() => {
+          winner();
+        }, 500);
+      }
+    }
+  );
 });
+onUnmounted(stopFetchingPlayers);
 </script>
 
 <template>
-  <button @click="updatepos">NEXT ROUND</button>
-  <button @click="giveCards">Give Card</button>
-
   <div class="main-container">
     <div class="table">
-      <NewPlayer name="Player 1" :position="1" class="Player1" />
-      <NewPlayer name="Player 2" :position="2" class="Player2" />
-      <NewPlayer name="Player 3" :position="3" class="Player3" />
-      <NewPlayer name="Player 4" :position="4" class="Player4" />
-      <NewPlayer name="Player 5" :position="5" class="Player5" />
-      <NewPlayer name="Player 6" :position="6" class="Player6" />
+      <UiPlayerFreeSpace @click="joinTable(username(), 1)" class="Player1" />
+      <UiPlayerFreeSpace @click="joinTable(username(), 2)" class="Player2" />
+      <UiPlayerFreeSpace @click="joinTable(username(), 3)" class="Player3" />
+      <UiPlayerFreeSpace @click="joinTable(username(), 4)" class="Player4" />
+      <UiPlayerFreeSpace @click="joinTable(username(), 5)" class="Player5" />
+      <UiPlayerFreeSpace @click="joinTable(username(), 6)" class="Player6" />
+      <div v-for="item in playersStore.players" :key="item.id">
+        <NewPlayer
+          :name="item.name"
+          :position="item.position"
+          :class="`Player${item.position}`"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -126,6 +351,9 @@ onMounted(() => {
 }
 
 .table {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
   width: 1108px;
   height: 500px;
@@ -139,8 +367,8 @@ onMounted(() => {
   border: solid black;
   border-width: 15px;
   border-radius: 300px;
+  gap: 40px;
 }
-
 .Player1 {
   position: absolute;
   width: 264px;
