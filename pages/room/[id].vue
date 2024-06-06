@@ -17,7 +17,6 @@ const username = () => {
   return localStorage.getItem("username") ?? "";
 };
 
-
 const joinTable = async (
   nickname: string,
   position: number,
@@ -79,7 +78,7 @@ const giveFlop = async () => {
     const data = await response.json();
     playersStore.setFlop(data);
     sessionStorage.setItem("flop", JSON.stringify(data));
-    console.log(playersStore.flop);
+    console.log(`flop ${playersStore.flop}`);
   } catch (error) {
     console.error(error);
   }
@@ -92,6 +91,7 @@ const turn = async () => {
     const data = await response.json();
     playersStore.setTurn(data);
     sessionStorage.setItem("turn", JSON.stringify(data));
+    console.log(`turn ${playersStore.flop}`);
   } catch (error) {
     console.error(error);
   }
@@ -104,6 +104,7 @@ const river = async () => {
     const data = await response.json();
     playersStore.setRiver(data);
     sessionStorage.setItem("river", JSON.stringify(data));
+    console.log(`river ${playersStore.flop}`);
   } catch (error) {
     console.error(error);
   }
@@ -206,9 +207,9 @@ const giveWinner = () => {
 
 let intervalId: unknown;
 
-async function fetchPlayers() {
+async function fetchPlayers(roomId: string) {
   try {
-    socket.emit("getPlayers");
+    socket.emit("getPlayers", roomId);
     socket.on("playersData", (receivedPlayers) => {
       playersStore.setPlayers(receivedPlayers);
     });
@@ -217,8 +218,8 @@ async function fetchPlayers() {
   }
 }
 
-function startFetchingPlayers() {
-  intervalId = window.setInterval(fetchPlayers, 1000);
+function startFetchingPlayers(roomId: string) {
+  intervalId = window.setInterval(() => fetchPlayers(roomId), 1000);
 }
 
 function stopFetchingPlayers() {
@@ -228,7 +229,7 @@ function stopFetchingPlayers() {
 }
 
 onMounted(() => {
-  startFetchingPlayers();
+  startFetchingPlayers(roomId.toString());
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
   if (token && username) {
@@ -263,7 +264,7 @@ onMounted(() => {
   watch(
     () => playersStore.players.length,
     (newLength) => {
-      if (newLength === 6) giveCards();
+      if (newLength === 3) giveCards();
     }
   );
 

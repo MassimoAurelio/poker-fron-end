@@ -9,6 +9,8 @@ import {
 } from "@/utils/api";
 
 const playersStore = usePlayers();
+const authStore = useAuthStore();
+
 const props = defineProps<{
   name: string;
   position: number;
@@ -48,9 +50,10 @@ const playerExists = () => {
 };
 
 const playerAndCurrentPlayerId = () => {
-  return playersStore.players.some(
+  const player = playersStore.players.find(
     (player) => player.name === props.name && player.currentPlayerId === true
   );
+  return player && player.name === authStore.user?.username;
 };
 </script>
 

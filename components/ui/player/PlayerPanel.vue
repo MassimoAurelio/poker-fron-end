@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
+import { useAuthStore } from "@/store/auth";
 import {
   BASE_URL,
   NEXT_PLAYER,
@@ -13,6 +14,7 @@ import {
 } from "@/utils/api";
 
 const playersStore = usePlayers();
+const authStore = useAuthStore();
 
 const props = defineProps({
   name: {
