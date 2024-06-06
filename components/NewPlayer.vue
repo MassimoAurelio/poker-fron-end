@@ -9,16 +9,11 @@ import {
 } from "@/utils/api";
 
 const playersStore = usePlayers();
-const props = defineProps({
-  name: {
-    type: String,
-    required: true,
-  },
-  position: {
-    type: Number,
-    required: true,
-  },
-});
+const props = defineProps<{
+  name: string;
+  position: number;
+  roomId: string;
+}>();
 
 const joinTable = async (position: number) => {
   try {
@@ -63,7 +58,7 @@ const playerAndCurrentPlayerId = () => {
   <div class="player">
     <UiPlayerActivePlayer
       :name="props.name"
-      :position="props.position"
+      :roomId="props.roomId"
       v-if="playerExists()"
     />
 

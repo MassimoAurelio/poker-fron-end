@@ -46,10 +46,14 @@ export const sendRequestWithBody = async (
 };
 
 // Функция для проверки ответа
-export const checkResponse = (response: any) => {
+export const checkResponse = (response: Response) => {
   if (!response.ok) {
-    throw new Error("WARNING");
+    return response.json().then((error) => {
+      console.error('Error response:', error);
+      throw new Error(error.message || 'Something went wrong');
+    });
   }
+  return response;
 };
 
 export function getPlayerName(props: { name: string }) {

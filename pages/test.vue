@@ -10,6 +10,8 @@ useSeoMeta({
 const socket = io("http://localhost:5000");
 const playersStore = usePlayers();
 const authStore = useAuthStore();
+const route = useRoute();
+const roomId = route.params.id;
 
 const username = () => {
   return localStorage.getItem("username") ?? "";
@@ -318,6 +320,7 @@ onUnmounted(stopFetchingPlayers);
         <NewPlayer
           :name="item.name"
           :position="item.position"
+          :roomId="roomId.toString()"
           :class="`Player${item.position}`"
         />
       </div>

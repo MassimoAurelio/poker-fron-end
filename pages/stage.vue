@@ -18,6 +18,8 @@ import NewPlayer from "~/components/NewPlayer.vue";
 const playersStore = usePlayers();
 const authStore = useAuthStore();
 const socket = io("http://localhost:5000");
+const route = useRoute();
+const roomId = route.params.id;
 
 useSeoMeta({
   title: "POKER STAGE",
@@ -305,12 +307,12 @@ onUnmounted(stopFetchingPlayers);
 
   <div class="main-container">
     <div class="table">
-      <NewPlayer name="Player 1" :position="1" class="Player1" />
-      <NewPlayer name="Player 2" :position="2" class="Player2" />
-      <NewPlayer name="Player 3" :position="3" class="Player3" />
-      <NewPlayer name="Player 4" :position="4" class="Player4" />
-      <NewPlayer name="Player 5" :position="5" class="Player5" />
-      <NewPlayer name="Player 6" :position="6" class="Player6" />
+      <NewPlayer name="Player 1" :position="1" class="Player1" :roomId="roomId.toString()"/>
+      <NewPlayer name="Player 2" :position="2" class="Player2" :roomId="roomId.toString()"/>
+      <NewPlayer name="Player 3" :position="3" class="Player3" :roomId="roomId.toString()"/>
+      <NewPlayer name="Player 4" :position="4" class="Player4" :roomId="roomId.toString()"/>
+      <NewPlayer name="Player 5" :position="5" class="Player5" :roomId="roomId.toString()"/>
+      <NewPlayer name="Player 6" :position="6" class="Player6" :roomId="roomId.toString()"/>
       <div class="flop">
         <UiFlop v-if="playersStore.players.length > 0" />
       </div>

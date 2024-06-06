@@ -9,6 +9,7 @@ interface IPlayers {
   name: string;
   stack: number;
   position: number;
+  roomId: string;
   currentPlayerId: boolean;
   fold: boolean;
   lastBet: number;

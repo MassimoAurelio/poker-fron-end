@@ -17,6 +17,7 @@ const username = () => {
   return localStorage.getItem("username") ?? "";
 };
 
+
 const joinTable = async (
   nickname: string,
   position: number,
@@ -343,6 +344,7 @@ onUnmounted(stopFetchingPlayers);
         <NewPlayer
           :name="item.name"
           :position="item.position"
+          :roomId="roomId.toString()"
           :class="`Player${item.position}`"
         />
       </div>

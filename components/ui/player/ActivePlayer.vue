@@ -12,34 +12,24 @@ import {
 const playersStore = usePlayers();
 const authStore = useAuthStore();
 
-const props = defineProps({
-  name: {
-    type: String,
-    required: true,
-  },
-  position: {
-    type: Number,
-    required: true,
-  },
-});
+const props = defineProps<{
+  name: string;
+  roomId: string;
+}>();
 
-const leaveFromTable = async (position: number) => {
+const leaveFromTable = async (name: string, roomId: string) => {
+  if (!roomId || !name) {
+    console.error("roomId or name is undefined");
+    return;
+  }
   try {
-    const body = { position };
+    const body = { player: name, roomId };
     const response = await sendRequestWithBody(
       `${BASE_URL}${LEAVE}`,
       "POST",
       body
     );
     checkResponse(response);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const leaveAndGetInfo = async (positon: number) => {
-  try {
-    await leaveFromTable(positon);
   } catch (error) {
     console.error(error);
   }
@@ -104,7 +94,7 @@ const pos6 = ref(pos(props));
         class="table-position"
         sizes="40"
         name="pepicons-pop:leave"
-        @click="leaveAndGetInfo(props.position)"
+        @click="leaveFromTable(props.name, props.roomId)"
       />
     </div>
   </div>
