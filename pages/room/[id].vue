@@ -59,7 +59,7 @@ const mbbb = async () => {
   }
 };
 
-const giveCards = async () => {
+/* const giveCards = async () => {
   try {
     const response = await sendRequest(`${BASE_URL}${DEAL}`, "POST");
     checkResponse(response);
@@ -69,7 +69,7 @@ const giveCards = async () => {
   } catch (error) {
     console.error(error);
   }
-};
+}; */
 
 const giveFlop = async () => {
   try {
@@ -78,7 +78,6 @@ const giveFlop = async () => {
     const data = await response.json();
     playersStore.setFlop(data);
     sessionStorage.setItem("flop", JSON.stringify(data));
-    console.log(`flop ${playersStore.flop}`);
   } catch (error) {
     console.error(error);
   }
@@ -89,9 +88,8 @@ const turn = async () => {
     const response = await sendRequest(`${BASE_URL}${TURN}`, "POST");
     checkResponse(response);
     const data = await response.json();
-    playersStore.setTurn(data);
+    playersStore.setFlop(data);
     sessionStorage.setItem("turn", JSON.stringify(data));
-    console.log(`turn ${playersStore.flop}`);
   } catch (error) {
     console.error(error);
   }
@@ -102,9 +100,8 @@ const river = async () => {
     const response = await sendRequest(`${BASE_URL}${RIVER}`, "POST");
     checkResponse(response);
     const data = await response.json();
-    playersStore.setRiver(data);
+    playersStore.setFlop(data);
     sessionStorage.setItem("river", JSON.stringify(data));
-    console.log(`river ${playersStore.flop}`);
   } catch (error) {
     console.error(error);
   }
@@ -229,6 +226,7 @@ function stopFetchingPlayers() {
 }
 
 onMounted(() => {
+  socket.emit("requestDeal", { roomId: "666067c6d4a06d920d4cc7a5" });
   startFetchingPlayers(roomId.toString());
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
@@ -256,17 +254,17 @@ onMounted(() => {
     (newLength) => {
       if (newLength === 0) {
         sessionStorage.clear();
-        playersStore.setFlop({ flopCards: [] });
+        playersStore.setFlop({ tableCards: [] });
       }
     }
   );
 
-  watch(
+  /*  watch(
     () => playersStore.players.length,
     (newLength) => {
       if (newLength === 3) giveCards();
     }
-  );
+  ); */
 
   watch(
     () => flop(),
