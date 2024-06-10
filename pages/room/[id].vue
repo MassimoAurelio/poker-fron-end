@@ -59,30 +59,6 @@ const mbbb = async () => {
   }
 };
 
-/* const giveCards = async () => {
-  try {
-    const response = await sendRequest(`${BASE_URL}${DEAL}`, "POST");
-    checkResponse(response);
-    const data = await response.json();
-    playersStore.setCards(data);
-    sessionStorage.setItem("cardsDealt", "true");
-  } catch (error) {
-    console.error(error);
-  }
-}; */
-
-const giveFlop = async () => {
-  try {
-    const response = await sendRequest("http://localhost:5000/giveflop", "GET");
-    checkResponse(response);
-    const data = await response.json();
-    playersStore.setFlop(data);
-    sessionStorage.setItem("flop", JSON.stringify(data));
-  } catch (error) {
-    console.error(error);
-  }
-};
-
 const turn = async () => {
   try {
     const response = await sendRequest(`${BASE_URL}${TURN}`, "POST");
@@ -224,9 +200,8 @@ function stopFetchingPlayers() {
     clearInterval(intervalId);
   }
 }
-
+const dealRequested = ref<boolean>(false);
 onMounted(() => {
-  socket.emit("requestDeal", { roomId: "666067c6d4a06d920d4cc7a5" });
   startFetchingPlayers(roomId.toString());
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
@@ -259,56 +234,14 @@ onMounted(() => {
     }
   );
 
-  /*  watch(
-    () => playersStore.players.length,
-    (newLength) => {
-      if (newLength === 3) giveCards();
-    }
-  ); */
-
-  watch(
-    () => flop(),
-    (flop) => {
-      if (flop) {
-        setTimeout(() => {
-          giveFlop();
-        }, 500);
-      }
-    }
-  );
-
-  watch(
-    () => giveTurn(),
-    (tern1) => {
-      if (tern1) {
-        setTimeout(() => {
-          turn();
-        }, 500);
-      }
-    }
-  );
-
-  watch(
-    () => giveRiver(),
-    (giveRiver) => {
-      if (giveRiver) {
-        setTimeout(() => {
-          river();
-        }, 500);
-      }
-    }
-  );
-  watch(
-    () => giveWinner(),
-    (winner1) => {
-      if (winner1) {
-        setTimeout(() => {
-          winner();
-        }, 500);
-      }
-    }
-  );
+  // Проверяем, было ли уже отправлено событие requestDeal
+  if (!dealRequested.value) {
+    socket.emit("requestDeal", { roomId: "666067c6d4a06d920d4cc7a5" });
+    // Устанавливаем флаг в true, чтобы избежать повторной отправки
+    dealRequested.value = true;
+  }
 });
+
 onUnmounted(stopFetchingPlayers);
 </script>
 
