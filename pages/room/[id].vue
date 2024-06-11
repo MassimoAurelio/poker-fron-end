@@ -9,6 +9,7 @@ useSeoMeta({
 });
 
 const socket = io("http://localhost:5000");
+
 const playersStore = usePlayers();
 const authStore = useAuthStore();
 const route = useRoute();
@@ -41,12 +42,6 @@ const joinTable = async (
   }
 };
 
-socket.on("dealFlop", (data) => {
-  playersStore.setFlop(data.flop);
-  sessionStorage.setItem("flop", JSON.stringify(data.flop));
-});
-
-
 let intervalId: unknown;
 
 async function fetchPlayers(roomId: string) {
@@ -70,9 +65,17 @@ function stopFetchingPlayers() {
   }
 }
 
-onMounted(() => {
-  startFetchingPlayers(roomId.toString());
+socket.on("connect", () => {
+  console.log("Connected to server");
+});
 
+socket.on("message", (data) => {
+  console.log("Received from server:", data);
+});
+
+onMounted(() => {
+  console.log("Component mounted");
+  startFetchingPlayers(roomId.toString());
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
   if (token && username) {
@@ -93,7 +96,6 @@ onMounted(() => {
   watch(
     () => playersStore.players.length,
     (newLength) => {
-      console.log("Players length changed:", newLength);
       if (newLength === 0) {
         sessionStorage.clear();
         playersStore.setFlop({ tableCards: [] });
@@ -102,22 +104,11 @@ onMounted(() => {
       }
     }
   );
-
-  watch(
-    () => flop(),
-    (flop) => {
-      if (flop) {
-        setTimeout(() => {
-          socket.emit("dealFlop", { roomId: "666067c6d4a06d920d4cc7a5" });
-        }, 500);
-      }
-    }
-  );
 });
 
 onUnmounted(() => {
+  console.log("Component unmounted");
   stopFetchingPlayers();
-  socket.off("dealFlop");
   socket.off("playersData");
 });
 </script>
