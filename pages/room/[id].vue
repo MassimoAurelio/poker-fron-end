@@ -75,7 +75,7 @@ socket.on("dealFlop", (card) => {
 
 onMounted(() => {
   startFetchingPlayers(roomId.toString());
-  socket.emit("dealFlop");
+
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
   if (token && username) {
@@ -101,6 +101,15 @@ onMounted(() => {
         playersStore.setFlop({ flop: { tableCards: [] } });
       } else if (newLength === 3) {
         socket.emit("requestDeal", { roomId: roomId });
+      }
+    }
+  );
+
+  watch(
+    () => flop(),
+    (newFlop) => {
+      if (newFlop) {
+        socket.emit("dealFlop");
       }
     }
   );
