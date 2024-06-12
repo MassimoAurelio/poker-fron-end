@@ -65,17 +65,17 @@ function stopFetchingPlayers() {
   }
 }
 
-socket.on("connect", () => {
-  console.log("Connected to server");
-});
-
-socket.on("message", (data) => {
-  console.log("Received from server:", data);
+socket.on("dealFlop", (card) => {
+  if (card && card.flop && Array.isArray(card.flop.tableCards)) {
+    playersStore.setFlop(card);
+  } else {
+    console.error("Received invalid flop data:", card);
+  }
 });
 
 onMounted(() => {
-  console.log("Component mounted");
   startFetchingPlayers(roomId.toString());
+  socket.emit("dealFlop");
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
   if (token && username) {
@@ -98,16 +98,15 @@ onMounted(() => {
     (newLength) => {
       if (newLength === 0) {
         sessionStorage.clear();
-        playersStore.setFlop({ tableCards: [] });
+        playersStore.setFlop({ flop: { tableCards: [] } });
       } else if (newLength === 3) {
-        socket.emit("requestDeal", { roomId: "666067c6d4a06d920d4cc7a5" });
+        socket.emit("requestDeal", { roomId: roomId });
       }
     }
   );
 });
 
 onUnmounted(() => {
-  console.log("Component unmounted");
   stopFetchingPlayers();
   socket.off("playersData");
 });
@@ -140,6 +139,9 @@ onUnmounted(() => {
         @click="joinTable(username(), 6, roomId.toString())"
         class="Player6"
       />
+      <div class="flop">
+        <UiFlop v-if="playersStore.players.length > 0" />
+      </div>
       <div v-for="item in playersStore.players" :key="item.id">
         <NewPlayer
           :name="item.name"

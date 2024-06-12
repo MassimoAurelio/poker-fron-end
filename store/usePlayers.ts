@@ -21,8 +21,11 @@ interface IPlayers {
   cards: ICard[];
   roundStage: string;
 }
+
 interface IFlop {
-  tableCards: ICard[];
+  flop: {
+    tableCards: ICard[];
+  };
 }
 
 export const usePlayers = defineStore({
@@ -30,7 +33,7 @@ export const usePlayers = defineStore({
 
   state: () => ({
     players: [] as IPlayers[],
-    flop: {} as IFlop,
+    flop: { flop: { tableCards: [] } } as IFlop,
     cards: {} as IFlop,
     flopGiven: false,
   }),

@@ -17,12 +17,14 @@ const totalPot = () => {
   <div class="flop-container">
     <div
       class="flop-card"
-      v-for="(card, index) in playersStore.flop.tableCards"
+      v-if="playersStore?.flop?.flop?.tableCards"
+      v-for="(card, index) in playersStore.flop.flop.tableCards"
       :key="index"
     >
       <div class="flop-suite">{{ card.suit }}</div>
       <div class="flop-value">{{ card.value }}</div>
     </div>
+    <div v-else>No cards to show.</div>
   </div>
 </template>
 
