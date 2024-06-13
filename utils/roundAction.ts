@@ -2,23 +2,23 @@ import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
 
 const updatepos = async () => {
-    try {
-      const response = await sendRequest(`${BASE_URL}${UPDATEPOSITION}`, "POST");
-      checkResponse(response);
-      await mbbb();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  
-  const mbbb = async () => {
-    try {
-      const response = await sendRequest(`${BASE_URL}${MBBB}`, "POST");
-      checkResponse(response);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  try {
+    const response = await sendRequest(`${BASE_URL}${UPDATEPOSITION}`, "POST");
+    checkResponse(response);
+    await mbbb();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const mbbb = async () => {
+  try {
+    const response = await sendRequest(`${BASE_URL}${MBBB}`, "POST");
+    checkResponse(response);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 const turn = async () => {
   const playersStore = usePlayers();
@@ -84,7 +84,7 @@ export const flop = () => {
   }
 };
 
-const giveTurn = () => {
+export const giveTurn = () => {
   const playersStore = usePlayers();
   const authStore = useAuthStore();
   const flopPlayers = playersStore.players.filter(
@@ -107,7 +107,7 @@ const giveTurn = () => {
   return allSameMaxBet;
 };
 
-const giveRiver = () => {
+export const giveRiver = () => {
   const playersStore = usePlayers();
   const authStore = useAuthStore();
   const turnPlayers = playersStore.players.filter(

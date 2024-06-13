@@ -2,7 +2,7 @@
 import { io } from "socket.io-client";
 import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
-import { flop } from "@/utils/roundAction";
+import { flop, giveTurn, giveRiver } from "@/utils/roundAction";
 
 useSeoMeta({
   title: "POKER STAGE",
@@ -73,6 +73,21 @@ socket.on("dealFlop", (card) => {
   }
 });
 
+socket.on("dealTurn", (card) => {
+  if (card && card.flop && Array.isArray(card.flop.tableCards)) {
+    playersStore.setFlop(card);
+  } else {
+    console.error("Received invalid flop data:", card);
+  }
+});
+socket.on("dealRiver", (card) => {
+  if (card && card.flop && Array.isArray(card.flop.tableCards)) {
+    playersStore.setFlop(card);
+  } else {
+    console.error("Received invalid flop data:", card);
+  }
+});
+
 onMounted(() => {
   startFetchingPlayers(roomId.toString());
 
@@ -113,7 +128,24 @@ onMounted(() => {
       }
     }
   );
+  watch(
+    () => giveTurn(),
+    (newTurn) => {
+      if (newTurn) {
+        socket.emit("dealTurn");
+      }
+    }
+  );
 });
+
+watch(
+  () => giveRiver(),
+  (newRiver) => {
+    if (newRiver) {
+      socket.emit("dealRiver");
+    }
+  }
+);
 
 onUnmounted(() => {
   stopFetchingPlayers();
