@@ -48,7 +48,7 @@ const river = async () => {
   }
 };
 
-const winner = async () => {
+ const winner = async () => {
   const playersStore = usePlayers();
   const authStore = useAuthStore();
   try {
@@ -61,7 +61,6 @@ const winner = async () => {
 
 export const flop = () => {
   const playersStore = usePlayers();
-  const authStore = useAuthStore();
   const activePlayers = playersStore.players.filter(
     (player) => player.fold === false && player.roundStage === "preflop"
   );
@@ -86,7 +85,6 @@ export const flop = () => {
 
 export const giveTurn = () => {
   const playersStore = usePlayers();
-  const authStore = useAuthStore();
   const flopPlayers = playersStore.players.filter(
     (player) => player.fold === false && player.roundStage === "flop"
   );
@@ -109,7 +107,6 @@ export const giveTurn = () => {
 
 export const giveRiver = () => {
   const playersStore = usePlayers();
-  const authStore = useAuthStore();
   const turnPlayers = playersStore.players.filter(
     (player) => player.fold === false && player.roundStage === "turn"
   );
@@ -130,9 +127,8 @@ export const giveRiver = () => {
   return allSameMaxBet;
 };
 
-const giveWinner = () => {
+export const giveWinner = () => {
   const playersStore = usePlayers();
-  const authStore = useAuthStore();
   const turnPlayers = playersStore.players.filter(
     (player) => player.fold === false && player.roundStage === "river"
   );

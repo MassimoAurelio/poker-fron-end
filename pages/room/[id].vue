@@ -2,7 +2,7 @@
 import { io } from "socket.io-client";
 import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
-import { flop, giveTurn, giveRiver } from "@/utils/roundAction";
+import { flop, giveTurn, giveRiver, giveWinner } from "@/utils/roundAction";
 
 useSeoMeta({
   title: "POKER STAGE",
@@ -90,7 +90,7 @@ socket.on("dealRiver", (card) => {
 
 onMounted(() => {
   startFetchingPlayers(roomId.toString());
-
+  socket.emit("updatePositions");
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
   if (token && username) {
@@ -124,7 +124,9 @@ onMounted(() => {
     () => flop(),
     (newFlop) => {
       if (newFlop) {
-        socket.emit("dealFlop");
+        setTimeout(() => {
+          socket.emit("dealFlop");
+        }, 1000);
       }
     }
   );
@@ -136,16 +138,28 @@ onMounted(() => {
       }
     }
   );
-});
 
-watch(
-  () => giveRiver(),
-  (newRiver) => {
-    if (newRiver) {
-      socket.emit("dealRiver");
+  watch(
+    () => giveRiver(),
+    (newRiver) => {
+      if (newRiver) {
+        socket.emit("dealRiver");
+      }
     }
-  }
-);
+  );
+
+  watch(
+    () => giveWinner(),
+    (newWinner) => {
+      if (newWinner) {
+        socket.emit("findWinner");
+        setTimeout(() => {
+          socket.emit("updatePositions");
+        }, 1000);
+      }
+    }
+  );
+});
 
 onUnmounted(() => {
   stopFetchingPlayers();
