@@ -48,7 +48,7 @@ const river = async () => {
   }
 };
 
- const winner = async () => {
+const winner = async () => {
   const playersStore = usePlayers();
   const authStore = useAuthStore();
   try {
@@ -62,7 +62,10 @@ const river = async () => {
 export const flop = () => {
   const playersStore = usePlayers();
   const activePlayers = playersStore.players.filter(
-    (player) => player.fold === false && player.roundStage === "preflop"
+    (player) =>
+      player.fold === false &&
+      player.roundStage === "preflop" &&
+      player.makeTurn === true
   );
 
   if (activePlayers.length === 0) {

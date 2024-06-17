@@ -43,6 +43,7 @@ const joinTable = async (
 };
 
 let intervalId: unknown;
+let hasDealtCards = false;
 
 async function fetchPlayers(roomId: string) {
   try {
@@ -155,6 +156,8 @@ onMounted(() => {
         socket.emit("findWinner");
         setTimeout(() => {
           socket.emit("updatePositions");
+          sessionStorage.clear();
+          playersStore.setFlop({ flop: { tableCards: [] } });
         }, 1000);
       }
     }
