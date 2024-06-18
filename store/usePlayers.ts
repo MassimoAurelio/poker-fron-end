@@ -51,5 +51,8 @@ export const usePlayers = defineStore({
     markFlopGiven() {
       this.flopGiven = true;
     },
+    clearFlop() {
+      this.flop.flop.tableCards = [];
+    },
   },
 });
