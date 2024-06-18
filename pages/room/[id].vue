@@ -159,7 +159,7 @@ onMounted(() => {
           playersStore.setFlop({ flop: { tableCards: [] } });
         }, 1000);
         setTimeout(() => {
-          socket.emit("resetTableCards");
+          socket.emit("resetFlop");
           socket.emit("requestDeal", { roomId: roomId });
           console.log("Раздаем карты каждому игроку");
         }, 5000);
