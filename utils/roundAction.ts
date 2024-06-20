@@ -1,6 +1,5 @@
 import { usePlayers } from "@/store/usePlayers";
 
-
 export const flop = () => {
   const playersStore = usePlayers();
   const activePlayers = playersStore.players.filter(
@@ -93,3 +92,5 @@ export const giveWinner = () => {
 
   return allSameMaxBet;
 };
+
+

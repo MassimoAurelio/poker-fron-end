@@ -88,6 +88,12 @@ socket.on("dealRiver", (card) => {
   }
 });
 
+
+// Обработчик события resetFlop
+socket.on("resetFlop", (tableCards) => {
+  console.log("Флоп был сброшен:", tableCards);
+});
+
 onMounted(() => {
   startFetchingPlayers(roomId.toString());
   socket.emit("updatePositions");
@@ -125,6 +131,7 @@ onMounted(() => {
     (newFlop) => {
       if (newFlop) {
         setTimeout(() => {
+          console.log("flop");
           socket.emit("dealFlop");
         }, 1000);
       }
