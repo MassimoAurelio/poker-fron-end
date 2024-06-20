@@ -2,7 +2,13 @@
 import { io } from "socket.io-client";
 import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
-import { flop, giveTurn, giveRiver, giveWinner } from "@/utils/roundAction";
+import {
+  flop,
+  giveTurn,
+  giveRiver,
+  giveWinner,
+  lastWinner,
+} from "@/utils/roundAction";
 
 useSeoMeta({
   title: "POKER STAGE",
@@ -88,14 +94,13 @@ socket.on("dealRiver", (card) => {
   }
 });
 
-
-// Обработчик события resetFlop
 socket.on("resetFlop", (tableCards) => {
   console.log("Флоп был сброшен:", tableCards);
 });
 
 onMounted(() => {
   startFetchingPlayers(roomId.toString());
+
   socket.emit("updatePositions");
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
@@ -122,6 +127,25 @@ onMounted(() => {
         playersStore.setFlop({ flop: { tableCards: [] } });
       } else if (newLength === 3) {
         socket.emit("requestDeal", { roomId: roomId });
+      }
+    }
+  );
+
+  watch(
+    () => lastWinner(),
+    (lastUser) => {
+      if (lastUser) {
+        socket.emit("remainineOneWinner");
+        setTimeout(() => {
+          socket.emit("updatePositions");
+          sessionStorage.clear();
+          playersStore.setFlop({ flop: { tableCards: [] } });
+        }, 1000);
+        setTimeout(() => {
+          socket.emit("resetFlop");
+          socket.emit("requestDeal", { roomId: roomId });
+          console.log("Раздаем карты каждому игроку");
+        }, 5000);
       }
     }
   );

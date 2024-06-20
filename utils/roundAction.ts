@@ -93,4 +93,21 @@ export const giveWinner = () => {
   return allSameMaxBet;
 };
 
+export const lastWinner = () => {
+  const playersStore = usePlayers();
+  let countFoldFalse = 0;
+  const users = playersStore.players;
 
+  for (let user of users) {
+    if (user.fold === false) {
+      countFoldFalse++;
+      if (countFoldFalse > 1) {
+        return false; // если нашли больше одного с fold: false, сразу возвращаем false
+      }
+    } else if (user.fold !== true) {
+      return false; // если значение fold не является строго true или false
+    }
+  }
+
+  return countFoldFalse === 1;
+};
