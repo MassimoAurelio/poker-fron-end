@@ -13,7 +13,7 @@ export const flop = () => {
     return false;
   }
 
-  if (activePlayers.length > 2) {
+  if (activePlayers.length > 1) {
     const maxBet = activePlayers.reduce((maxSum, currentPlayer) =>
       maxSum.preFlopLastBet > currentPlayer.preFlopLastBet
         ? maxSum
@@ -98,14 +98,16 @@ export const lastWinner = () => {
   let countFoldFalse = 0;
   const users = playersStore.players;
 
-  for (let user of users) {
-    if (user.fold === false) {
-      countFoldFalse++;
-      if (countFoldFalse > 1) {
-        return false; // если нашли больше одного с fold: false, сразу возвращаем false
+  if (users.length > 1) {
+    for (let user of users) {
+      if (user.fold === false) {
+        countFoldFalse++;
+        if (countFoldFalse > 1) {
+          return false;
+        }
+      } else if (user.fold !== true) {
+        return false;
       }
-    } else if (user.fold !== true) {
-      return false; // если значение fold не является строго true или false
     }
   }
 
