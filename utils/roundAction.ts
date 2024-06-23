@@ -73,6 +73,7 @@ export const giveRiver = () => {
 
 export const giveWinner = () => {
   const playersStore = usePlayers();
+
   const turnPlayers = playersStore.players.filter(
     (player) => player.fold === false && player.roundStage === "river"
   );
@@ -89,7 +90,6 @@ export const giveWinner = () => {
     (player) =>
       player.riverLastBet === maxBet.riverLastBet && player.makeTurn === true
   );
-
   return allSameMaxBet;
 };
 
@@ -113,3 +113,6 @@ export const lastWinner = () => {
 
   return countFoldFalse === 1;
 };
+
+
+

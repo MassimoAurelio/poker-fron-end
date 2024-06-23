@@ -100,7 +100,6 @@ socket.on("resetFlop", (tableCards) => {
 
 onMounted(() => {
   startFetchingPlayers(roomId.toString());
-
   socket.emit("updatePositions");
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
@@ -123,29 +122,12 @@ onMounted(() => {
     () => playersStore.players.length,
     (newLength) => {
       if (newLength === 0) {
+        socket.emit("resetFlop");
+        console.log("Очищаем флоп");
         sessionStorage.clear();
         playersStore.setFlop({ flop: { tableCards: [] } });
       } else if (newLength === 3) {
         socket.emit("requestDeal", { roomId: roomId });
-      }
-    }
-  );
-
-  watch(
-    () => lastWinner(),
-    (lastUser) => {
-      if (lastUser) {
-        socket.emit("remainineOneWinner");
-        setTimeout(() => {
-          socket.emit("updatePositions");
-          sessionStorage.clear();
-          playersStore.setFlop({ flop: { tableCards: [] } });
-        }, 1000);
-        setTimeout(() => {
-          socket.emit("resetFlop");
-          socket.emit("requestDeal", { roomId: roomId });
-          console.log("Раздаем карты каждому игроку");
-        }, 5000);
       }
     }
   );
@@ -183,6 +165,27 @@ onMounted(() => {
     () => giveWinner(),
     (newWinner) => {
       if (newWinner) {
+        console.log("ВСКРЫТИЕ НА РИВЕРЕ");
+        socket.emit("findWinner");
+        setTimeout(() => {
+          socket.emit("updatePositions");
+          sessionStorage.clear();
+          playersStore.setFlop({ flop: { tableCards: [] } });
+        }, 1000);
+        setTimeout(() => {
+          socket.emit("resetFlop");
+          socket.emit("requestDeal", { roomId: roomId });
+          console.log("Раздаем карты каждому игроку");
+        }, 5000);
+      }
+    }
+  );
+
+  watch(
+    () => lastWinner(),
+    (newWinner) => {
+      if (newWinner) {
+        console.log("ВСЕ СКИНУЛИ ВСРЫТИЯ НЕТ");
         socket.emit("findWinner");
         setTimeout(() => {
           socket.emit("updatePositions");
