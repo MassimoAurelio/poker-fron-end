@@ -13,7 +13,7 @@ export const flop = () => {
     return false;
   }
 
-  if (activePlayers.length > 1) {
+  if (activePlayers.length > 2) {
     const maxBet = activePlayers.reduce((maxSum, currentPlayer) =>
       maxSum.preFlopLastBet > currentPlayer.preFlopLastBet
         ? maxSum
@@ -113,6 +113,3 @@ export const lastWinner = () => {
 
   return countFoldFalse === 1;
 };
-
-
-
