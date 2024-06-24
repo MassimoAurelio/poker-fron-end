@@ -169,14 +169,14 @@ onMounted(() => {
         socket.emit("findWinner");
         setTimeout(() => {
           socket.emit("updatePositions");
+          socket.emit("resetFlop");
           sessionStorage.clear();
           playersStore.setFlop({ flop: { tableCards: [] } });
         }, 1000);
         setTimeout(() => {
-          socket.emit("resetFlop");
           socket.emit("requestDeal", { roomId: roomId });
           console.log("Раздаем карты каждому игроку");
-        }, 5000);
+        }, 2000);
       }
     }
   );
@@ -189,14 +189,14 @@ onMounted(() => {
         socket.emit("findWinner");
         setTimeout(() => {
           socket.emit("updatePositions");
+          socket.emit("resetFlop");
           sessionStorage.clear();
           playersStore.setFlop({ flop: { tableCards: [] } });
         }, 1000);
         setTimeout(() => {
-          socket.emit("resetFlop");
           socket.emit("requestDeal", { roomId: roomId });
           console.log("Раздаем карты каждому игроку");
-        }, 5000);
+        }, 2000);
       }
     }
   );
