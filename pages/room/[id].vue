@@ -95,12 +95,27 @@ socket.on("dealRiver", (card) => {
 });
 
 socket.on("resetFlop", (tableCards) => {
-  console.log("Флоп был сброшен:", tableCards);
+  if (Array.isArray(tableCards) && tableCards.length > 0) {
+    console.log("Флоп был сброшен:", tableCards);
+  } else {
+    console.error("Received invalid resetFlop data:", tableCards);
+  }
+});
+
+socket.on("findWinner", ({ winners, lastPlayer, winnerSum }) => {
+  if (winners) {
+    console.log(`Игроки дошли до ривера и вскрыли карты ${winnerSum}`);
+    // Действия при нескольких победителях
+  } else if (lastPlayer) {
+    console.log(
+      `Юзер остался один, все остальные сбросили, он победитель ${winnerSum}`
+    );
+    // Действия при одном победителе
+  }
 });
 
 onMounted(() => {
   startFetchingPlayers(roomId.toString());
-  socket.emit("updatePositions");
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
   if (token && username) {
@@ -166,6 +181,7 @@ onMounted(() => {
     (newWinner) => {
       if (newWinner) {
         console.log("ВСКРЫТИЕ НА РИВЕРЕ");
+
         socket.emit("findWinner");
         setTimeout(() => {
           socket.emit("updatePositions");
