@@ -111,7 +111,6 @@ onMounted(() => {
   startFetchingPlayers(roomId.toString());
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
-  socket.emit("findWinner");
   if (token && username) {
     authStore.login(token, { username: username });
   }
