@@ -94,14 +94,6 @@ socket.on("dealRiver", (card) => {
   }
 });
 
-socket.on("resetFlop", (tableCards) => {
-  if (Array.isArray(tableCards) && tableCards.length > 0) {
-    console.log("Флоп был сброшен:", tableCards);
-  } else {
-    console.error("Received invalid resetFlop data:", tableCards);
-  }
-});
-
 socket.on("findWinner", ({ winners, lastPlayer, winnerSum }) => {
   if (winners) {
     console.log(`Игроки дошли до ривера и вскрыли карты ${winnerSum}`);
@@ -114,10 +106,12 @@ socket.on("findWinner", ({ winners, lastPlayer, winnerSum }) => {
   }
 });
 
+
 onMounted(() => {
   startFetchingPlayers(roomId.toString());
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
+  socket.emit("findWinner");
   if (token && username) {
     authStore.login(token, { username: username });
   }
