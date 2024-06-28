@@ -55,6 +55,18 @@ const getSuiteFirstCard = () => {
   return cards[0]?.suit;
 };
 
+const getSuiteColorFirstCard = () => {
+  if (getSuiteFirstCard() === "♠") {
+    return { color: "rgb(152, 222, 227)" };
+  } else if (getSuiteFirstCard() === "♦") {
+    return { color: "rgb(234, 166, 128)" };
+  } else if (getSuiteFirstCard() === "♣") {
+    return { color: "rgb(122, 167, 255)" };
+  } else if (getSuiteFirstCard() === "♥") {
+    return { color: "rgb(233, 123, 136)" };
+  }
+};
+
 const getValueSecondCard = () => {
   const cards = getPlayerCards();
   return cards[1]?.value;
@@ -63,6 +75,18 @@ const getValueSecondCard = () => {
 const getSuiteSecondCard = () => {
   const cards = getPlayerCards();
   return cards[1]?.suit;
+};
+
+const getSuiteColorSecondCard = () => {
+  if (getSuiteSecondCard() === "♠") {
+    return { color: "rgb(152, 222, 227)" };
+  } else if (getSuiteSecondCard() === "♦") {
+    return { color: "rgb(234, 166, 128)" };
+  } else if (getSuiteSecondCard() === "♣") {
+    return { color: "rgb(122, 167, 255)" };
+  } else if (getSuiteSecondCard() === "♥") {
+    return { color: "rgb(233, 123, 136)" };
+  }
 };
 
 const pos6 = ref(pos(props));
@@ -76,17 +100,23 @@ const isActivePlayer = computed(() => {
   <div class="active-player-container" v-if="isActivePlayer">
     <div class="card-container">
       <div class="first-card">
-        <div class="suit">
+        <div class="suit" :style="getSuiteColorFirstCard()">
           {{ getSuiteFirstCard() }}
           <div class="card_number-container">
-            <div class="card-number">{{ getValueFirstCard() }}</div>
+            <div class="card-number" :style="getSuiteColorFirstCard()">
+              {{ getValueFirstCard() }}
+            </div>
           </div>
         </div>
       </div>
       <div class="second-card">
-        {{ getSuiteSecondCard() }}
-        <div class="card_number-container">
-          <div class="card-number">{{ getValueSecondCard() }}</div>
+        <div class="suit" :style="getSuiteColorSecondCard()">
+          {{ getSuiteSecondCard() }}
+          <div class="card_number-container">
+            <div class="card-number" :style="getSuiteColorSecondCard()">
+              {{ getValueSecondCard() }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -105,7 +135,9 @@ const isActivePlayer = computed(() => {
 
   <div class="Not-active-player-container" v-else>
     <div class="card-container">
-      <div class="first-card"></div>
+      <div class="first-card">
+        <div class="foo"></div>
+      </div>
       <div class="second-card"></div>
     </div>
     <UiPlayerFooterInfo :name="props.name" />
@@ -218,10 +250,14 @@ const isActivePlayer = computed(() => {
     margin-right: 50px;
     display: flex;
     .first-card {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       position: relative;
       width: 64px;
       height: 88px;
       font-size: 30px;
+      padding: 5%;
       border-radius: 3px;
       box-shadow: -1px 0px 2px 0px rgba(20, 28, 33, 0.56);
       background: radial-gradient(
@@ -230,23 +266,10 @@ const isActivePlayer = computed(() => {
         rgb(44, 58, 68) 100%
       );
 
-      .card_number-container {
-        position: absolute;
+      .foo {
         width: 100%;
-        display: flex;
-        justify-content: center;
-        top: 40px;
-        .card-number {
-          width: 31px;
-          height: 36px;
-          color: rgb(122, 167, 255);
-          font-family: Dela Gothic One;
-          font-size: 36px;
-          font-weight: 400;
-          line-height: 100%;
-          letter-spacing: -2%;
-          text-align: center;
-        }
+        height: 100%;
+        transform: rotate(180deg);
       }
     }
     .second-card {
@@ -258,27 +281,9 @@ const isActivePlayer = computed(() => {
       box-shadow: -1px 0px 2px 0px rgba(20, 28, 33, 0.56);
       background: radial-gradient(
         98% 100% at 50% 100%,
-        rgb(69, 84, 95),
+        rgb(17, 92, 146),
         rgb(44, 58, 68) 100%
       );
-      .card_number-container {
-        position: absolute;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        top: 40px;
-        .card-number {
-          width: 31px;
-          height: 36px;
-          color: rgb(122, 167, 255);
-          font-family: Dela Gothic One;
-          font-size: 36px;
-          font-weight: 400;
-          line-height: 100%;
-          letter-spacing: -2%;
-          text-align: center;
-        }
-      }
     }
   }
 }

@@ -10,6 +10,21 @@ const totalPot = () => {
   const lastBet = returnLastBet();
   return lastBet.reduce((acc, bet) => acc + bet, 0);
 };
+
+function getColorForSuit(suit: any) {
+  switch (suit) {
+    case "♠":
+      return "rgb(152, 222, 227)";
+    case "♦":
+      return "rgb(234, 166, 128)";
+    case "♣":
+      return "rgb(122, 167, 255)";
+    case "♥":
+      return "rgb(233, 123, 136)";
+    default:
+      return "gray"; // Цвет по умолчанию
+  }
+}
 </script>
 
 <template>
@@ -21,8 +36,12 @@ const totalPot = () => {
       v-for="(card, index) in playersStore.flop.flop.tableCards"
       :key="index"
     >
-      <div class="flop-suite">{{ card.suit }}</div>
-      <div class="flop-value">{{ card.value }}</div>
+      <div :style="{ color: getColorForSuit(card.suit) }" class="flop-suite">
+        {{ card.suit }}
+      </div>
+      <div class="flop-value" :style="{ color: getColorForSuit(card.suit) }">
+        {{ card.value }}
+      </div>
     </div>
     <div v-else>No cards to show.</div>
   </div>
