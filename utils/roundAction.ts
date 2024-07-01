@@ -1,6 +1,6 @@
 import { usePlayers } from "@/store/usePlayers";
 
-export const flop = () => {
+export const flop = (): boolean => {
   const playersStore = usePlayers();
   const activePlayers = playersStore.players.filter(
     (player) =>
@@ -25,9 +25,10 @@ export const flop = () => {
     );
     return allSameMaxBet;
   }
+  return false;
 };
 
-export const giveTurn = () => {
+export const giveTurn = (): boolean => {
   const playersStore = usePlayers();
   const flopPlayers = playersStore.players.filter(
     (player) => player.fold === false && player.roundStage === "flop"
@@ -49,7 +50,7 @@ export const giveTurn = () => {
   return allSameMaxBet;
 };
 
-export const giveRiver = () => {
+export const giveRiver = (): boolean => {
   const playersStore = usePlayers();
   const turnPlayers = playersStore.players.filter(
     (player) => player.fold === false && player.roundStage === "turn"
@@ -71,7 +72,7 @@ export const giveRiver = () => {
   return allSameMaxBet;
 };
 
-export const giveWinner = () => {
+export const giveWinner = (): boolean => {
   const playersStore = usePlayers();
 
   const turnPlayers = playersStore.players.filter(
@@ -93,7 +94,7 @@ export const giveWinner = () => {
   return allSameMaxBet;
 };
 
-export const lastWinner = () => {
+export const lastWinner = (): boolean => {
   const playersStore = usePlayers();
   let countFoldFalse = 0;
   const users = playersStore.players;

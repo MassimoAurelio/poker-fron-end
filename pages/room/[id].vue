@@ -48,7 +48,7 @@ const joinTable = async (
   }
 };
 
-let intervalId: unknown;
+let intervalId: number | unknown;
 
 async function fetchPlayers(roomId: string) {
   try {
@@ -97,15 +97,12 @@ socket.on("dealRiver", (card) => {
 socket.on("findWinner", ({ winners, lastPlayer, winnerSum }) => {
   if (winners) {
     console.log(`Игроки дошли до ривера и вскрыли карты ${winnerSum}`);
-    // Действия при нескольких победителях
   } else if (lastPlayer) {
     console.log(
       `Юзер остался один, все остальные сбросили, он победитель ${winnerSum}`
     );
-    // Действия при одном победителе
   }
 });
-
 
 onMounted(() => {
   startFetchingPlayers(roomId.toString());
@@ -128,7 +125,7 @@ onMounted(() => {
 
   watch(
     () => playersStore.players.length,
-    (newLength) => {
+    (newLength: number) => {
       if (newLength === 0) {
         socket.emit("resetFlop");
         console.log("Очищаем флоп");

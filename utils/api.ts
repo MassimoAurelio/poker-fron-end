@@ -1,22 +1,22 @@
 import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
 
-export const BASE_URL = "http://localhost:5000/";
-export const NEXT_PLAYER = "nextplayer";
-export const COLL = "coll";
-export const JOIN = "join";
-export const LEAVE = "leave";
-export const PLAYERS = "players";
-export const FOLD = "fold";
-export const RAISE = "raise";
-export const UPDATEPOSITION = "updatepos";
-export const MBBB = "mbbb";
-export const DEAL = "deal";
-export const GIVEFLOP = "giveflop";
-export const TURN = "turn";
-export const RIVER = "river";
-export const WINNER = "winner";
-export const CHECK = "check";
+export const BASE_URL: string = "http://localhost:5000/";
+export const NEXT_PLAYER: string = "nextplayer";
+export const COLL: string = "coll";
+export const JOIN: string = "join";
+export const LEAVE: string = "leave";
+export const PLAYERS: string = "players";
+export const FOLD: string = "fold";
+export const RAISE: string = "raise";
+export const UPDATEPOSITION: string = "updatepos";
+export const MBBB: string = "mbbb";
+export const DEAL: string = "deal";
+export const GIVEFLOP: string = "giveflop";
+export const TURN: string = "turn";
+export const RIVER: string = "river";
+export const WINNER: string = "winner";
+export const CHECK: string = "check";
 
 // Функция для отправки запроса
 export const sendRequest = async (url: string, method: string) => {
@@ -49,14 +49,14 @@ export const sendRequestWithBody = async (
 export const checkResponse = (response: Response) => {
   if (!response.ok) {
     return response.json().then((error) => {
-      console.error('Error response:', error);
-      throw new Error(error.message || 'Something went wrong');
+      console.error("Error response:", error);
+      throw new Error(error.message || "Something went wrong");
     });
   }
   return response;
 };
 
-export function getPlayerName(props: { name: string }) {
+export function getPlayerName(props: { name: string }): string {
   const playersStore = usePlayers();
   const name = playersStore.players.find(
     (player) => player.name === props.name
@@ -64,7 +64,7 @@ export function getPlayerName(props: { name: string }) {
   return name?.name || " ";
 }
 
-export function getBalance(props: { name: string }) {
+export function getBalance(props: { name: string }): number {
   const playersStore = usePlayers();
 
   const balance = computed(() => {
@@ -74,10 +74,10 @@ export function getBalance(props: { name: string }) {
     return player?.stack || 0;
   });
 
-  return balance;
+  return balance.value;
 }
 
-export function getLastBet(props: { name: string }) {
+export function getLastBet(props: { name: string }): number {
   const playersStore = usePlayers();
   const lastBet = computed(() => {
     const player = playersStore.players.find(
@@ -86,7 +86,7 @@ export function getLastBet(props: { name: string }) {
 
     return player?.lastBet || 0;
   });
-  return lastBet;
+  return lastBet.value;
 }
 
 export function getFirstCard(props: { name: string }) {

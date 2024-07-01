@@ -9,10 +9,22 @@ useSeoMeta({
 const authStore = useAuthStore();
 const router = useRouter();
 
-const authField = {
+interface AuthField {
+  username: string;
+  password: string;
+}
+
+const authField: AuthField = {
   username: "",
   password: "",
 };
+
+interface LoginResponse {
+  token: string;
+  user: {
+    username: string;
+  };
+}
 
 const login = async (username: string, password: string) => {
   try {
@@ -29,7 +41,7 @@ const login = async (username: string, password: string) => {
     if (!response.ok) {
       throw new Error("Ошибка при выполнении запроса");
     }
-    const data = await response.json();
+    const data: LoginResponse = await response.json();
     console.log("Server response:", data);
     if (data.token) {
       authStore.login(data.token, { username: data.user.username });
@@ -41,7 +53,6 @@ const login = async (username: string, password: string) => {
     console.error(error);
   }
 };
-
 </script>
 
 <template>

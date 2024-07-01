@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted } from "vue";
 import { useAuthStore } from "@/store/auth";
 const authStore = useAuthStore();
 
@@ -6,12 +7,20 @@ useSeoMeta({
   title: "REGISTRATION PAGE",
 });
 
-const authField = {
+interface AuthField {
+  username: string;
+  password: string;
+}
+
+const authField: AuthField = {
   username: "",
   password: "",
 };
 
-const registration = async (username: string, password: string) => {
+const registration = async (
+  username: string,
+  password: string
+): Promise<void> => {
   try {
     const response = await fetch("http://localhost:5000/register", {
       method: "POST",

@@ -11,18 +11,15 @@ const totalPot = () => {
   return lastBet.reduce((acc, bet) => acc + bet, 0);
 };
 
-function getColorForSuit(suit: any) {
-  switch (suit) {
-    case "♠":
-      return "rgb(152, 222, 227)";
-    case "♦":
-      return "rgb(234, 166, 128)";
-    case "♣":
-      return "rgb(122, 167, 255)";
-    case "♥":
-      return "rgb(233, 123, 136)";
-    default:
-      return "gray"; // Цвет по умолчанию
+function getColorForSuit(suit: string) {
+  if (suit === "♥") {
+    return "rgb(233, 123, 136)";
+  } else if (suit === "♣") {
+    return "rgb(122, 167, 255)";
+  } else if (suit === "♦") {
+    return "rgb(234, 166, 128)";
+  } else if (suit === "♠") {
+    return "rgb(152, 222, 227)";
   }
 }
 </script>
@@ -43,7 +40,6 @@ function getColorForSuit(suit: any) {
         {{ card.value }}
       </div>
     </div>
-    <div v-else>No cards to show.</div>
   </div>
 </template>
 
