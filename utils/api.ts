@@ -56,7 +56,7 @@ export const checkResponse = (response: Response) => {
   return response;
 };
 
-export function getPlayerName(props: { name: string }): string {
+export function getPlayerName(props: { name: string }){
   const playersStore = usePlayers();
   const name = playersStore.players.find(
     (player) => player.name === props.name
@@ -64,7 +64,7 @@ export function getPlayerName(props: { name: string }): string {
   return name?.name || " ";
 }
 
-export function getBalance(props: { name: string }): number {
+export function getBalance(props: { name: string }) {
   const playersStore = usePlayers();
 
   const balance = computed(() => {
@@ -74,10 +74,10 @@ export function getBalance(props: { name: string }): number {
     return player?.stack || 0;
   });
 
-  return balance.value;
+  return balance;
 }
 
-export function getLastBet(props: { name: string }): number {
+export function getLastBet(props: { name: string }) {
   const playersStore = usePlayers();
   const lastBet = computed(() => {
     const player = playersStore.players.find(
@@ -86,7 +86,7 @@ export function getLastBet(props: { name: string }): number {
 
     return player?.lastBet || 0;
   });
-  return lastBet.value;
+  return lastBet;
 }
 
 export function getFirstCard(props: { name: string }) {

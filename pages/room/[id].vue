@@ -95,12 +95,18 @@ socket.on("dealRiver", (card) => {
 });
 
 socket.on("findWinner", ({ winners, lastPlayer, winnerSum }) => {
-  if (winners) {
+  if (winners && Array.isArray(winners)) {
     console.log(`Игроки дошли до ривера и вскрыли карты ${winnerSum}`);
   } else if (lastPlayer) {
     console.log(
       `Юзер остался один, все остальные сбросили, он победитель ${winnerSum}`
     );
+  } else {
+    console.error("Received invalid winners data:", {
+      winners,
+      lastPlayer,
+      winnerSum,
+    });
   }
 });
 
@@ -206,6 +212,7 @@ onMounted(() => {
       }
     }
   );
+
 });
 
 onUnmounted(() => {
