@@ -25,40 +25,20 @@ const username = () => {
   return localStorage.getItem("username") ?? "";
 };
 
-const joinTable = async (
-  nickname: string,
-  position: number,
-  roomId: string
-) => {
-  try {
-    const body = {
-      player: nickname,
-      stack: 1000,
-      position: position,
-      roomId: roomId,
-    };
-    const response = await sendRequestWithBody(
-      `${BASE_URL}${JOIN}`,
-      "POST",
-      body
-    );
-    checkResponse(response);
-  } catch (error) {
-    console.error(error);
-  }
+const joinTable = (nickname: string, position: number, roomId: string) => {
+  const body = {
+    player: nickname,
+    stack: 1000,
+    position: position,
+    roomId: roomId,
+  };
+  socket.emit("join", body);
 };
 
 let intervalId: number | unknown;
 
-async function fetchPlayers(roomId: string) {
-  try {
-    socket.emit("getPlayers", roomId);
-    socket.on("playersData", (receivedPlayers) => {
-      playersStore.setPlayers(receivedPlayers);
-    });
-  } catch (error) {
-    console.error("Error fetching players:", error);
-  }
+function fetchPlayers(roomId: string) {
+  socket.emit("getPlayers", roomId);
 }
 
 function startFetchingPlayers(roomId: string) {
@@ -70,6 +50,11 @@ function stopFetchingPlayers() {
     clearInterval(intervalId);
   }
 }
+
+socket.on("playersData", (receivedPlayers) => {
+  playersStore.setPlayers(receivedPlayers);
+});
+
 
 socket.on("dealFlop", (card) => {
   if (card && card.flop && Array.isArray(card.flop.tableCards)) {
@@ -137,40 +122,11 @@ onMounted(() => {
         console.log("Очищаем флоп");
         sessionStorage.clear();
         playersStore.setFlop({ flop: { tableCards: [] } });
-      } else if (newLength === 3) {
-        socket.emit("requestDeal", { roomId: roomId });
       }
     }
   );
 
-  watch(
-    () => flop(),
-    (newFlop) => {
-      if (newFlop) {
-        setTimeout(() => {
-          console.log("flop");
-          socket.emit("dealFlop");
-        }, 1000);
-      }
-    }
-  );
-  watch(
-    () => giveTurn(),
-    (newTurn) => {
-      if (newTurn) {
-        socket.emit("dealTurn");
-      }
-    }
-  );
-
-  watch(
-    () => giveRiver(),
-    (newRiver) => {
-      if (newRiver) {
-        socket.emit("dealRiver");
-      }
-    }
-  );
+  
 
   watch(
     () => giveWinner(),
@@ -185,10 +141,6 @@ onMounted(() => {
           sessionStorage.clear();
           playersStore.setFlop({ flop: { tableCards: [] } });
         }, 1000);
-        setTimeout(() => {
-          socket.emit("requestDeal", { roomId: roomId });
-          console.log("Раздаем карты каждому игроку");
-        }, 2000);
       }
     }
   );
@@ -205,14 +157,9 @@ onMounted(() => {
           sessionStorage.clear();
           playersStore.setFlop({ flop: { tableCards: [] } });
         }, 1000);
-        setTimeout(() => {
-          socket.emit("requestDeal", { roomId: roomId });
-          console.log("Раздаем карты каждому игроку");
-        }, 2000);
       }
     }
   );
-
 });
 
 onUnmounted(() => {
