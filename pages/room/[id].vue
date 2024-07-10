@@ -2,13 +2,7 @@
 import { io } from "socket.io-client";
 import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
-import {
-  flop,
-  giveTurn,
-  giveRiver,
-  giveWinner,
-  lastWinner,
-} from "@/utils/roundAction";
+import { giveWinner, lastWinner } from "@/utils/roundAction";
 
 useSeoMeta({
   title: "POKER STAGE",
@@ -51,10 +45,13 @@ function stopFetchingPlayers() {
   }
 }
 
+socket.on("clearTableCards", () => {
+  playersStore.clearFlop(); 
+});
+
 socket.on("playersData", (receivedPlayers) => {
   playersStore.setPlayers(receivedPlayers);
 });
-
 
 socket.on("dealFlop", (card) => {
   if (card && card.flop && Array.isArray(card.flop.tableCards)) {
@@ -126,21 +123,14 @@ onMounted(() => {
     }
   );
 
-  
-
   watch(
     () => giveWinner(),
     (newWinner) => {
       if (newWinner) {
-        console.log("ВСКРЫТИЕ НА РИВЕРЕ");
-
-        socket.emit("findWinner");
-        setTimeout(() => {
-          socket.emit("updatePositions");
-          socket.emit("resetFlop");
-          sessionStorage.clear();
-          playersStore.setFlop({ flop: { tableCards: [] } });
-        }, 1000);
+        socket.emit("updatePositions");
+        socket.emit("resetFlop");
+        sessionStorage.clear();
+        playersStore.setFlop({ flop: { tableCards: [] } });
       }
     }
   );
@@ -149,14 +139,10 @@ onMounted(() => {
     () => lastWinner(),
     (newWinner) => {
       if (newWinner) {
-        console.log("ВСЕ СКИНУЛИ ВСРЫТИЯ НЕТ");
-        socket.emit("findWinner");
-        setTimeout(() => {
-          socket.emit("updatePositions");
-          socket.emit("resetFlop");
-          sessionStorage.clear();
-          playersStore.setFlop({ flop: { tableCards: [] } });
-        }, 1000);
+        socket.emit("updatePositions");
+        socket.emit("resetFlop");
+        sessionStorage.clear();
+        playersStore.setFlop({ flop: { tableCards: [] } });
       }
     }
   );

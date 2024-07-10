@@ -1,32 +1,6 @@
 import { usePlayers } from "@/store/usePlayers";
 
-export const flop = () => {
-  const playersStore = usePlayers();
-  const activePlayers = playersStore.players.filter(
-    (player) =>
-      player.fold === false &&
-      player.roundStage === "preflop" &&
-      player.makeTurn === true
-  );
 
-  if (activePlayers.length === 0) {
-    return false;
-  }
-
-  if (activePlayers.length > 2) {
-    const maxBet = activePlayers.reduce((maxSum, currentPlayer) =>
-      maxSum.preFlopLastBet > currentPlayer.preFlopLastBet
-        ? maxSum
-        : currentPlayer
-    );
-
-    const allSameMaxBet = activePlayers.every(
-      (player) => player.preFlopLastBet === maxBet.preFlopLastBet
-    );
-    return allSameMaxBet;
-  }
-  return false;
-};
 
 export const giveTurn = () => {
   const playersStore = usePlayers();
@@ -115,13 +89,4 @@ export const lastWinner = () => {
   return countFoldFalse === 1;
 };
 
-/* export const allInWInner = () => {
-  const playersStore = usePlayers();
-  const allInPlayers = playersStore.players.find(
-    (player) => player.fold === false && player.stack === 0
-  );
-  if (allInPlayers) {
-    return true;
-  }
-  return false;
-}; */
+
