@@ -1,6 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
+
   modules: [
     "@pinia/nuxt",
     "@vueuse/nuxt",
@@ -9,10 +10,13 @@ export default defineNuxtConfig({
     "@nuxtjs/color-mode",
     "nuxt-primevue",
   ],
+
   css: ["@/assets/scss/global.scss"],
+
   typescript: {
     typeCheck: true,
   },
+
   colorMode: {
     preference: "dark",
     fallback: "light",
@@ -23,4 +27,6 @@ export default defineNuxtConfig({
     classSuffix: "-mode",
     storageKey: "nuxt-color-mode",
   },
+
+  compatibilityDate: "2024-07-11",
 });

@@ -2,7 +2,6 @@
 import { io } from "socket.io-client";
 import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
-import { giveWinner, lastWinner } from "@/utils/roundAction";
 
 useSeoMeta({
   title: "POKER STAGE",
@@ -76,21 +75,7 @@ socket.on("dealRiver", (card) => {
   }
 });
 
-socket.on("findWinner", ({ winners, lastPlayer, winnerSum }) => {
-  if (winners && Array.isArray(winners)) {
-    console.log(`Игроки дошли до ривера и вскрыли карты ${winnerSum}`);
-  } else if (lastPlayer) {
-    console.log(
-      `Юзер остался один, все остальные сбросили, он победитель ${winnerSum}`
-    );
-  } else {
-    console.error("Received invalid winners data:", {
-      winners,
-      lastPlayer,
-      winnerSum,
-    });
-  }
-});
+
 
 onMounted(() => {
   startFetchingPlayers(roomId.toString());
@@ -110,42 +95,6 @@ onMounted(() => {
       console.error("Error parsing savedFlop:", error);
     }
   }
-
-  watch(
-    () => playersStore.players.length,
-    (newLength: number) => {
-      if (newLength === 0) {
-        socket.emit("resetFlop");
-        console.log("Очищаем флоп");
-        sessionStorage.clear();
-        playersStore.setFlop({ flop: { tableCards: [] } });
-      }
-    }
-  );
-
-  watch(
-    () => giveWinner(),
-    (newWinner) => {
-      if (newWinner) {
-        socket.emit("updatePositions");
-        socket.emit("resetFlop");
-        sessionStorage.clear();
-        playersStore.setFlop({ flop: { tableCards: [] } });
-      }
-    }
-  );
-
-  watch(
-    () => lastWinner(),
-    (newWinner) => {
-      if (newWinner) {
-        socket.emit("updatePositions");
-        socket.emit("resetFlop");
-        sessionStorage.clear();
-        playersStore.setFlop({ flop: { tableCards: [] } });
-      }
-    }
-  );
 });
 
 onUnmounted(() => {
