@@ -20,6 +20,7 @@ interface IPlayers {
   makeTurn: boolean;
   cards: ICard[];
   roundStage: string;
+  allIn: boolean;
 }
 
 interface IFlop {
