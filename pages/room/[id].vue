@@ -45,7 +45,7 @@ function stopFetchingPlayers() {
 }
 
 socket.on("clearTableCards", () => {
-  playersStore.clearFlop(); 
+  playersStore.clearFlop();
 });
 
 socket.on("playersData", (receivedPlayers) => {
@@ -55,6 +55,7 @@ socket.on("playersData", (receivedPlayers) => {
 socket.on("dealFlop", (card) => {
   if (card && card.flop && Array.isArray(card.flop.tableCards)) {
     playersStore.setFlop(card);
+    console.log(card);
   } else {
     console.error("Received invalid flop data:", card);
   }
@@ -74,8 +75,6 @@ socket.on("dealRiver", (card) => {
     console.error("Received invalid flop data:", card);
   }
 });
-
-
 
 onMounted(() => {
   startFetchingPlayers(roomId.toString());
