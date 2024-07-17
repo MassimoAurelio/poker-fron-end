@@ -1,13 +1,8 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
-import {
-  BASE_URL,
-  LEAVE,
-  checkResponse,
-  sendRequestWithBody,
-  pos,
-} from "@/utils/api";
+import { sendRequestWithBody, checkResponse } from "@/shared/api/requestUtils";
+import { methods } from "@/shared/api/apiMethods";
 
 const playersStore = usePlayers();
 const authStore = useAuthStore();
@@ -30,7 +25,7 @@ const leaveFromTable = async (
   try {
     const body = { player: name, roomId };
     const response = await sendRequestWithBody(
-      `${BASE_URL}${LEAVE}`,
+      methods.leave.path,
       "POST",
       body
     );
@@ -101,9 +96,7 @@ const isActivePlayer = computed(() => {
 });
 
 const losers = computed(() => {
-  return playersStore.players.filter(
-    (player) => player.stack <= 0 && player.loser === true
-  );
+  return playersStore.players.filter((player) => player.loser === true);
 });
 
 watch(

@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
-import {
-  BASE_URL,
-  JOIN,
-  checkResponse,
-  sendRequestWithBody,
-} from "@/utils/api";
 
 const playersStore = usePlayers();
 const authStore = useAuthStore();
@@ -16,32 +10,6 @@ const props = defineProps<{
   position: number;
   roomId: string;
 }>();
-
-const joinTable = async (position: number) => {
-  try {
-    const body = {
-      player: props.name,
-      stack: 1000,
-      position: position,
-    };
-    const response = await sendRequestWithBody(
-      `${BASE_URL}${JOIN}`,
-      "POST",
-      body
-    );
-    checkResponse(response);
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const joinAndGetInfo = async (position: number) => {
-  try {
-    await joinTable(position);
-  } catch (error) {
-    console.error(error);
-  }
-};
 
 const playerExists = () => {
   return playersStore.players.some(
@@ -63,13 +31,6 @@ const playerAndCurrentPlayerId = () => {
       :name="props.name"
       :roomId="props.roomId"
       v-if="playerExists()"
-    />
-
-    <UiPlayerFreeSpace
-      :name="props.name"
-      :position="props.position"
-      @click="joinAndGetInfo(position)"
-      v-else
     />
 
     <div class="panel" v-if="playerAndCurrentPlayerId()">

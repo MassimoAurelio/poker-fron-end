@@ -1,13 +1,11 @@
 <script setup lang="ts">
+import BaseJoinTableButton from "~/shared/ui/BaseJoinTableButton.vue";
 </script>
 
 <template>
   <div class="free-player-container">
     <div class="player-footer">
-      <div class="free-place">
-        <NuxtImg src="/emptyPlace.svg" />
-        <NuxtImg src="krest.svg" class="krest" sizes="10" />
-      </div>
+      <BaseJoinTableButton />
       <div class="first-block">
         <div>Cheps -</div>
       </div>
@@ -28,24 +26,6 @@
     width: 264px;
     height: 80px;
 
-    .free-place {
-      position: absolute;
-      top: 0;
-      right: 0;
-      z-index: 1;
-      width: 72px;
-      height: 72px;
-      display: flex;
-      justify-content: flex-end;
-      .krest {
-        position: absolute;
-        width: 18px;
-        height: 18px;
-        margin-right: 28px;
-        margin-top: 25px;
-        z-index: 2;
-      }
-    }
     .first-block {
       display: flex;
       align-items: center;

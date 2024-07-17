@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
-import { useAuthStore } from "@/store/auth";
+import Button from "@/shared/ui/BaseButton.vue";
+import Input from "@/shared/ui/BaseInput.vue";
 import {
   BASE_URL,
   NEXT_PLAYER,
@@ -13,9 +14,6 @@ import {
   checkResponse,
 } from "@/utils/api";
 
-const playersStore = usePlayers();
-const authStore = useAuthStore();
-
 const props = defineProps({
   name: {
     type: String,
@@ -26,6 +24,9 @@ const props = defineProps({
     required: true,
   },
 });
+
+const sum = ref<number>(50);
+const playersStore = usePlayers();
 
 const fold = async (name: string) => {
   try {
@@ -44,8 +45,6 @@ const fold = async (name: string) => {
     console.error(error);
   }
 };
-
-const sum = ref<number>(50);
 
 const raise = async (name: string) => {
   try {
@@ -111,10 +110,14 @@ const check = async (name: string) => {
 };
 
 const stack = () => {
-  const stack = playersStore.players.find(
+  const player = playersStore.players.find(
     (player) => player.name === props.name
   );
-  return stack?.stack;
+  if (player) {
+    return () => player.stack ?? 0;
+  } else {
+    return () => 0;
+  }
 };
 
 /* const time = ref(30);
@@ -145,35 +148,35 @@ onBeforeUnmount(() => {
     <div class="second-buttons">
       <div class="up_buttons">
         <div class="buttons_">
-          <UiButton color="default" size="S" radius="M">MIN</UiButton>
-          <UiButton color="default" size="S" radius="M">3/4</UiButton>
-          <UiButton color="default" size="S" radius="M">POT</UiButton>
-          <UiButton color="default" size="S" radius="M">MAX</UiButton>
+          <Button color="default" size="S" radius="M" icon="/emptyPlace.svg"
+            >MIN</Button
+          >
+          <Button color="default" size="S" radius="M">3/4</Button>
+          <Button color="default" size="S" radius="M">POT</Button>
+          <Button color="default" size="S" radius="M">MAX</Button>
         </div>
-        <div class="range_input_container">
-          <input
-            class="range_input"
-            type="range"
-            min="0"
-            :max="stack()"
-            v-model="sum"
-          />
-        </div>
+        <Input
+          view="line"
+          type="range"
+          :name="props.name"
+          :max="stack()"
+          v-model="sum"
+        />
       </div>
-      <input class="input" type="number" v-model="sum" />
+      <Input view="window" type="number" :name="props.name" />
     </div>
     <div class="main-buttons">
-      <UiButton @click="fold(props.name)" color="fold" size="M" radius="M"
-        >FOLD</UiButton
+      <Button @click="fold(props.name)" color="fold" size="M" radius="M"
+        >FOLD</Button
       >
-      <UiButton @click="check(props.name)" color="check" size="M" radius="M"
-        >CHECK</UiButton
+      <Button @click="check(props.name)" color="check" size="M" radius="M"
+        >CHECK</Button
       >
-      <UiButton @click="coll(props.name)" color="check" size="M" radius="M"
-        >CALL</UiButton
+      <Button @click="coll(props.name)" color="check" size="M" radius="M"
+        >CALL</Button
       >
-      <UiButton @click="raise(props.name)" color="bet" size="M" radius="M"
-        >BET</UiButton
+      <Button @click="raise(props.name)" color="bet" size="M" radius="M"
+        >BET</Button
       >
     </div>
     <div class="timer">
@@ -206,45 +209,6 @@ onBeforeUnmount(() => {
       .buttons_ {
         display: flex;
       }
-      .range_input_container {
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-
-        .range_input {
-          -webkit-appearance: none;
-          width: 100%;
-          height: 5px;
-          outline: none;
-          opacity: 0.7;
-          transition: opacity 0.2s;
-          border-radius: 26px;
-          background: rgb(152, 222, 227);
-        }
-        .range_input::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 15px;
-          height: 15px;
-          background: rgb(214, 233, 253);
-          border-radius: 50%;
-          cursor: pointer;
-        }
-      }
-    }
-    .input {
-      width: 77px;
-      height: 60px;
-      left: 1901px;
-      cursor: pointer;
-      right: -1901px;
-      top: 1148px;
-      bottom: -1148px;
-      border-radius: 1px;
-      border: none;
-      color: rgb(214, 233, 253);
-      backdrop-filter: blur(2px);
-      background: rgba(64, 82, 94, 0.24);
     }
   }
   .main-buttons {
