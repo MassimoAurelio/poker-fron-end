@@ -21,6 +21,8 @@ interface IPlayers {
   cards: ICard[];
   roundStage: string;
   allIn: boolean;
+  allInColl: boolean;
+  loser: boolean;
 }
 
 interface IFlop {

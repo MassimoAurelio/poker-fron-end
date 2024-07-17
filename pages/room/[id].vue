@@ -55,7 +55,6 @@ socket.on("playersData", (receivedPlayers) => {
 socket.on("dealFlop", (card) => {
   if (card && card.flop && Array.isArray(card.flop.tableCards)) {
     playersStore.setFlop(card);
-    console.log(card);
   } else {
     console.error("Received invalid flop data:", card);
   }

@@ -11,13 +11,18 @@ import {
 
 const playersStore = usePlayers();
 const authStore = useAuthStore();
+const route = useRoute();
+const roomId = route.params.id;
 
 const props = defineProps<{
   name: string;
   roomId: string;
 }>();
 
-const leaveFromTable = async (name: string, roomId: string) => {
+const leaveFromTable = async (
+  name: string | undefined,
+  roomId: string | string[]
+) => {
   if (!roomId || !name) {
     console.error("roomId or name is undefined");
     return;
@@ -94,6 +99,19 @@ const pos6 = ref(pos(props));
 const isActivePlayer = computed(() => {
   return authStore.user?.username === props.name;
 });
+
+watch(
+  () =>
+    playersStore.players.find(
+      (player) => player.stack <= 0 && player.loser === true
+    ),
+  (newLoser) => {
+    if (newLoser) {
+      leaveFromTable(newLoser.name, roomId);
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
