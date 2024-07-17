@@ -100,15 +100,18 @@ const isActivePlayer = computed(() => {
   return authStore.user?.username === props.name;
 });
 
+const losers = computed(() => {
+  return playersStore.players.filter(
+    (player) => player.stack <= 0 && player.loser === true
+  );
+});
+
 watch(
-  () =>
-    playersStore.players.find(
-      (player) => player.stack <= 0 && player.loser === true
-    ),
-  (newLoser) => {
-    if (newLoser) {
+  losers,
+  (newLosers) => {
+    newLosers.forEach((newLoser) => {
       leaveFromTable(newLoser.name, roomId);
-    }
+    });
   },
   { immediate: true }
 );
