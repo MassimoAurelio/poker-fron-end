@@ -1,18 +1,17 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
-import { defineProps, defineEmits } from "vue";
 
 const playersStore = usePlayers();
 
 interface Props {
   view: "line" | "window";
   type: "range" | "number";
+  modelValue: Number;
   name?: string;
   sum?: number;
 }
 
 const props = defineProps<Props>();
-const emits = defineEmits(["update:sum"]);
 
 const { view = "line", type = "range" } = props;
 
@@ -24,22 +23,10 @@ const stack = () => {
   );
   return stack?.stack;
 };
-
-const updateSum = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  emits("update:sum", Number(target.value));
-};
 </script>
 
 <template>
-  <input
-    :class="classes"
-    :type="type"
-    min="0"
-    :max="stack()"
-    :value="sum"
-    @input="updateSum"
-  />
+  <input :class="classes" :type="type" min="0" :max="stack()" />
 </template>
 
 <style scoped lang="scss">

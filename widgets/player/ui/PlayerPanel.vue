@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
 import Button from "@/shared/ui/BaseButton.vue";
-import Input from "@/shared/ui/BaseInput.vue";
 import { methods } from "@/shared/api/apiMethods";
 import {
   BASE_URL,
@@ -103,6 +102,12 @@ const check = async (name: string) => {
     console.error(error);
   }
 };
+const stack = () => {
+  const stack = playersStore.players.find(
+    (player) => player.name === props.name
+  );
+  return stack?.stack;
+};
 
 /* const time = ref(30);
 let timer: NodeJS.Timeout | null = null;
@@ -137,9 +142,15 @@ onBeforeUnmount(() => {
           <Button color="default" size="S" radius="M">POT</Button>
           <Button color="default" size="S" radius="M">MAX</Button>
         </div>
-        <Input view="line" type="range" />
+        <input
+          class="range_input"
+          type="range"
+          min="0"
+          :max="stack()"
+          v-model="sum"
+        />
       </div>
-      <Input view="window" type="number" />
+      <input class="input" type="number" v-model="sum" />
     </div>
     <div class="main-buttons">
       <Button @click="fold(props.name)" color="fold" size="M" radius="M"
@@ -182,6 +193,41 @@ onBeforeUnmount(() => {
       display: flex;
       flex-direction: column;
       gap: 10px;
+
+      cursor: pointer;
+      .range_input {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 5px;
+        outline: none;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+        border-radius: 26px;
+        background: rgb(152, 222, 227);
+      }
+      .range_input::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 15px;
+        height: 15px;
+        background: rgb(214, 233, 253);
+        border-radius: 50%;
+        cursor: pointer;
+      }
+    }
+    .input {
+      width: 77px;
+      height: 60px;
+      left: 1901px;
+      cursor: pointer;
+      right: -1901px;
+      top: 1148px;
+      bottom: -1148px;
+      border-radius: 1px;
+      border: none;
+      color: rgb(214, 233, 253);
+      backdrop-filter: blur(2px);
+      background: rgba(64, 82, 94, 0.24);
 
       .buttons_ {
         display: flex;
