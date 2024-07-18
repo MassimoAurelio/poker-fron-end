@@ -1,27 +1,48 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
+import { defineProps, defineEmits } from "vue";
 
 const playersStore = usePlayers();
 
 interface Props {
   view: "line" | "window";
   type: "range" | "number";
-  name: string;
-  max?: () => number;
+  name?: string;
   sum?: number;
 }
+
 const props = defineProps<Props>();
+const emits = defineEmits(["update:sum"]);
 
 const { view = "line", type = "range" } = props;
 
 const classes = ["input", `view_${view}`, `type_${type}`];
+
+const stack = () => {
+  const stack = playersStore.players.find(
+    (player) => player.name === props.name
+  );
+  return stack?.stack;
+};
+
+const updateSum = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  emits("update:sum", Number(target.value));
+};
 </script>
 
 <template>
-  <input :class="classes" :type="type" min="0" :max="max ? max() : undefined" />
+  <input
+    :class="classes"
+    :type="type"
+    min="0"
+    :max="stack()"
+    :value="sum"
+    @input="updateSum"
+  />
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 .input.view_line {
   -webkit-appearance: none;
   width: 100%;

@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { Header } from "@/widgets/header";
+</script>
 
 <template>
   <div class="layout-container">

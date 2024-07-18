@@ -7,7 +7,7 @@
   </div>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 .free-place {
   position: absolute;
   top: 0;

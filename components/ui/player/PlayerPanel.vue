@@ -2,11 +2,11 @@
 import { usePlayers } from "@/store/usePlayers";
 import Button from "@/shared/ui/BaseButton.vue";
 import Input from "@/shared/ui/BaseInput.vue";
+import { methods } from "@/shared/api/apiMethods";
 import {
   BASE_URL,
   NEXT_PLAYER,
   COLL,
-  FOLD,
   RAISE,
   CHECK,
   sendRequest,
@@ -33,13 +33,8 @@ const fold = async (name: string) => {
     const body = {
       name: name,
     };
-    const response = await sendRequestWithBody(
-      `${BASE_URL}${FOLD}`,
-      "POST",
-      body
-    );
+    const response = await sendRequestWithBody(methods.fold.path, "POST", body);
     checkResponse(response);
-
     await userTern();
   } catch (error) {
     console.error(error);
@@ -109,17 +104,6 @@ const check = async (name: string) => {
   }
 };
 
-const stack = () => {
-  const player = playersStore.players.find(
-    (player) => player.name === props.name
-  );
-  if (player) {
-    return () => player.stack ?? 0;
-  } else {
-    return () => 0;
-  }
-};
-
 /* const time = ref(30);
 let timer: NodeJS.Timeout | null = null;
 
@@ -148,22 +132,14 @@ onBeforeUnmount(() => {
     <div class="second-buttons">
       <div class="up_buttons">
         <div class="buttons_">
-          <Button color="default" size="S" radius="M" icon="/emptyPlace.svg"
-            >MIN</Button
-          >
+          <Button color="default" size="S" radius="M">MIN</Button>
           <Button color="default" size="S" radius="M">3/4</Button>
           <Button color="default" size="S" radius="M">POT</Button>
           <Button color="default" size="S" radius="M">MAX</Button>
         </div>
-        <Input
-          view="line"
-          type="range"
-          :name="props.name"
-          :max="stack()"
-          v-model="sum"
-        />
+        <Input view="line" type="range" />
       </div>
-      <Input view="window" type="number" :name="props.name" />
+      <Input view="window" type="number" />
     </div>
     <div class="main-buttons">
       <Button @click="fold(props.name)" color="fold" size="M" radius="M"
@@ -206,6 +182,7 @@ onBeforeUnmount(() => {
       display: flex;
       flex-direction: column;
       gap: 10px;
+
       .buttons_ {
         display: flex;
       }

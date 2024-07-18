@@ -21,11 +21,6 @@ export const apiPaths = {
 };
 
 export const methods: IConfigApiMethods = {
-  signUp: {
-    path: BASE_URL + "sec/signup",
-    cache: false,
-    method: "POST",
-  },
   nextPlayer: {
     path: BASE_URL + apiPaths.NEXT_PLAYER,
     cache: false,
@@ -46,4 +41,10 @@ export const methods: IConfigApiMethods = {
     cache: false,
     method: "POST",
   },
+  fold: {
+    path: BASE_URL + apiPaths.FOLD,
+    cache: false,
+    method: "POST",
+  },
+  
 };

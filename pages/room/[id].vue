@@ -2,6 +2,8 @@
 import { io } from "socket.io-client";
 import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
+import { Flop } from "@/widgets/flop";
+import { Player } from "@/widgets/player";
 
 useSeoMeta({
   title: "POKER STAGE",
@@ -129,10 +131,10 @@ onUnmounted(() => {
         class="Player6"
       />
       <div class="flop">
-        <UiFlop v-if="playersStore.players.length > 0" />
+        <Flop v-if="playersStore.players.length > 0" />
       </div>
       <div v-for="item in playersStore.players" :key="item.id">
-        <NewPlayer
+        <Player
           :name="item.name"
           :position="item.position"
           :roomId="roomId.toString()"
