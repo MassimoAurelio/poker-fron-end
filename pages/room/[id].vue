@@ -4,6 +4,7 @@ import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
 import { Flop } from "@/widgets/flop";
 import { Player } from "@/widgets/player";
+import { FreeSpace } from "@/widgets/freeSpace";
 
 useSeoMeta({
   title: "POKER STAGE",
@@ -106,27 +107,27 @@ onUnmounted(() => {
 <template>
   <div class="main-container">
     <div class="table">
-      <UiPlayerFreeSpace
+      <FreeSpace
         @click="joinTable(username(), 1, roomId.toString())"
         class="Player1"
       />
-      <UiPlayerFreeSpace
+      <FreeSpace
         @click="joinTable(username(), 2, roomId.toString())"
         class="Player2"
       />
-      <UiPlayerFreeSpace
+      <FreeSpace
         @click="joinTable(username(), 3, roomId.toString())"
         class="Player3"
       />
-      <UiPlayerFreeSpace
+      <FreeSpace
         @click="joinTable(username(), 4, roomId.toString())"
         class="Player4"
       />
-      <UiPlayerFreeSpace
+      <FreeSpace
         @click="joinTable(username(), 5, roomId.toString())"
         class="Player5"
       />
-      <UiPlayerFreeSpace
+      <FreeSpace
         @click="joinTable(username(), 6, roomId.toString())"
         class="Player6"
       />

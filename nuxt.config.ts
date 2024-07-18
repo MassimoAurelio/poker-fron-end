@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     "nuxt-primevue",
   ],
 
-  css: ["@/assets/scss/global.scss"],
+  css: ["@/shared/assets/scss/global.scss"],
 
   typescript: {
     typeCheck: true,

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { PlayerFooterInfo } from "@/widgets/player";
 const props = defineProps<{
   name: string;
 }>();
@@ -12,7 +13,7 @@ const props = defineProps<{
       </div>
       <div class="second-card" />
     </div>
-    <UiPlayerFooterInfo :name="props.name" />
+    <PlayerFooterInfo :name="props.name" />
   </div>
 </template>
 

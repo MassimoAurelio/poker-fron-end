@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
+import { ActivePlayer, PlayerPanel } from "@/widgets/player";
 
 const playersStore = usePlayers();
 const authStore = useAuthStore();
@@ -27,14 +28,14 @@ const playerAndCurrentPlayerId = () => {
 
 <template>
   <div class="player">
-    <UiPlayerActivePlayer
+    <ActivePlayer
       :name="props.name"
       :roomId="props.roomId"
       v-if="playerExists()"
     />
 
     <div class="panel" v-if="playerAndCurrentPlayerId()">
-      <UiPlayerPanel :name="props.name" :position="props.position" />
+      <PlayerPanel :name="props.name" :position="props.position" />
     </div>
   </div>
 </template>

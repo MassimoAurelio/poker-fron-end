@@ -3,8 +3,8 @@ import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
 import { sendRequestWithBody, checkResponse } from "@/shared/api/requestUtils";
 import { methods } from "@/shared/api/apiMethods";
+import { NotActivePlayer, PlayerFooterInfo } from "@/widgets/player";
 import BaseLeaveButton from "@/shared/ui/BaseLeaveButton.vue";
-import NotActivePlayer from "./NotActivePlayer.vue";
 import BaseCard from "@/shared/ui/BaseCard.vue";
 
 const playersStore = usePlayers();
@@ -60,7 +60,7 @@ watch(
 <template>
   <div class="active-player-container" v-if="isActivePlayer">
     <BaseCard :name="props.name" />
-    <UiPlayerFooterInfo :name="props.name" />
+    <PlayerFooterInfo :name="props.name" />
     <BaseLeaveButton @click="leaveFromTable(props.name, props.roomId)" />
   </div>
   <NotActivePlayer :name="props.name" v-else />
