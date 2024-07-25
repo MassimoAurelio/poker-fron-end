@@ -3,6 +3,7 @@ import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
 const playersStore = usePlayers();
 const authStore = useAuthStore();
+
 const props = defineProps<{
   name: string;
 }>();
@@ -16,6 +17,7 @@ const getPlayerCards = () => {
   }
   return [];
 };
+
 const getValueFirstCard = () => {
   const cards = getPlayerCards();
   return cards[0]?.value;
@@ -59,6 +61,9 @@ const getSuiteColorSecondCard = () => {
     return { color: "rgb(233, 123, 136)" };
   }
 };
+const hasActivePlayers = computed(() => {
+  return playersStore.players.some((player) => player.fold === false);
+});
 </script>
 
 <template>
