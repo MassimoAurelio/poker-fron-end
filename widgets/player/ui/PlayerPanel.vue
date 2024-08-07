@@ -103,10 +103,18 @@ const check = async (name: string) => {
   }
 };
 const stack = () => {
-  const stack = playersStore.players.find(
+  // Найти игрока по имени
+  const player = playersStore.players.find(
     (player) => player.name === props.name
   );
-  return stack?.stack;
+
+  // Если игрок найден, вернуть сумму stack и lastBet
+  if (player) {
+    return player.stack + player.lastBet;
+  }
+
+  // Если игрок не найден, вернуть 0 или другое значение по умолчанию
+  return 0;
 };
 
 /* const time = ref(30);
