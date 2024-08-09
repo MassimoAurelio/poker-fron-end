@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
+import { io } from "socket.io-client";
 import { sendRequestWithBody, checkResponse } from "@/shared/api/requestUtils";
 import { methods } from "@/shared/api/apiMethods";
 import { NotActivePlayer, PlayerFooterInfo } from "@/widgets/player";
@@ -11,31 +12,19 @@ const playersStore = usePlayers();
 const authStore = useAuthStore();
 const route = useRoute();
 const roomId = route.params.id;
+const socket = io("http://localhost:5000");
 
 const props = defineProps<{
   name: string;
   roomId: string;
 }>();
 
-const leaveFromTable = async (
-  name: string | undefined,
-  roomId: string | string[]
-) => {
-  if (!roomId || !name) {
-    console.error("roomId or name is undefined");
-    return;
-  }
-  try {
-    const body = { player: name, roomId };
-    const response = await sendRequestWithBody(
-      methods.leave.path,
-      "POST",
-      body
-    );
-    checkResponse(response);
-  } catch (error) {
-    console.error(error);
-  }
+const leaveFromTable = (nickname: string, roomId: string) => {
+  const body = {
+    player: nickname,
+    roomId: roomId,
+  };
+  socket.emit("leave", body);
 };
 
 const isActivePlayer = computed(() => {
