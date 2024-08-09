@@ -56,7 +56,7 @@ export const checkResponse = (response: Response) => {
   return response;
 };
 
-export function getPlayerName(props: { name: string }){
+export function getPlayerName(props: { name: string }) {
   const playersStore = usePlayers();
   const name = playersStore.players.find(
     (player) => player.name === props.name
@@ -83,8 +83,18 @@ export function getLastBet(props: { name: string }) {
     const player = playersStore.players.find(
       (player) => player.name === props.name
     );
-
-    return player?.lastBet || 0;
+    if (!player) {
+      return null;
+    }
+    if (player?.roundStage === "preflop") {
+      return player.preFlopLastBet;
+    } else if (player?.roundStage === "flop") {
+      return player.flopLastBet;
+    } else if (player?.roundStage === "turn") {
+      return player.turnLastBet;
+    } else if (player?.roundStage === "river") {
+      return player.riverLastBet;
+    }
   });
   return lastBet;
 }

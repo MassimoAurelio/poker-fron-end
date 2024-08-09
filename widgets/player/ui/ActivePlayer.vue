@@ -46,15 +46,17 @@ const losers = computed(() => {
   return playersStore.players.filter((player) => player.loser === true);
 });
 
-watch(
+/* watch(
   losers,
   (newLosers) => {
     newLosers.forEach((newLoser) => {
-      leaveFromTable(newLoser.name, roomId);
+      setTimeout(() => {
+        leaveFromTable(newLoser.name, roomId);
+      }, 2000);
     });
   },
   { immediate: true }
-);
+); */
 </script>
 
 <template>
