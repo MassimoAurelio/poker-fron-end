@@ -2,8 +2,7 @@
 import { usePlayers } from "@/store/usePlayers";
 import { useAuthStore } from "@/store/auth";
 import { io } from "socket.io-client";
-import { sendRequestWithBody, checkResponse } from "@/shared/api/requestUtils";
-import { methods } from "@/shared/api/apiMethods";
+
 import { NotActivePlayer, PlayerFooterInfo } from "@/widgets/player";
 import BaseLeaveButton from "@/shared/ui/BaseLeaveButton.vue";
 import BaseCard from "@/shared/ui/BaseCard.vue";
@@ -39,9 +38,7 @@ const losers = computed(() => {
   losers,
   (newLosers) => {
     newLosers.forEach((newLoser) => {
-      setTimeout(() => {
-        leaveFromTable(newLoser.name, roomId);
-      }, 2000);
+      leaveFromTable(newLoser.name, "666067c6d4a06d920d4cc7a5");
     });
   },
   { immediate: true }
