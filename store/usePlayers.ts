@@ -1,61 +1,61 @@
 interface ICard {
-  value: string;
-  suit: string;
-  _id: string;
+	value: string
+	suit: string
+	_id: string
 }
 
 interface IPlayers {
-  id: string;
-  name: string;
-  stack: number;
-  position: number;
-  roomId: string;
-  currentPlayerId: boolean;
-  fold: boolean;
-  lastBet: number;
-  preFlopLastBet: number;
-  flopLastBet: number;
-  turnLastBet: number;
-  riverLastBet: number;
-  makeTurn: boolean;
-  cards: ICard[];
-  roundStage: string;
-  allIn: boolean;
-  allInColl: boolean;
-  loser: boolean;
+	id: string
+	name: string
+	stack: number
+	position: number
+	roomId: string
+	currentPlayerId: boolean
+	fold: boolean
+	lastBet: number
+	preFlopLastBet: number
+	flopLastBet: number
+	turnLastBet: number
+	riverLastBet: number
+	makeTurn: boolean
+	cards: ICard[]
+	roundStage: string
+	allIn: boolean
+	allInColl: boolean
+	loser: boolean
 }
 
 interface IFlop {
-  flop: {
-    tableCards: ICard[];
-  };
+	flop: {
+		tableCards: ICard[]
+	}
 }
 
 export const usePlayers = defineStore({
-  id: "players",
+	id: 'players',
 
-  state: () => ({
-    players: [] as IPlayers[],
-    flop: { flop: { tableCards: [] } } as IFlop,
-    cards: {} as IFlop,
-    flopGiven: false,
-  }),
+	state: () => ({
+		players: [] as IPlayers[],
+		flop: { flop: { tableCards: [] } } as IFlop,
+		cards: {} as IFlop,
+		flopGiven: false,
+	}),
 
-  actions: {
-    setPlayers(players: IPlayers[]) {
-      this.players = players;
-    },
-    setFlop(flop: IFlop) {
-      this.flop = flop;
-    },
-    setCards(cards: IFlop) {
-      this.cards = cards;
-    },
-    markFlopGiven() {
-      this.flopGiven = true;
-    },
-    clearFlop() {
-      this.flop.flop.tableCards = [];
-    },
-  },
-});
+	actions: {
+		setPlayers(players: IPlayers[]) {
+			this.players = players
+		},
+		setFlop(flop: IFlop) {
+			this.flop = flop
+		},
+		setCards(cards: IFlop) {
+			this.cards = cards
+		},
+		markFlopGiven() {
+			this.flopGiven = true
+		},
+		clearFlop() {
+			this.flop.flop.tableCards = []
+		},
+	},
+})
