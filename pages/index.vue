@@ -21,7 +21,7 @@ const authField = {
 
 const createRoom = async (name: string, password: string) => {
   try {
-    const response = await fetch("http://localhost:5000/createroom", {
+    const response = await fetch("http://localhost:5001/api/room/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -56,7 +56,7 @@ const getInfo = async () => {
 
 const enterRoom = async (name: string, password: string) => {
   try {
-    const response = await fetch("http://localhost:5000/enterroom", {
+    const response = await fetch("http://localhost:5001/api/room/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

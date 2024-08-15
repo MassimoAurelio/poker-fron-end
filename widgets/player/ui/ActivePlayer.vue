@@ -34,7 +34,7 @@ const losers = computed(() => {
   return playersStore.players.filter((player) => player.loser === true);
 });
 
-/* watch(
+watch(
   losers,
   (newLosers) => {
     newLosers.forEach((newLoser) => {
@@ -42,7 +42,7 @@ const losers = computed(() => {
     });
   },
   { immediate: true }
-); */
+);
 </script>
 
 <template>

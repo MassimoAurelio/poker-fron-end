@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useAuthStore } from "@/store/auth";
+import { useRouter } from "vue-router";
 const authStore = useAuthStore();
+
+const router = useRouter();
 
 useSeoMeta({
   title: "REGISTRATION PAGE",
@@ -22,7 +25,7 @@ const registration = async (
   password: string
 ): Promise<void> => {
   try {
-    const response = await fetch("http://localhost:5000/register", {
+    const response = await fetch("http://localhost:5001/api/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -35,6 +38,7 @@ const registration = async (
     if (!response.ok) {
       throw new Error("Ошибка при выполнении запроса");
     }
+    router.push("/");
   } catch (error) {
     console.error(error);
   }
