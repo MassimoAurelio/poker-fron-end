@@ -19,105 +19,24 @@ const route = useRoute()
 const roomId = route.params.id
 
 const username = () => {
-	return localStorage.getItem('username') ?? ''
+	const value = localStorage.getItem('username') ?? ''
+	return value
 }
-
-// Функция присоединения к столу
-const joinTable = (nickname: string, position: number, roomId: string) => {
-	const body = {
+const sitDown = (nickname: string, position: number, roomId: string) => {
+	const userData = {
 		player: nickname,
 		stack: 1000,
 		position: position,
 		roomId: roomId,
 	}
 
-	// Отправляем данные на сервер
-	socket.emit('join', body, (response: any) => {
-		if (response.success) {
-			console.log('Successfully joined the game:', response.message)
-		} else {
-			console.error('Failed to join the game:', response.message)
-		}
-	})
+	socket.emit('createUser', userData)
 }
-
-// Подписка на события WebSocket
-socket.on('playerJoined', (message: string) => {
-	console.log(message)
-	// Здесь можно добавить логику обновления интерфейса, если нужно
-}) // Закрывающая скобка для `socket.on('playerJoined')`
-
-let intervalId: number | unknown
-
-function fetchPlayers(roomId: string) {
-	socket.emit('getPlayers', roomId)
-}
-
-function startFetchingPlayers(roomId: string) {
-	intervalId = window.setInterval(() => fetchPlayers(roomId), 1000)
-}
-
-function stopFetchingPlayers() {
-	if (typeof intervalId === 'number') {
-		clearInterval(intervalId)
-	}
-}
-
-socket.on('clearTableCards', () => {
-	playersStore.clearFlop()
-})
-
-socket.on('playersData', receivedPlayers => {
-	playersStore.setPlayers(receivedPlayers)
-})
-
-socket.on('dealFlop', card => {
-	if (card && card.flop && Array.isArray(card.flop.tableCards)) {
-		playersStore.setFlop(card)
-	} else {
-		console.error('Received invalid flop data:', card)
-	}
-})
-
-socket.on('dealTurn', card => {
-	if (card && card.flop && Array.isArray(card.flop.tableCards)) {
-		playersStore.setFlop(card)
-	} else {
-		console.error('Received invalid flop data:', card)
-	}
-})
-
-socket.on('dealRiver', card => {
-	if (card && card.flop && Array.isArray(card.flop.tableCards)) {
-		playersStore.setFlop(card)
-	} else {
-		console.error('Received invalid flop data:', card)
-	}
-})
 
 onMounted(() => {
-	startFetchingPlayers(roomId.toString())
-	const token = localStorage.getItem('token')
-	const username = localStorage.getItem('username')
-	if (token && username) {
-		authStore.login(token, { username: username })
-	}
-
-	const savedFlop = sessionStorage.getItem('flop')
-	if (savedFlop) {
-		try {
-			const parsedFlop = JSON.parse(savedFlop)
-			console.log('Loaded saved flop from sessionStorage:', parsedFlop)
-			playersStore.setFlop(parsedFlop)
-		} catch (error) {
-			console.error('Error parsing savedFlop:', error)
-		}
-	}
-})
-
-onUnmounted(() => {
-	stopFetchingPlayers()
-	socket.off('playersData')
+	socket.on('userCreated', user => {
+		playersStore.setPlayers([user])
+	})
 })
 </script>
 
@@ -125,27 +44,27 @@ onUnmounted(() => {
 	<div class="main-container">
 		<div class="table">
 			<FreeSpace
-				@click="joinTable(username(), 1, roomId.toString())"
+				@click="sitDown(username(), 1, roomId.toString())"
 				class="Player1"
 			/>
 			<FreeSpace
-				@click="joinTable(username(), 2, roomId.toString())"
+				@click="sitDown(username(), 2, roomId.toString())"
 				class="Player2"
 			/>
 			<FreeSpace
-				@click="joinTable(username(), 3, roomId.toString())"
+				@click="sitDown(username(), 3, roomId.toString())"
 				class="Player3"
 			/>
 			<FreeSpace
-				@click="joinTable(username(), 4, roomId.toString())"
+				@click="sitDown(username(), 4, roomId.toString())"
 				class="Player4"
 			/>
 			<FreeSpace
-				@click="joinTable(username(), 5, roomId.toString())"
+				@click="sitDown(username(), 5, roomId.toString())"
 				class="Player5"
 			/>
 			<FreeSpace
-				@click="joinTable(username(), 6, roomId.toString())"
+				@click="sitDown(username(), 6, roomId.toString())"
 				class="Player6"
 			/>
 			<div class="flop">

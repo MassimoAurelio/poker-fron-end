@@ -42,7 +42,7 @@ const createRoom = async (name: string, password: string) => {
 	}
 }
 
-/* const getInfo = async () => {
+const getInfo = async () => {
 	try {
 		const response = await fetch('http')
 		if (!response.ok) {
@@ -53,7 +53,7 @@ const createRoom = async (name: string, password: string) => {
 	} catch (error) {
 		console.error(error)
 	}
-} */
+}
 
 const enterRoom = async (name: string, password: string) => {
 	try {

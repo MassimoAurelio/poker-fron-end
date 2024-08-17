@@ -1,11 +1,9 @@
 <script setup lang="ts">
+import BaseCard from '@/shared/ui/BaseCard.vue'
 import { useAuthStore } from '@/store/auth'
 import { usePlayers } from '@/store/usePlayers'
-import { io } from 'socket.io-client'
-
-import BaseCard from '@/shared/ui/BaseCard.vue'
-import BaseLeaveButton from '@/shared/ui/BaseLeaveButton.vue'
 import { NotActivePlayer, PlayerFooterInfo } from '@/widgets/player'
+import { io } from 'socket.io-client'
 
 const playersStore = usePlayers()
 const authStore = useAuthStore()
