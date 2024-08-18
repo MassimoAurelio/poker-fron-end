@@ -4,6 +4,7 @@ import { useAuthStore } from '@/store/auth'
 import { usePlayers } from '@/store/usePlayers'
 import { NotActivePlayer, PlayerFooterInfo } from '@/widgets/player'
 import { io } from 'socket.io-client'
+import BaseLeaveButton from '~/shared/ui/BaseLeaveButton.vue'
 
 const playersStore = usePlayers()
 const authStore = useAuthStore()
@@ -21,8 +22,12 @@ const leaveFromTable = (nickname: string, roomId: string) => {
 		player: nickname,
 		roomId: roomId,
 	}
-	socket.emit('leave', body)
+	socket.emit('leaveUser', body)
 }
+
+socket.on('userLeave', leaveUser => {
+	playersStore.removePlayer(leaveUser.name)
+})
 
 const isActivePlayer = computed(() => {
 	return authStore.user?.username === props.name

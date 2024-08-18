@@ -45,6 +45,9 @@ export const usePlayers = defineStore({
 		setPlayers(players: IPlayers[]) {
 			this.players = players
 		},
+		removePlayer(nickname: string) {
+			this.players = this.players.filter(player => player.name !== nickname)
+		},
 		setFlop(flop: IFlop) {
 			this.flop = flop
 		},

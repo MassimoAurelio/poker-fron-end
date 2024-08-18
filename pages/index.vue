@@ -13,7 +13,7 @@ const router = useRouter()
 const route = useRoute()
 const roomId = route.params.id
 
-console.log(`params: ${route.params}`)
+console.log(`params: ${JSON.stringify(route.params)}`)
 
 const authField = {
 	name: '',
@@ -37,19 +37,6 @@ const createRoom = async (name: string, password: string) => {
 		}
 		const data = await response.json()
 		await router.push(`/room/${data.roomId}`)
-	} catch (error) {
-		console.error(error)
-	}
-}
-
-const getInfo = async () => {
-	try {
-		const response = await fetch('http')
-		if (!response.ok) {
-			throw new Error('Ошибка при получении данных')
-		}
-		const data = await response.json()
-		playersStore.setPlayers(data)
 	} catch (error) {
 		console.error(error)
 	}

@@ -34,6 +34,23 @@ const sitDown = (nickname: string, position: number, roomId: string) => {
 }
 
 onMounted(() => {
+	const token = localStorage.getItem('token')
+	const username = localStorage.getItem('username')
+	if (token && username) {
+		authStore.login(token, { username: username })
+	}
+	const savedFlop = sessionStorage.getItem('flop')
+	if (savedFlop) {
+		try {
+			const parsedFlop = JSON.parse(savedFlop)
+			console.log('Loaded saved flop from sessionStorage:', parsedFlop)
+			playersStore.setFlop(parsedFlop)
+		} catch (error) {
+			console.error('Error parsing savedFlop:', error)
+		}
+	}
+})
+onMounted(() => {
 	socket.on('userCreated', user => {
 		playersStore.setPlayers([user])
 	})
