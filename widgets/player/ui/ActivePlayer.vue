@@ -17,9 +17,9 @@ const props = defineProps<{
 	roomId: string
 }>()
 
-const leaveFromTable = (nickname: string, roomId: string) => {
+const leaveFromTable = (name: string, roomId: string) => {
 	const body = {
-		player: nickname,
+		name: name,
 		roomId: roomId,
 	}
 	socket.emit('leaveUser', body)

@@ -22,9 +22,9 @@ const username = () => {
 	const value = localStorage.getItem('username') ?? ''
 	return value
 }
-const sitDown = (nickname: string, position: number, roomId: string) => {
+const sitDown = (name: string, position: number, roomId: string) => {
 	const userData = {
-		player: nickname,
+		name: name,
 		stack: 1000,
 		position: position,
 		roomId: roomId,
