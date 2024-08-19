@@ -44,9 +44,25 @@ export const usePlayers = defineStore({
 	actions: {
 		setPlayers(players: IPlayers[]) {
 			this.players = players
+			localStorage.setItem('players', JSON.stringify(players))
 		},
+		getPlayers() {
+			return this.players
+		},
+
 		removePlayer(nickname: string) {
 			this.players = this.players.filter(player => player.name !== nickname)
+		},
+		removePlayerAndUpdateStorage(nickname: string) {
+			this.removePlayer(nickname)
+			const players = localStorage.getItem('players')
+			if (players) {
+				let parsePlayers = JSON.parse(players)
+				parsePlayers = parsePlayers.filter(
+					(player: IPlayers) => player.name !== nickname
+				)
+				localStorage.setItem('players', JSON.stringify(parsePlayers))
+			}
 		},
 		setFlop(flop: IFlop) {
 			this.flop = flop

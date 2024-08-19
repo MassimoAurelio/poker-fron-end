@@ -51,9 +51,15 @@ onMounted(() => {
 	}
 })
 onMounted(() => {
-	socket.on('userCreated', user => {
-		playersStore.setPlayers([user])
+	socket.on('userCreated', newUser => {
+		const updatedPlayers = [...playersStore.getPlayers(), newUser]
+		playersStore.setPlayers(updatedPlayers)
 	})
+	const players = localStorage.getItem('players')
+	if (players) {
+		const parsePlayers = JSON.parse(players)
+		playersStore.setPlayers(parsePlayers)
+	}
 })
 </script>
 
