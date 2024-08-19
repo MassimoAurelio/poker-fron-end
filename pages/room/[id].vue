@@ -52,8 +52,15 @@ onMounted(() => {
 })
 onMounted(() => {
 	socket.on('userCreated', newUser => {
-		const updatedPlayers = [...playersStore.getPlayers(), newUser]
-		playersStore.setPlayers(updatedPlayers)
+		if (newUser !== null) {
+			const existingPlayer = playersStore
+				.getPlayers()
+				.find(player => player.id === newUser.id)
+			if (!existingPlayer) {
+				const updatedPlayers = [...playersStore.getPlayers(), newUser]
+				playersStore.setPlayers(updatedPlayers)
+			}
+		}
 	})
 	const players = localStorage.getItem('players')
 	if (players) {
