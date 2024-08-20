@@ -10,7 +10,6 @@ useSeoMeta({
 	title: 'POKER STAGE',
 })
 
-// Подключение к WebSocket серверу
 const socket = io('http://localhost:5001')
 
 const playersStore = usePlayers()
@@ -33,6 +32,13 @@ const sitDown = (name: string, position: number, roomId: string) => {
 	socket.emit('createUser', userData)
 }
 
+const startCardDistribution = (roomId: string) => {
+	const userData = {
+		roomId: roomId,
+	}
+	socket.emit('dealCards', userData)
+}
+
 onMounted(() => {
 	const token = localStorage.getItem('token')
 	const username = localStorage.getItem('username')
@@ -49,8 +55,10 @@ onMounted(() => {
 			console.error('Error parsing savedFlop:', error)
 		}
 	}
-})
-onMounted(() => {
+
+	socket.on('updatedPlayers', updatedPlayers => {
+		playersStore.setPlayers(updatedPlayers)
+	})
 	socket.on('userCreated', newUser => {
 		if (newUser !== null) {
 			const existingPlayer = playersStore
@@ -64,8 +72,12 @@ onMounted(() => {
 	})
 	const players = localStorage.getItem('players')
 	if (players) {
-		const parsePlayers = JSON.parse(players)
-		playersStore.setPlayers(parsePlayers)
+		try {
+			const parsePlayers = JSON.parse(players)
+			playersStore.setPlayers(parsePlayers)
+		} catch (error) {
+			console.error('Error parsing savedPlayers:', error)
+		}
 	}
 })
 </script>
@@ -73,6 +85,9 @@ onMounted(() => {
 <template>
 	<div class="main-container">
 		<div class="table">
+			<button @click="startCardDistribution(roomId.toString())">
+				РАЗДАЧА КАРТ
+			</button>
 			<FreeSpace
 				@click="sitDown(username(), 1, roomId.toString())"
 				class="Player1"
