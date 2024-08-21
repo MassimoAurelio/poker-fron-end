@@ -2,15 +2,14 @@
 import BaseCard from '@/shared/ui/BaseCard.vue'
 import { useAuthStore } from '@/store/auth'
 import { usePlayers } from '@/store/usePlayers'
+import socket from '@/utils/socket'
 import { NotActivePlayer, PlayerFooterInfo } from '@/widgets/player'
-import { io } from 'socket.io-client'
 import BaseLeaveButton from '~/shared/ui/BaseLeaveButton.vue'
 
 const playersStore = usePlayers()
 const authStore = useAuthStore()
 const route = useRoute()
 const roomId = route.params.id
-const socket = io('http://localhost:5001')
 
 const props = defineProps<{
 	name: string
@@ -46,6 +45,13 @@ watch(
 	},
 	{ immediate: true }
 )
+
+onUnmounted(() => {
+	socket.off('getUsers')
+	socket.off('userLeave')
+	socket.off('updatedPlayers')
+	socket.off('userCreated')
+})
 </script>
 
 <template>

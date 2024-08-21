@@ -27,6 +27,6 @@
     "nuxt-icon": "^0.6.10",
     "nuxt-primevue": "^0.3.1",
     "typescript": "^5.4.5",
-    "vue-tsc": "^1.8.27"
+    "vue-tsc": "^2.0.29"
   }
 }

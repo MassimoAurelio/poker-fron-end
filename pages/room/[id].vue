@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/store/auth'
 import { usePlayers } from '@/store/usePlayers'
+import socket from '@/utils/socket'
 import { Flop } from '@/widgets/flop'
 import { FreeSpace } from '@/widgets/freeSpace'
 import { Player } from '@/widgets/player'
-import { io } from 'socket.io-client'
 
 useSeoMeta({
 	title: 'POKER STAGE',
 })
-
-const socket = io('http://localhost:5001')
 
 const playersStore = usePlayers()
 const authStore = useAuthStore()
@@ -45,17 +43,14 @@ onMounted(() => {
 	if (token && username) {
 		authStore.login(token, { username: username })
 	}
-	const savedFlop = sessionStorage.getItem('flop')
-	if (savedFlop) {
-		try {
-			const parsedFlop = JSON.parse(savedFlop)
-			console.log('Loaded saved flop from sessionStorage:', parsedFlop)
-			playersStore.setFlop(parsedFlop)
-		} catch (error) {
-			console.error('Error parsing savedFlop:', error)
-		}
-	}
 
+	if (roomId) {
+		console.log(`ROOMID IN ONMOUNT : ${roomId}`)
+		socket.emit('givePlayers', roomId)
+		socket.on('getUsers', users => {
+			playersStore.setPlayers(users)
+		})
+	}
 	socket.on('updatedPlayers', updatedPlayers => {
 		playersStore.setPlayers(updatedPlayers)
 	})
@@ -70,15 +65,21 @@ onMounted(() => {
 			}
 		}
 	})
-	const players = localStorage.getItem('players')
-	if (players) {
+	const getItemPlayers = localStorage.getItem('players')
+	if (getItemPlayers) {
 		try {
-			const parsePlayers = JSON.parse(players)
+			const parsePlayers = JSON.parse(getItemPlayers)
 			playersStore.setPlayers(parsePlayers)
 		} catch (error) {
 			console.error('Error parsing savedPlayers:', error)
 		}
 	}
+})
+
+onUnmounted(() => {
+	socket.off('getUsers')
+	socket.off('updatedPlayers')
+	socket.off('userCreated')
 })
 </script>
 
