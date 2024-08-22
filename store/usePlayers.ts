@@ -49,8 +49,8 @@ export const usePlayers = defineStore({
 			return this.players
 		},
 
-		removePlayer(nickname: string) {
-			this.players = this.players.filter(player => player.name !== nickname)
+		removePlayer(name: string) {
+			this.players = this.players.filter(player => player.name !== name)
 		},
 
 		setFlop(flop: IFlop) {

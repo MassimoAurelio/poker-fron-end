@@ -2,8 +2,6 @@
 import { useAuthStore } from '@/store/auth'
 import { usePlayers } from '@/store/usePlayers'
 
-import socket from '@/utils/socket'
-
 const playersStore = usePlayers()
 
 useSeoMeta({
@@ -61,9 +59,6 @@ const enterRoom = async (name: string, password: string) => {
 		}
 		const data = await response.json()
 		await router.push(`/room/${data.roomId}`)
-		socket.on('getUsers', users => {
-			playersStore.setPlayers(users)
-		})
 	} catch (error) {
 		console.error(error)
 	}
@@ -75,12 +70,6 @@ onMounted(() => {
 	if (token && username) {
 		authStore.login(token, { username: username })
 	}
-})
-
-onUnmounted(() => {
-	socket.off('getUsers')
-	socket.off('updatedPlayers')
-	socket.off('userCreated')
 })
 </script>
 

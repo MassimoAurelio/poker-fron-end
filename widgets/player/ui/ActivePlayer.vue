@@ -24,10 +24,6 @@ const leaveFromTable = (name: string, roomId: string) => {
 	socket.emit('leaveUser', body)
 }
 
-socket.on('userLeave', leaveUser => {
-	playersStore.removePlayer(leaveUser.name)
-})
-
 const isActivePlayer = computed(() => {
 	return authStore.user?.username === props.name
 })
@@ -46,11 +42,14 @@ watch(
 	{ immediate: true }
 )
 
+onMounted(() => {
+	socket.on('userLeave', leaveUser => {
+		playersStore.removePlayer(leaveUser.name)
+	})
+})
+
 onUnmounted(() => {
-	socket.off('getUsers')
 	socket.off('userLeave')
-	socket.off('updatedPlayers')
-	socket.off('userCreated')
 })
 </script>
 

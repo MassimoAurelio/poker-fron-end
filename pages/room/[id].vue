@@ -30,11 +30,11 @@ const sitDown = (name: string, position: number, roomId: string) => {
 	socket.emit('createUser', userData)
 }
 
-const startCardDistribution = (roomId: string) => {
+const startRound = (roomId: string) => {
 	const userData = {
 		roomId: roomId,
 	}
-	socket.emit('dealCards', userData)
+	socket.emit('startRound', userData)
 }
 
 onMounted(() => {
@@ -51,7 +51,7 @@ onMounted(() => {
 			playersStore.setPlayers(users)
 		})
 	}
-	socket.on('updatedPlayers', updatedPlayers => {
+	socket.on('start', updatedPlayers => {
 		playersStore.setPlayers(updatedPlayers)
 	})
 	socket.on('userCreated', newUser => {
@@ -86,9 +86,7 @@ onUnmounted(() => {
 <template>
 	<div class="main-container">
 		<div class="table">
-			<button @click="startCardDistribution(roomId.toString())">
-				РАЗДАЧА КАРТ
-			</button>
+			<button @click="startRound(roomId.toString())">РАЗДАЧА КАРТ</button>
 			<FreeSpace
 				@click="sitDown(username(), 1, roomId.toString())"
 				class="Player1"
