@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { methods } from '@/shared/api/apiMethods'
 import Button from '@/shared/ui/BaseButton.vue'
 import { usePlayers } from '@/store/usePlayers'
 import { checkResponse, sendRequestWithBody } from '@/utils/api'
+import socket from '@/utils/socket'
+
+const route = useRoute()
+const roomId = route.params.id
 
 const props = defineProps({
 	name: {
@@ -18,17 +21,8 @@ const props = defineProps({
 const sum = ref<number>(50)
 const playersStore = usePlayers()
 
-const fold = async (name: string) => {
-	try {
-		const body = {
-			name: name,
-		}
-		const response = await sendRequestWithBody(methods.fold.path, 'POST', body)
-		checkResponse(response)
-		/* await userTern() */
-	} catch (error) {
-		console.error(error)
-	}
+const makeFold = (name: string) => {
+	socket.emit('fold', name)
 }
 
 const raise = async (name: string) => {
@@ -104,7 +98,7 @@ const stack = () => {
 		return player.stack
 	}
 }
-
+/*
 const time = ref(30)
 let timer: NodeJS.Timeout | null = null
 
@@ -115,16 +109,19 @@ const tick = () => {
 
 		time.value = 30
 	}
-}
+} */
 
 onMounted(() => {
-	timer = setInterval(tick, 1000)
+	/* 	timer = setInterval(tick, 1000) */
+	socket.on('foldPlayer', foldUser => {
+		playersStore.setPlayers(foldUser)
+	})
 })
 
 onBeforeUnmount(() => {
-	if (timer) {
+	/* 	if (timer) {
 		clearInterval(timer)
-	}
+	} */
 })
 </script>
 
@@ -149,7 +146,7 @@ onBeforeUnmount(() => {
 			<input class="input" type="number" v-model="sum" />
 		</div>
 		<div class="main-buttons">
-			<Button @click="fold(props.name)" color="fold" size="M" radius="M"
+			<Button @click="makeFold(props.name)" color="fold" size="M" radius="M"
 				>FOLD</Button
 			>
 			<Button @click="check(props.name)" color="check" size="M" radius="M"
@@ -162,9 +159,9 @@ onBeforeUnmount(() => {
 				>BET</Button
 			>
 		</div>
-		<div class="timer">
+		<!-- <div class="timer">
 			<p class="text">Time: {{ time }}</p>
-		</div>
+		</div> -->
 	</div>
 </template>
 
