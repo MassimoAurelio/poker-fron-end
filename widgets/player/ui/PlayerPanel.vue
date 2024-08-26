@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Button from '@/shared/ui/BaseButton.vue'
 import { usePlayers } from '@/store/usePlayers'
-import { checkResponse, sendRequestWithBody } from '@/utils/api'
 import socket from '@/utils/socket'
 
 const route = useRoute()
@@ -21,72 +20,11 @@ const props = defineProps({
 const sum = ref<number>(50)
 const playersStore = usePlayers()
 
-const makeFold = (name: string) => {
-	socket.emit('fold', name)
+const makeFold = (roomId: string, name: string) => {
+	socket.emit('fold', roomId, name)
+	/* socket.emit('nextPlayer') */
 }
 
-const raise = async (name: string) => {
-	try {
-		const body = {
-			name: name,
-			raiseAmount: sum.value,
-		}
-		const response = await sendRequestWithBody(
-			`${BASE_URL}${RAISE}`,
-			'POST',
-			body
-		)
-		checkResponse(response)
-
-		await userTern()
-	} catch (error) {
-		console.error(error)
-	}
-}
-const coll = async (name: string) => {
-	try {
-		const body = {
-			name: name,
-		}
-		const response = await sendRequestWithBody(
-			`${BASE_URL}${COLL}`,
-			'POST',
-			body
-		)
-		checkResponse(response)
-
-		await userTern()
-	} catch (error) {
-		console.log(error)
-	}
-}
-
-const userTern = async () => {
-	try {
-		const response = await sendRequest(`${BASE_URL}${NEXT_PLAYER}`, 'POST')
-		checkResponse(response)
-	} catch (error) {
-		console.error(error)
-	}
-}
-
-const check = async (name: string) => {
-	try {
-		const body = {
-			name: name,
-		}
-		const response = await sendRequestWithBody(
-			`${BASE_URL}${CHECK}`,
-			'POST',
-			body
-		)
-		checkResponse(response)
-
-		await userTern()
-	} catch (error) {
-		console.error(error)
-	}
-}
 const stack = () => {
 	const player = playersStore.players.find(player => player.name === props.name)
 	if (!player) {
@@ -113,8 +51,9 @@ const tick = () => {
 
 onMounted(() => {
 	/* 	timer = setInterval(tick, 1000) */
-	socket.on('foldPlayer', foldUser => {
-		playersStore.setPlayers(foldUser)
+	socket.on('foldPlayer', ({ foldPlayer, nextPlayer }) => {
+		playersStore.updatePlayerFoldStatus(foldPlayer)
+		playersStore.updatePlayerFoldStatus(nextPlayer)
 	})
 })
 
@@ -146,18 +85,16 @@ onBeforeUnmount(() => {
 			<input class="input" type="number" v-model="sum" />
 		</div>
 		<div class="main-buttons">
-			<Button @click="makeFold(props.name)" color="fold" size="M" radius="M"
+			<Button
+				@click="makeFold(roomId.toString(), props.name)"
+				color="fold"
+				size="M"
+				radius="M"
 				>FOLD</Button
 			>
-			<Button @click="check(props.name)" color="check" size="M" radius="M"
-				>CHECK</Button
-			>
-			<Button @click="coll(props.name)" color="check" size="M" radius="M"
-				>CALL</Button
-			>
-			<Button @click="raise(props.name)" color="bet" size="M" radius="M"
-				>BET</Button
-			>
+			<Button color="check" size="M" radius="M">CHECK</Button>
+			<Button color="check" size="M" radius="M">CALL</Button>
+			<Button color="bet" size="M" radius="M">BET</Button>
 		</div>
 		<!-- <div class="timer">
 			<p class="text">Time: {{ time }}</p>

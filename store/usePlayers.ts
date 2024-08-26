@@ -48,11 +48,9 @@ export const usePlayers = defineStore({
 		getPlayers() {
 			return this.players
 		},
-
 		removePlayer(name: string) {
 			this.players = this.players.filter(player => player.name !== name)
 		},
-
 		setFlop(flop: IFlop) {
 			this.flop = flop
 		},
@@ -64,6 +62,21 @@ export const usePlayers = defineStore({
 		},
 		clearFlop() {
 			this.flop.flop.tableCards = []
+		},
+		updatePlayerFoldStatus(playerData: IPlayers) {
+			const playerIndex = this.players.findIndex(
+				player => player.id === playerData.id
+			)
+			if (playerIndex !== -1) {
+				this.players[playerIndex] = {
+					...this.players[playerIndex],
+					...playerData,
+				}
+			} else {
+				// Если игрок не найден в хранилище, вы можете решить, что делать
+				// Например, добавить игрока в хранилище
+				this.players.push(playerData)
+			}
 		},
 	},
 })

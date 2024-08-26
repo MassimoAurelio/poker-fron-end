@@ -6,27 +6,23 @@ import { ActivePlayer, PlayerPanel } from '@/widgets/player'
 const playersStore = usePlayers()
 const authStore = useAuthStore()
 
-const props = defineProps<{
-	name: string
-	position: number
-	roomId: string
-}>()
+const props = defineProps<{ name: string; roomId: string; position: number }>()
 
-const playerExists = () => {
+const playerExists = computed(() => {
 	return playersStore.players.some(
 		player =>
 			player.name === props.name &&
 			player.position === props.position &&
 			player.roomId === props.roomId
 	)
-}
+})
 
-const playerAndCurrentPlayerId = () => {
+const playerAndCurrentPlayerId = computed(() => {
 	const player = playersStore.players.find(
 		player => player.name === props.name && player.currentPlayerId === true
 	)
 	return player && player.name === authStore.user?.username
-}
+})
 </script>
 
 <template>
@@ -34,10 +30,10 @@ const playerAndCurrentPlayerId = () => {
 		<ActivePlayer
 			:name="props.name"
 			:roomId="props.roomId"
-			v-if="playerExists()"
+			v-if="playerExists"
 		/>
 
-		<div class="panel" v-if="playerAndCurrentPlayerId()">
+		<div class="panel" v-if="playerAndCurrentPlayerId">
 			<PlayerPanel :name="props.name" :position="props.position" />
 		</div>
 	</div>
