@@ -15,10 +15,11 @@ const authStore = useAuthStore()
 const route = useRoute()
 const roomId = route.params.id
 
-const username = () => {
+const username = computed(() => {
 	const value = localStorage.getItem('username') ?? ''
 	return value
-}
+})
+
 const sitDown = (name: string, position: number, roomId: string) => {
 	const userData = {
 		name: name,
@@ -36,6 +37,8 @@ const startRound = (roomId: string) => {
 	}
 	socket.emit('startRound', userData)
 }
+
+const players = computed(() => playersStore.players)
 
 onMounted(() => {
 	const token = localStorage.getItem('token')
@@ -74,6 +77,11 @@ onMounted(() => {
 			console.error('Error parsing savedPlayers:', error)
 		}
 	}
+
+	socket.on('foldPlayer', ({ foldPlayer, nextPlayer }) => {
+		playersStore.updatePlayerFoldStatus(nextPlayer)
+		playersStore.updatePlayerFoldStatus(foldPlayer)
+	})
 })
 
 onUnmounted(() => {
@@ -88,33 +96,33 @@ onUnmounted(() => {
 		<div class="table">
 			<button @click="startRound(roomId.toString())">РАЗДАЧА КАРТ</button>
 			<FreeSpace
-				@click="sitDown(username(), 1, roomId.toString())"
+				@click="sitDown(username, 1, roomId.toString())"
 				class="Player1"
 			/>
 			<FreeSpace
-				@click="sitDown(username(), 2, roomId.toString())"
+				@click="sitDown(username, 2, roomId.toString())"
 				class="Player2"
 			/>
 			<FreeSpace
-				@click="sitDown(username(), 3, roomId.toString())"
+				@click="sitDown(username, 3, roomId.toString())"
 				class="Player3"
 			/>
 			<FreeSpace
-				@click="sitDown(username(), 4, roomId.toString())"
+				@click="sitDown(username, 4, roomId.toString())"
 				class="Player4"
 			/>
 			<FreeSpace
-				@click="sitDown(username(), 5, roomId.toString())"
+				@click="sitDown(username, 5, roomId.toString())"
 				class="Player5"
 			/>
 			<FreeSpace
-				@click="sitDown(username(), 6, roomId.toString())"
+				@click="sitDown(username, 6, roomId.toString())"
 				class="Player6"
 			/>
 			<div class="flop">
-				<Flop v-if="playersStore.players.length > 0" />
+				<Flop v-if="players.length > 0" />
 			</div>
-			<div v-for="item in playersStore.players" :key="item.id">
+			<div v-for="item in players" :key="item.id">
 				<Player
 					:name="item.name"
 					:position="item.position"

@@ -68,13 +68,9 @@ export const usePlayers = defineStore({
 				player => player.id === playerData.id
 			)
 			if (playerIndex !== -1) {
-				this.players[playerIndex] = {
-					...this.players[playerIndex],
-					...playerData,
-				}
+				// Обновляем состояние без мутации
+				this.players.splice(playerIndex, 1, { ...playerData })
 			} else {
-				// Если игрок не найден в хранилище, вы можете решить, что делать
-				// Например, добавить игрока в хранилище
 				this.players.push(playerData)
 			}
 		},

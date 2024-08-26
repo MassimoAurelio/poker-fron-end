@@ -22,7 +22,6 @@ const playersStore = usePlayers()
 
 const makeFold = (roomId: string, name: string) => {
 	socket.emit('fold', roomId, name)
-	/* socket.emit('nextPlayer') */
 }
 
 const stack = () => {
@@ -49,18 +48,24 @@ const tick = () => {
 	}
 } */
 
+watch(
+	() => playersStore.players,
+	newPlayers => {
+		console.log('Players updated:', newPlayers)
+	},
+	{ deep: true }
+)
+
 onMounted(() => {
 	/* 	timer = setInterval(tick, 1000) */
-	socket.on('foldPlayer', ({ foldPlayer, nextPlayer }) => {
-		playersStore.updatePlayerFoldStatus(foldPlayer)
-		playersStore.updatePlayerFoldStatus(nextPlayer)
-	})
 })
 
 onBeforeUnmount(() => {
 	/* 	if (timer) {
 		clearInterval(timer)
 	} */
+
+	socket.off('foldPlayer')
 })
 </script>
 
