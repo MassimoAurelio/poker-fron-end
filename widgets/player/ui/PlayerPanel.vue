@@ -24,6 +24,10 @@ const makeFold = (roomId: string, name: string) => {
 	socket.emit('fold', roomId, name)
 }
 
+const makeCheck = (roomId: string, name: string) => {
+	socket.emit('check', roomId, name)
+}
+
 const stack = () => {
 	const player = playersStore.players.find(player => player.name === props.name)
 	if (!player) {
@@ -97,7 +101,13 @@ onBeforeUnmount(() => {
 				radius="M"
 				>FOLD</Button
 			>
-			<Button color="check" size="M" radius="M">CHECK</Button>
+			<Button
+				color="check"
+				size="M"
+				radius="M"
+				@click="makeCheck(roomId.toString(), props.name)"
+				>CHECK</Button
+			>
 			<Button color="check" size="M" radius="M">CALL</Button>
 			<Button color="bet" size="M" radius="M">BET</Button>
 		</div>

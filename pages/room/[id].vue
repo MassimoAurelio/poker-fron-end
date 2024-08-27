@@ -82,12 +82,19 @@ onMounted(() => {
 		playersStore.updatePlayerFoldStatus(nextPlayer)
 		playersStore.updatePlayerFoldStatus(foldPlayer)
 	})
+
+	socket.on('checkPlayer', ({ nextPlayer, сheckPlayer }) => {
+		playersStore.updatePlayerFoldStatus(nextPlayer)
+		playersStore.updatePlayerFoldStatus(сheckPlayer)
+	})
 })
 
 onUnmounted(() => {
 	socket.off('getUsers')
 	socket.off('updatedPlayers')
 	socket.off('userCreated')
+	socket.off('foldPlayer')
+	socket.off('checkPlayer')
 })
 </script>
 

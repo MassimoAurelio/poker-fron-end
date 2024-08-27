@@ -13,8 +13,6 @@ const router = useRouter()
 const route = useRoute()
 const roomId = route.params.id
 
-console.log(`params: ${JSON.stringify(route.params)}`)
-
 const authField = {
 	name: '',
 	password: '',
