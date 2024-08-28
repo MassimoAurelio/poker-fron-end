@@ -28,6 +28,14 @@ const makeCheck = (roomId: string, name: string) => {
 	socket.emit('check', roomId, name)
 }
 
+const makeRaise = (roomId: string, name: string, raiseAmount: number) => {
+	socket.emit('raise', roomId, name, raiseAmount)
+}
+
+const makeColl = (roomId: string, name: string) => {
+	socket.emit('coll', roomId, name)
+}
+
 const stack = () => {
 	const player = playersStore.players.find(player => player.name === props.name)
 	if (!player) {
@@ -108,8 +116,20 @@ onBeforeUnmount(() => {
 				@click="makeCheck(roomId.toString(), props.name)"
 				>CHECK</Button
 			>
-			<Button color="check" size="M" radius="M">CALL</Button>
-			<Button color="bet" size="M" radius="M">BET</Button>
+			<Button
+				color="check"
+				size="M"
+				radius="M"
+				@click="makeColl(roomId.toString(), props.name)"
+				>CALL</Button
+			>
+			<Button
+				color="bet"
+				size="M"
+				radius="M"
+				@click="makeRaise(roomId.toString(), props.name, sum)"
+				>BET</Button
+			>
 		</div>
 		<!-- <div class="timer">
 			<p class="text">Time: {{ time }}</p>

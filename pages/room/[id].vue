@@ -87,6 +87,16 @@ onMounted(() => {
 		playersStore.updatePlayerFoldStatus(nextPlayer)
 		playersStore.updatePlayerFoldStatus(сheckPlayer)
 	})
+
+	socket.on('raisePlayer', ({ raisePlayer, nextPlayer }) => {
+		playersStore.updatePlayerFoldStatus(raisePlayer)
+		playersStore.updatePlayerFoldStatus(nextPlayer)
+	})
+
+	socket.on('collPlayer', ({ collPlayer, nextPlayer }) => {
+		playersStore.updatePlayerFoldStatus(collPlayer)
+		playersStore.updatePlayerFoldStatus(nextPlayer)
+	})
 })
 
 onUnmounted(() => {
