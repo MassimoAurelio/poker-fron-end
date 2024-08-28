@@ -38,6 +38,10 @@ const startRound = (roomId: string) => {
 	socket.emit('startRound', userData)
 }
 
+const dealFlop = (roomId: string) => {
+	socket.emit('flop', [roomId])
+}
+
 const players = computed(() => playersStore.players)
 
 onMounted(() => {
@@ -97,6 +101,9 @@ onMounted(() => {
 		playersStore.updatePlayerFoldStatus(collPlayer)
 		playersStore.updatePlayerFoldStatus(nextPlayer)
 	})
+	socket.on('dealFlop', flopCards => {
+		playersStore.setFlop(flopCards)
+	})
 })
 
 onUnmounted(() => {
@@ -112,6 +119,7 @@ onUnmounted(() => {
 	<div class="main-container">
 		<div class="table">
 			<button @click="startRound(roomId.toString())">РАЗДАЧА КАРТ</button>
+			<button @click="dealFlop(roomId.toString())">dealFlop</button>
 			<FreeSpace
 				@click="sitDown(username, 1, roomId.toString())"
 				class="Player1"
