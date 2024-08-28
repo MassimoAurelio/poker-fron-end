@@ -41,6 +41,12 @@ const startRound = (roomId: string) => {
 const dealFlop = (roomId: string) => {
 	socket.emit('flop', [roomId])
 }
+const dealTurn = (roomId: string) => {
+	socket.emit('turn', [roomId])
+}
+const dealRiver = (roomId: string) => {
+	socket.emit('river', [roomId])
+}
 
 const players = computed(() => playersStore.players)
 
@@ -104,6 +110,13 @@ onMounted(() => {
 	socket.on('dealFlop', flopCards => {
 		playersStore.setFlop(flopCards)
 	})
+
+	socket.on('dealTurn', turnCard => {
+		playersStore.setFlop(turnCard)
+	})
+	socket.on('dealRiver', riverCards => {
+		playersStore.setFlop(riverCards)
+	})
 })
 
 onUnmounted(() => {
@@ -112,14 +125,22 @@ onUnmounted(() => {
 	socket.off('userCreated')
 	socket.off('foldPlayer')
 	socket.off('checkPlayer')
+	socket.off('raisePlayer')
+	socket.off('collPlayer')
+	socket.off('dealFlop')
 })
 </script>
 
 <template>
 	<div class="main-container">
-		<div class="table">
+		<div class="button">
 			<button @click="startRound(roomId.toString())">РАЗДАЧА КАРТ</button>
 			<button @click="dealFlop(roomId.toString())">dealFlop</button>
+			<button @click="dealTurn(roomId.toString())">dealTurn</button>
+			<button @click="dealRiver(roomId.toString())">dealRiver</button>
+		</div>
+
+		<div class="table">
 			<FreeSpace
 				@click="sitDown(username, 1, roomId.toString())"
 				class="Player1"
@@ -182,6 +203,15 @@ onUnmounted(() => {
 	box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 	background: url(),
 		radial-gradient(76% 100% at 50% 0%, rgb(54, 68, 78), rgb(16, 25, 30) 100%);
+
+	.button {
+		position: absolute;
+		display: flex;
+		flex-direction: row;
+		width: 500px;
+		top: 50px;
+		gap: 10px;
+	}
 }
 
 .table {

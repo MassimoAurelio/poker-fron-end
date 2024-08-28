@@ -4,12 +4,13 @@ interface ICard {
 	_id: string
 }
 
-interface IPlayers {
+interface IPlayer {
 	id: string
 	name: string
 	stack: number
 	position: number
 	roomId: string
+	isDealer: boolean
 	currentPlayerId: boolean
 	fold: boolean
 	lastBet: number
@@ -20,39 +21,43 @@ interface IPlayers {
 	makeTurn: boolean
 	cards: ICard[]
 	roundStage: string
-	allIn: boolean
-	allInColl: boolean
+	allIn: boolean | null
+	allInColl: boolean | null
 	loser: boolean
+	winner: boolean
+	createdAt: string
+	updatedAt: string
 }
 
 interface IFlop {
-	flop: {
-		tableCards: ICard[]
-	}
+	tableCards: ICard[]
 }
 
 export const usePlayers = defineStore({
 	id: 'players',
 
 	state: () => ({
-		players: [] as IPlayers[],
-		flop: { flop: { tableCards: [] } } as IFlop,
+		players: [] as IPlayer[],
+		tableCards: [] as ICard[],
 		cards: {} as IFlop,
 		flopGiven: false,
 	}),
 
 	actions: {
-		setPlayers(players: IPlayers[]) {
+		setPlayers(players: IPlayer[]) {
 			this.players = players
 		},
 		getPlayers() {
 			return this.players
 		},
+		getTableCards() {
+			return this.tableCards
+		},
 		removePlayer(name: string) {
 			this.players = this.players.filter(player => player.name !== name)
 		},
-		setFlop(flop: IFlop) {
-			this.flop = flop
+		setFlop(tableCards: ICard[]) {
+			this.tableCards = tableCards
 		},
 		setCards(cards: IFlop) {
 			this.cards = cards
@@ -61,14 +66,13 @@ export const usePlayers = defineStore({
 			this.flopGiven = true
 		},
 		clearFlop() {
-			this.flop.flop.tableCards = []
+			this.tableCards = []
 		},
-		updatePlayerFoldStatus(playerData: IPlayers) {
+		updatePlayerFoldStatus(playerData: IPlayer) {
 			const playerIndex = this.players.findIndex(
 				player => player.id === playerData.id
 			)
 			if (playerIndex !== -1) {
-				// Обновляем состояние без мутации
 				this.players.splice(playerIndex, 1, { ...playerData })
 			} else {
 				this.players.push(playerData)
