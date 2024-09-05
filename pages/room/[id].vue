@@ -48,6 +48,10 @@ const dealRiver = (roomId: string) => {
 	socket.emit('river', [roomId])
 }
 
+const triggerWinner = (roomId: string) => {
+	socket.emit('findWinner', [roomId])
+}
+
 const players = computed(() => playersStore.players)
 
 onMounted(() => {
@@ -107,8 +111,9 @@ onMounted(() => {
 		playersStore.updatePlayerFoldStatus(collPlayer)
 		playersStore.updatePlayerFoldStatus(nextPlayer)
 	})
-	socket.on('dealFlop', flopCards => {
-		playersStore.setFlop(flopCards)
+	socket.on('dealFlop', ({ tableCards, updatedUsers }) => {
+		playersStore.setFlop(tableCards)
+		playersStore.setPlayers(updatedUsers)
 	})
 
 	socket.on('dealTurn', turnCard => {
@@ -138,6 +143,7 @@ onUnmounted(() => {
 			<button @click="dealFlop(roomId.toString())">dealFlop</button>
 			<button @click="dealTurn(roomId.toString())">dealTurn</button>
 			<button @click="dealRiver(roomId.toString())">dealRiver</button>
+			<button @click="triggerWinner(roomId.toString())">giveWinner</button>
 		</div>
 
 		<div class="table">
