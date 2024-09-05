@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/store/auth'
-import { usePlayers } from '@/store/usePlayers'
-
-const playersStore = usePlayers()
+import socket from '@/utils/socket'
 
 useSeoMeta({
 	title: 'ROOMS PAGE',
@@ -10,53 +8,26 @@ useSeoMeta({
 
 const authStore = useAuthStore()
 const router = useRouter()
-const route = useRoute()
-const roomId = route.params.id
 
 const authField = {
 	name: '',
 	password: '',
 }
 
-const createRoom = async (name: string, password: string) => {
-	try {
-		const response = await fetch('http://localhost:5001/api/room/create', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				name: name,
-				password: password,
-			}),
-		})
-		if (!response.ok) {
-			throw new Error('Ошибка при выполнении запроса')
-		}
-		const data = await response.json()
-		await router.push(`/room/${data.roomId}`)
-	} catch (error) {
-		console.error(error)
+const createRoom = (name: string, password: string) => {
+	const formData = {
+		name: name,
+		password: password,
 	}
+	socket.emit('createRoom', formData)
 }
-
 const enterRoom = async (name: string, password: string) => {
 	try {
-		const response = await fetch('http://localhost:5001/api/room/enter', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				name: name,
-				password: password,
-			}),
-		})
-		if (!response.ok) {
-			throw new Error('Ошибка при выполнении запроса')
+		const formData = {
+			name: name,
+			password: password,
 		}
-		const data = await response.json()
-		await router.push(`/room/${data.roomId}`)
+		socket.emit('enterRoom', formData)
 	} catch (error) {
 		console.error(error)
 	}
@@ -68,6 +39,10 @@ onMounted(() => {
 	if (token && username) {
 		authStore.login(token, { username: username })
 	}
+
+	socket.on('roomEnter', room => {
+		router.push(`/room/${room.id}`)
+	})
 })
 </script>
 
