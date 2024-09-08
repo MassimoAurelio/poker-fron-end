@@ -93,8 +93,8 @@ onMounted(() => {
 	}
 
 	socket.on('foldPlayer', ({ foldPlayer, nextPlayer }) => {
-		playersStore.updatePlayerFoldStatus(nextPlayer)
 		playersStore.updatePlayerFoldStatus(foldPlayer)
+		playersStore.updatePlayerFoldStatus(nextPlayer)
 	})
 
 	socket.on('checkPlayer', ({ nextPlayer, сheckPlayer }) => {
@@ -121,6 +121,10 @@ onMounted(() => {
 	})
 	socket.on('dealRiver', riverCards => {
 		playersStore.setFlop(riverCards)
+	})
+
+	socket.on('winner', winner => {
+		playersStore.setPlayers(winner)
 	})
 })
 
